@@ -1,0 +1,5 @@
+package com.fuerzaMovil.service;
+
+public class AuthService {
+
+}
