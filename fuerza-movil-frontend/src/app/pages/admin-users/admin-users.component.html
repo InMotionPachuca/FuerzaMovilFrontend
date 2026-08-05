@@ -1,0 +1,119 @@
+<div style="padding: 24px; max-width: 1100px; margin: 0 auto;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <h2>Panel de Administración - Usuarios y Asignaciones</h2>
+    <div>
+      <button (click)="goToClients()" style="padding: 8px 16px; margin-right: 8px; cursor: pointer;">
+        Ver Clientes
+      </button>
+      <button (click)="showUserModal = true" style="padding: 8px 16px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        + Nuevo Agente / Usuario
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="message" style="padding: 12px; background-color: #d4edda; color: #155724; border-radius: 4px; margin-bottom: 16px;">
+    {{ message }}
+  </div>
+
+  <!-- Sección 1: Usuarios Registrados -->
+  <h3>Agentes / Usuarios Registrados</h3>
+  <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <thead>
+      <tr style="background-color: #f4f4f4; text-align: left;">
+        <th style="padding: 12px; border-bottom: 2px solid #ddd;">ID</th>
+        <th style="padding: 12px; border-bottom: 2px solid #ddd;">Nombre Completo</th>
+        <th style="padding: 12px; border-bottom: 2px solid #ddd;">Usuario / Email</th>
+        <th style="padding: 12px; border-bottom: 2px solid #ddd;">Rol</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users" style="border-bottom: 1px solid #eee;">
+        <td style="padding: 12px;">{{ user.id }}</td>
+        <td style="padding: 12px; font-weight: bold;">{{ user.fullName }}</td>
+        <td style="padding: 12px;">{{ user.username }}</td>
+        <td style="padding: 12px;">
+          <span [style.background-color]="user.role === 'ADMIN' ? '#cce5ff' : '#e2e3e5'" style="padding: 4px 8px; border-radius: 12px; font-size: 12px;">
+            {{ user.role }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Sección 2: Asignación de Clientes -->
+  <h3>Asignación de Cartera a Agentes</h3>
+  <table style="width: 100%; border-collapse: collapse; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <thead>
+      <tr style="background-color: #f4f4f4; text-align: left;">
+        <th style="padding: 12px; border-bottom: 2px solid #ddd;">Cliente</th>
+        <th style="padding: 12px; border-bottom: 2px solid #ddd;">RFC</th>
+        <th style="padding: 12px; border-bottom: 2px solid #ddd;">Agente Asignado</th>
+        <th style="padding: 12px; border-bottom: 2px solid #ddd; text-align: center;">Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let client of clients" style="border-bottom: 1px solid #eee;">
+        <td style="padding: 12px; font-weight: bold;">{{ client.companyName }}</td>
+        <td style="padding: 12px;">{{ client.taxId }}</td>
+        <td style="padding: 12px;">{{ client.assignedUserName || 'Sin Asignar' }}</td>
+        <td style="padding: 12px; text-align: center;">
+          <button (click)="openAssignModal(client.id!)" style="padding: 6px 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            Reasignar Agente
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Modal: Crear Usuario -->
+  <div *ngIf="showUserModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 24px; border-radius: 8px; width: 400px;">
+      <h3>Crear Nuevo Usuario</h3>
+      <form (ngSubmit)="onRegisterUser()">
+        <div style="margin-bottom: 12px;">
+          <label>Nombre Completo</label>
+          <input type="text" [(ngModel)]="newUser.fullName" name="fullName" required style="width: 100%; padding: 8px; margin-top: 4px;" />
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label>Email / Username</label>
+          <input type="email" [(ngModel)]="newUser.username" name="username" required style="width: 100%; padding: 8px; margin-top: 4px;" />
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label>Contraseña</label>
+          <input type="password" [(ngModel)]="newUser.password" name="password" required style="width: 100%; padding: 8px; margin-top: 4px;" />
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label>Rol</label>
+          <select [(ngModel)]="newUser.role" name="role" style="width: 100%; padding: 8px; margin-top: 4px;">
+            <option value="AGENT">Agente (Operativo)</option>
+            <option value="ADMIN">Administrador</option>
+          </select>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button type="button" (click)="showUserModal = false" style="padding: 8px 16px;">Cancelar</button>
+          <button type="submit" style="padding: 8px 16px; background-color: #28a745; color: white; border: none; border-radius: 4px;">Crear</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Asignar Agente a Cliente -->
+  <div *ngIf="showAssignModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 24px; border-radius: 8px; width: 400px;">
+      <h3>Asignar Agente</h3>
+      <div style="margin-bottom: 16px;">
+        <label>Selecciona el Agente Responsable:</label>
+        <select [(ngModel)]="selectedAgentId" style="width: 100%; padding: 8px; margin-top: 8px;">
+          <option [ngValue]="null" disabled>-- Selecciona un Agente --</option>
+          <option *ngFor="let user of users" [value]="user.id">
+            {{ user.fullName }} ({{ user.username }})
+          </option>
+        </select>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 8px;">
+        <button type="button" (click)="showAssignModal = false" style="padding: 8px 16px;">Cancelar</button>
+        <button type="button" (click)="onAssignClient()" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px;">Guardar Asignación</button>
+      </div>
+    </div>
+  </div>
+</div>
