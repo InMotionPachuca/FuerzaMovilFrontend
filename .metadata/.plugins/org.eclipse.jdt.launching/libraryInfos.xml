@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<libraryInfos>
+    <libraryInfo home="C:\Program Files\Java\jdk-17" version="17.0.12"/>
+    <libraryInfo home="C:\Users\Agencia Toyota\Documents\SpringTools\plugins\org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_25.0.3.v20260502-0818" version="25.0.3">
+        <bootpath>
+            <entry path="null"/>
+        </bootpath>
+        <extensionDirs>
+            <entry path="null"/>
+        </extensionDirs>
+        <endorsedDirs>
+            <entry path="null"/>
+        </endorsedDirs>
+    </libraryInfo>
+    <libraryInfo home="C:\Users\Agencia Toyota\Documents\SpringTools\plugins\org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_25.0.3.v20260502-0818\jre" version="25.0.3"/>
+    <libraryInfo home="C:\Program Files (x86)\Java\jre7" version="1.7.0_45">
+        <bootpath>
+            <entry path="C:\Program Files (x86)\Java\jre7\lib\resources.jar"/>
+            <entry path="C:\Program Files (x86)\Java\jre7\lib\rt.jar"/>
+            <entry path="C:\Program Files (x86)\Java\jre7\lib\sunrsasign.jar"/>
+            <entry path="C:\Program Files (x86)\Java\jre7\lib\jsse.jar"/>
+            <entry path="C:\Program Files (x86)\Java\jre7\lib\jce.jar"/>
+            <entry path="C:\Program Files (x86)\Java\jre7\lib\charsets.jar"/>
+            <entry path="C:\Program Files (x86)\Java\jre7\lib\jfr.jar"/>
+            <entry path="C:\Program Files (x86)\Java\jre7\classes"/>
+        </bootpath>
+        <extensionDirs>
+            <entry path="C:\Program Files (x86)\Java\jre7\lib\ext"/>
+            <entry path="C:\windows\Sun\Java\lib\ext"/>
+        </extensionDirs>
+        <endorsedDirs>
+            <entry path="C:\Program Files (x86)\Java\jre7\lib\endorsed"/>
+        </endorsedDirs>
+    </libraryInfo>
+</libraryInfos>

@@ -1,0 +1,10 @@
+package com.fuerzaMovil.dto;
+
+public record CreateClientRequest(
+        String companyName,
+        String contactEmail,
+        String contactPhone,
+        String sensitiveNotes,
+        String taxId,
+        Long assignedUserId
+) {}

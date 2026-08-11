@@ -1,0 +1,5 @@
+package com.fuerzaMovil.config;
+
+public class JwtAuthenticationFilter {
+
+}

@@ -1,0 +1,5 @@
+package com.fuerzaMovil.dto;
+
+public record CreateClientRequest() {
+
+}
