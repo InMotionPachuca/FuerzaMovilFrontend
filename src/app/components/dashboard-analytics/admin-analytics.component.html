@@ -1,0 +1,197 @@
+<div class="app-container">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content bg-light min-vh-100 py-4 px-3 px-md-4">
+    
+    <!-- ENCABEZADO Y REFRESCAR -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+      <div>
+        <h3 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+          <i class="bi bi-trophy-fill text-danger"></i>
+          Monitor de Fuerza de Ventas & KPIs
+        </h3>
+        <p class="text-muted small mb-0">Rendimiento en tiempo real, productividad de lote y asignación rápida en Toyota Pachuca</p>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" (click)="loadAnalyticsData()" class="btn btn-white border shadow-sm rounded-3 fw-semibold text-dark px-3 py-2 d-flex align-items-center gap-2">
+          <i class="bi bi-arrow-clockwise text-danger fs-5" [ngClass]="{'spin': isLoading}"></i>
+          <span>Refrescar Métricas</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- TARJETAS KPIS GENERALES DE AGENCIA -->
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-dark">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">Cobertura Global</span>
+              <h3 class="fw-bold text-dark mb-0 font-monospace">{{ assignmentCoveragePercentage }}%</h3>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">{{ totalAssignedClients }} asignados de {{ totalPortfolioCount }}</span>
+            </div>
+            <div class="bg-dark bg-opacity-10 rounded-3 p-3 text-dark d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+              <i class="bi bi-pie-chart-fill fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-success">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">Fuerza Activa</span>
+              <h3 class="fw-bold text-success mb-0 font-monospace">{{ agentsMetrics.length }} Asesores</h3>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Ejecutivos comerciales activos</span>
+            </div>
+            <div class="bg-success bg-opacity-10 rounded-3 p-3 text-success d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+              <i class="bi bi-people-fill fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-danger">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">Cuentas Beneficios</span>
+              <h3 class="fw-bold text-danger mb-0 font-monospace">{{ benefitPortfolioCount }}</h3>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Cartera de Beneficios activa</span>
+            </div>
+            <div class="bg-danger bg-opacity-10 rounded-3 p-3 text-danger d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+              <i class="bi bi-star-fill fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-warning">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">Por Repartir</span>
+              <h3 class="fw-bold text-warning-emphasis mb-0 font-monospace">{{ unassignedPortfolioCount }}</h3>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Clientes libres sin agente</span>
+            </div>
+            <div class="bg-warning bg-opacity-10 rounded-3 p-3 text-warning-emphasis d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+              <i class="bi bi-inbox-fill fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUSCADOR DE ASESORES Y BARRA DE CONTROL -->
+    <div class="p-3 mb-4 bg-white rounded-4 shadow-sm border border-0 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+      <div class="d-flex align-items-center gap-2">
+        <h6 class="fw-bold text-dark mb-0"><i class="bi bi-grid-fill text-danger me-1"></i> Desempeño Comercial Individual</h6>
+      </div>
+
+      <div class="input-group shadow-sm rounded-3 overflow-hidden border" style="max-width: 320px;">
+        <span class="input-group-text bg-white border-0 text-muted ps-3"><i class="bi bi-search"></i></span>
+        <input type="text" [(ngModel)]="agentSearchFilter" class="form-control border-0 shadow-none py-1.5" placeholder="Filtrar asesor por nombre o usuario..." />
+      </div>
+    </div>
+
+    <!-- CARGANDO -->
+    <div *ngIf="isLoading" class="text-center py-5 bg-white rounded-4 shadow-sm border my-4">
+      <div class="spinner-border text-danger me-2" role="status"></div>
+      <span class="small text-muted font-monospace d-block mt-2">Calculando interacciones y rendimiento de la fuerza de ventas...</span>
+    </div>
+
+    <!-- NAVEGACIÓN EN MOSAICO (CARDS DE AGENTES REDISEÑADAS) -->
+    <div *ngIf="!isLoading" class="row g-3">
+      <div *ngFor="let agent of filteredAgents; let i = index" class="col-12 col-md-6 col-xl-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-white h-100 position-relative agent-card hover-shadow transition-all">
+          
+          <!-- MEDALLA DE TOP 3 ASESORES -->
+          <div *ngIf="i < 3 && agent.totalAssigned > 0" class="position-absolute top-0 end-0 mt-3 me-3">
+            <span class="badge rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center"
+              [ngClass]="{'bg-warning text-dark': i === 0, 'bg-secondary text-white': i === 1, 'bg-danger text-white': i === 2}"
+              style="width: 32px; height: 32px;" [title]="'Rank #' + (i + 1)">
+              <i class="bi bi-award-fill fs-6"></i>
+            </span>
+          </div>
+
+          <div class="card-body p-4">
+            
+            <!-- ENCABEZADO ASESOR -->
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="bg-black text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 48px; height: 48px; min-width: 48px;">
+                {{ agent.fullName.charAt(0) }}
+              </div>
+              <div class="overflow-hidden">
+                <h6 class="fw-bold text-dark mb-0 text-truncate text-uppercase fs-6">{{ agent.fullName }}</h6>
+                <span class="small text-muted font-monospace d-block text-truncate" style="font-size: 0.72rem;">{{ agent.username }}</span>
+              </div>
+            </div>
+
+            <!-- PROGRESO Y EFECTIVIDAD REAL -->
+            <div class="bg-light p-3 rounded-3 border mb-3">
+              <div class="d-flex align-items-center justify-content-between mb-1.5">
+                <span class="text-muted small fw-bold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.5px;">Avance de Atención (3/3)</span>
+                <strong class="font-monospace fs-6" [ngClass]="agent.effectiveness > 0 ? 'text-danger' : 'text-muted'">
+                  {{ agent.effectiveness }}%
+                </strong>
+              </div>
+              <div class="progress rounded-pill bg-white border overflow-hidden" style="height: 8px;">
+                <div class="progress-bar bg-danger" role="progressbar" [style.width.%]="agent.effectiveness"></div>
+              </div>
+            </div>
+
+            <!-- DESGLOSE DE CARTERA ASIGNADA -->
+            <div class="row text-center g-2 mb-3">
+              <div class="col-4">
+                <div class="p-2 bg-light rounded-3 border">
+                  <span class="d-block text-muted text-uppercase fw-bold" style="font-size: 0.62rem;">TOTAL</span>
+                  <strong class="text-dark font-monospace fs-6">{{ agent.totalAssigned }}</strong>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="p-2 bg-success bg-opacity-10 text-success rounded-3 border border-success-subtle">
+                  <span class="d-block text-uppercase fw-bold" style="font-size: 0.62rem;">BASE</span>
+                  <strong class="font-monospace fs-6">{{ agent.baseCount }}</strong>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="p-2 bg-danger bg-opacity-10 text-danger rounded-3 border border-danger-subtle">
+                  <span class="d-block text-uppercase fw-bold" style="font-size: 0.62rem;">BENEFICIOS</span>
+                  <strong class="font-monospace fs-6">{{ agent.benefitCount }}</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- PIE CON INTERACCIONES REALES Y BOTONES DE ASIGNACIÓN -->
+            <div class="d-flex align-items-center justify-content-between border-top pt-3">
+              <span class="small text-muted font-monospace" style="font-size: 0.78rem;">
+                <i class="bi bi-chat-right-text-fill text-danger me-1"></i>
+                <strong class="text-dark">{{ agent.completedFollowUps }}</strong> Interacciones
+              </span>
+
+              <div class="btn-group btn-group-sm shadow-sm rounded-3 overflow-hidden border">
+                <button type="button" (click)="assignBatchToAgent(agent.id, 10)" class="btn btn-white text-danger fw-bold px-2 py-1" title="Asignar 10 clientes libres de Cartera Base">
+                  +10 Lote
+                </button>
+                <button type="button" (click)="assignBatchToAgent(agent.id, 20)" class="btn btn-white text-dark border-start fw-bold px-2 py-1" title="Asignar 20 clientes libres de Cartera Base">
+                  +20
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- SI NO HAY ASESORES -->
+      <div *ngIf="filteredAgents.length === 0" class="col-12 text-center py-5 bg-white rounded-4 shadow-sm border">
+        <i class="bi bi-search fs-1 text-muted d-block mb-2"></i>
+        <h6 class="fw-bold text-dark mb-1">No se encontraron asesores comerciales</h6>
+        <p class="text-muted small mb-0">Intenta ajustar el filtro de búsqueda.</p>
+      </div>
+    </div>
+
+  </main>
+</div>

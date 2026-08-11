@@ -1,0 +1,334 @@
+<div class="app-container">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content bg-light min-vh-100 py-4 px-3 px-md-4">
+    
+    <!-- ENCABEZADO -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+      <div>
+        <h3 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+          <i class="bi bi-people-fill text-danger"></i>
+          Gestión de Fuerza de Ventas
+        </h3>
+        <p class="text-muted small mb-0">Supervisión individual de asesores comerciales, asignación masiva de lotes y auditoría comercial</p>
+      </div>
+
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <button type="button" (click)="autoDistributeAll()" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm rounded-3 fw-semibold px-3 py-2 style-toyota-btn">
+          <i class="bi bi-diagram-3-fill"></i>
+          <span>Auto-Repartir Lote Base</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- TARJETAS KPIS -->
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-dark">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">Cartera Total Agencia</span>
+              <h3 class="fw-bold text-dark mb-0 font-monospace">{{ totalPortfolio }}</h3>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Cuentas registradas en sistema</span>
+            </div>
+            <div class="bg-dark bg-opacity-10 rounded-3 p-3 text-dark d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+              <i class="bi bi-building-fill fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-success">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">Cuentas Asignadas</span>
+              <h3 class="fw-bold text-success mb-0 font-monospace">{{ totalAssignedToday }}</h3>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">En atención activa por la fuerza comercial</span>
+            </div>
+            <div class="bg-success bg-opacity-10 rounded-3 p-3 text-success d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+              <i class="bi bi-person-check-fill fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-danger">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">Asesores Activos</span>
+              <h3 class="fw-bold text-danger mb-0 font-monospace">{{ totalAgentsCount }}</h3>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Ejecutivos comerciales (Sin admins)</span>
+            </div>
+            <div class="bg-danger bg-opacity-10 rounded-3 p-3 text-danger d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+              <i class="bi bi-person-badge-fill fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTAÑAS Y BUSCADOR -->
+    <div class="p-3 mb-4 bg-white rounded-4 shadow-sm border border-0 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+      <div class="btn-group p-1 bg-light border rounded-3 overflow-hidden" role="group">
+        <button type="button" (click)="selectTab('performance')" class="btn btn-sm border-0 px-3 py-1.5 fw-semibold rounded-2 transition-all" [ngClass]="activeTab === 'performance' ? 'bg-dark text-white shadow-sm' : 'text-secondary'">
+          <i class="bi bi-graph-up-arrow me-1.5"></i> Rendimiento del Equipo
+        </button>
+        <button type="button" (click)="selectTab('list')" class="btn btn-sm border-0 px-3 py-1.5 fw-semibold rounded-2 transition-all" [ngClass]="activeTab === 'list' ? 'bg-dark text-white shadow-sm' : 'text-secondary'">
+          <i class="bi bi-grid-fill me-1.5"></i> Lista de Asesores
+        </button>
+        <button type="button" (click)="selectTab('audit')" class="btn btn-sm border-0 px-3 py-1.5 fw-semibold rounded-2 transition-all" [ngClass]="activeTab === 'audit' ? 'bg-dark text-white shadow-sm' : 'text-secondary'">
+          <i class="bi bi-shield-check me-1.5"></i> Auditoría e Inspección
+        </button>
+      </div>
+
+      <div *ngIf="activeTab !== 'audit'" class="input-group shadow-sm rounded-3 overflow-hidden border" style="max-width: 320px;">
+        <span class="input-group-text bg-white border-0 text-muted ps-3"><i class="bi bi-search"></i></span>
+        <input type="text" [(ngModel)]="searchQuery" class="form-control border-0 shadow-none py-1.5" placeholder="Buscar asesor por nombre..." />
+      </div>
+    </div>
+
+    <!-- PESTAÑA 1: TABLA RENDIMIENTO -->
+    <div *ngIf="activeTab === 'performance'" class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+      <div class="card-header bg-black text-white p-3 px-4 d-flex align-items-center justify-content-between border-bottom border-danger border-2">
+        <h6 class="fw-bold mb-0 d-flex align-items-center gap-2">
+          <i class="bi bi-people-fill text-danger"></i>
+          Rendimiento Comercial ({{ filteredAgents.length }} Asesores)
+        </h6>
+        <span class="badge bg-danger text-white font-monospace">Efectividad %</span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light border-bottom">
+            <tr class="text-secondary small text-uppercase" style="letter-spacing: 0.5px;">
+              <th class="ps-4 py-3">Asesor Comercial</th>
+              <th class="py-3">Usuario / Correo</th>
+              <th class="text-center py-3">Mix Cartera</th>
+              <th class="text-center py-3">Clientes Asignados</th>
+              <th class="text-center py-3">Avance Real</th>
+              <th class="text-end pe-4 py-3" style="min-width: 240px;">Acciones Operativas</th>
+            </tr>
+          </thead>
+          <tbody class="border-0">
+            <tr *ngFor="let agent of filteredAgents" class="align-middle">
+              <td class="ps-4">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="bg-black text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 38px; height: 38px; min-width: 38px;">
+                    {{ agent.fullName.charAt(0) }}
+                  </div>
+                  <div>
+                    <strong class="d-block text-dark small text-uppercase">{{ agent.fullName }}</strong>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle fw-semibold" style="font-size: 0.65rem;">
+                      Ejecutivo de Ventas
+                    </span>
+                  </div>
+                </div>
+              </td>
+              <td><span class="small font-monospace text-muted">{{ agent.username }}</span></td>
+              <td class="text-center">
+                <div class="d-flex align-items-center justify-content-center gap-1">
+                  <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle font-monospace">Base: {{ agent.baseCount }}</span>
+                  <span class="badge bg-danger bg-opacity-10 text-danger border border-danger-subtle font-monospace">Beneficios: {{ agent.benefitCount }}</span>
+                </div>
+              </td>
+              <td class="text-center">
+                <span class="badge bg-light text-dark border font-monospace fs-6 px-3 py-1 shadow-sm">{{ agent.totalAssigned }}</span>
+              </td>
+              <td class="text-center">
+                <span class="badge rounded-pill font-monospace px-3 py-1.5 fw-bold"
+                  [ngClass]="{
+                    'bg-light text-muted border': agent.effectiveness === 0,
+                    'bg-warning-subtle text-warning-emphasis border border-warning-subtle': agent.effectiveness > 0 && agent.effectiveness < 50,
+                    'bg-success-subtle text-success border border-success-subtle': agent.effectiveness >= 50
+                  }">
+                  {{ agent.effectiveness }}% Atención
+                </span>
+              </td>
+              <td class="text-end pe-4">
+                <div class="d-flex align-items-center justify-content-end gap-1.5">
+                  <button type="button" (click)="assignBatch(agent.id, 10)" class="btn btn-sm btn-danger rounded-3 px-2 py-1 fw-semibold shadow-sm">
+                    <i class="bi bi-plus-circle me-1"></i>+10
+                  </button>
+                  <button type="button" (click)="openAgentDetailModal(agent)" class="btn btn-sm btn-dark rounded-3 px-2.5 py-1 fw-semibold shadow-sm">
+                    <i class="bi bi-folder-fill me-1"></i>Ver Cuentas
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 2: LISTA DE ASESORES EN MOSAICO REDISEÑADA -->
+    <div *ngIf="activeTab === 'list'" class="row g-3 mb-4">
+      <div *ngFor="let agent of filteredAgents" class="col-12 col-md-6 col-xl-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-white h-100 p-3.5 border-start border-4 border-danger position-relative">
+          
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="bg-black text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 44px; height: 44px; min-width: 44px;">
+                {{ agent.fullName.charAt(0) }}
+              </div>
+              <div class="overflow-hidden">
+                <h6 class="fw-bold text-dark mb-0 text-uppercase small text-truncate">{{ agent.fullName }}</h6>
+                <span class="small text-muted font-monospace d-block text-truncate" style="font-size: 0.72rem;">{{ agent.username }}</span>
+              </div>
+            </div>
+            <span class="badge bg-light text-dark border font-monospace px-2 py-1 small">ID #{{ agent.id }}</span>
+          </div>
+
+          <!-- RESUMEN DE MEZCLA DE CUENTAS -->
+          <div class="row text-center g-2 mb-3">
+            <div class="col-6">
+              <div class="p-2 rounded-3 bg-success bg-opacity-10 text-success border border-success-subtle">
+                <span class="d-block text-uppercase fw-bold" style="font-size: 0.62rem;">CARTERA BASE</span>
+                <strong class="font-monospace fs-6">{{ agent.baseCount }}</strong>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-2 rounded-3 bg-danger bg-opacity-10 text-danger border border-danger-subtle">
+                <span class="d-block text-uppercase fw-bold" style="font-size: 0.62rem;">BENEFICIOS</span>
+                <strong class="font-monospace fs-6">{{ agent.benefitCount }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-auto">
+            <span class="small text-muted">Lote Total: <strong class="text-dark font-monospace fs-6">{{ agent.totalAssigned }}</strong></span>
+            <button type="button" (click)="openAgentDetailModal(agent)" class="btn btn-sm btn-dark px-3 rounded-3 fw-semibold shadow-sm">
+              <i class="bi bi-person-lines-fill me-1"></i> Ver Cuentas
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 3: AUDITORÍA -->
+    <div *ngIf="activeTab === 'audit'" class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+      <div class="card-header bg-black text-white p-3 px-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 border-bottom border-danger border-2">
+        <h6 class="fw-bold mb-0 d-flex align-items-center gap-2">
+          <i class="bi bi-shield-check text-danger fs-5"></i>
+          Registro de Bitácora e Inspección Comercial
+        </h6>
+
+        <div class="d-flex align-items-center gap-2">
+          <span class="small text-white-50">Filtrar Asesor:</span>
+          <select [(ngModel)]="selectedAuditAgentId" class="form-select form-select-sm border-0 font-monospace fw-semibold" style="min-width: 200px;">
+            <option [ngValue]="null">-- Todos los Asesores --</option>
+            <option *ngFor="let a of agentsList" [ngValue]="a.id">{{ a.fullName }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card-body p-4 bg-light">
+        <div class="timeline">
+          <div *ngFor="let log of filteredAuditLogs" class="card border-0 shadow-sm rounded-3 p-3 mb-3 bg-white border-start border-3 border-danger">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge bg-dark px-2.5 py-1 font-monospace">{{ log.agentName || 'Asesor' }}</span>
+              <span class="small text-muted font-monospace"><i class="bi bi-clock me-1 text-danger"></i>{{ log.contactDate || log.timestamp | date:'dd/MMM/yyyy hh:mm a' }}</span>
+            </div>
+            <p class="mb-1 text-dark small fw-medium">{{ log.comments || log.description || 'Interacción registrada en bitácora.' }}</p>
+            <span class="small text-muted d-block" style="font-size: 0.72rem;">Vía: <strong>{{ log.contactMethod || 'Llamada' }}</strong></span>
+          </div>
+
+          <div *ngIf="filteredAuditLogs.length === 0" class="text-center py-5 text-muted">
+            <i class="bi bi-journal-x fs-1 d-block mb-2"></i>
+            No se encontraron registros de bitácora para el asesor seleccionado.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL DESGLOSE Y GESTIÓN INDIVIDUAL DE CUENTAS DEL ASESOR -->
+<div *ngIf="showAgentDetailModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); z-index: 1060;">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+      
+      <!-- ENCABEZADO Y BOTÓN ASIGNAR MÁS CLIENTES -->
+      <div class="modal-header bg-black text-white p-3.5 px-4 border-bottom border-danger border-2">
+        <div class="d-flex align-items-center justify-content-between w-100 me-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm fw-bold fs-5" style="width: 46px; height: 46px;">
+              {{ selectedAgentForDetail?.fullName?.charAt(0) }}
+            </div>
+            <div>
+              <h5 class="modal-title fw-bold mb-0 text-white text-uppercase fs-6">{{ selectedAgentForDetail?.fullName }}</h5>
+              <span class="small opacity-75 font-monospace">Lote Asignado: <strong>{{ agentClientsList.length }} Clientes</strong></span>
+            </div>
+          </div>
+
+          <button type="button" (click)="assignBatch(selectedAgentForDetail!.id, 10)" class="btn btn-sm btn-danger fw-semibold px-3 py-1.5 shadow-sm rounded-3">
+            <i class="bi bi-plus-circle me-1"></i> +10 Clientes Libres
+          </button>
+        </div>
+        <button type="button" class="btn-close btn-close-white" (click)="closeAgentDetailModal()"></button>
+      </div>
+
+      <!-- CUERPO DE LA LISTA DE CUENTAS CON ACCIONES INDIVIDUALES -->
+      <div class="modal-body p-4 bg-light">
+        
+        <div *ngIf="isLoadingAgentClients" class="text-center py-5">
+          <div class="spinner-border text-danger mb-2" role="status"></div>
+          <p class="text-muted small">Cargando cuentas asignadas...</p>
+        </div>
+
+        <div *ngIf="!isLoadingAgentClients && agentClientsList.length === 0" class="text-center py-5 text-muted">
+          <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+          <h6 class="fw-bold text-dark mb-1">Sin cuentas en lote actualmente</h6>
+          <p class="small text-muted mb-3">Puedes presionar "+10 Clientes Libres" para asignarle cartera de la agencia.</p>
+        </div>
+
+        <div *ngIf="!isLoadingAgentClients && agentClientsList.length > 0" class="d-flex flex-column gap-2.5">
+          <div *ngFor="let client of agentClientsList" class="card border-0 shadow-sm rounded-3 p-3 bg-white d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 border-start border-3"
+            [ngClass]="(client.clientType === 'BENEFIT' || client.clientType === 'BENEFICIOS') ? 'border-danger' : 'border-success'">
+            
+            <div class="overflow-hidden">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge rounded-pill px-2 py-0.5 small fw-bold" [ngClass]="(client.clientType === 'BENEFIT' || client.clientType === 'BENEFICIOS') ? 'bg-danger text-white' : 'bg-success text-white'">
+                  {{ (client.clientType === 'BENEFIT' || client.clientType === 'BENEFICIOS') ? 'BENEFICIOS' : 'BASE' }}
+                </span>
+                <strong class="text-dark small text-truncate">{{ client.companyName || client.nombreDelCliente }}</strong>
+              </div>
+              <span class="small text-muted d-block font-monospace" style="font-size: 0.72rem;">
+                RFC: {{ client.taxId || client.rfc || 'N/A' }} • Tel: {{ client.contactPhone || client.telefono1 || 'Sin Tel' }}
+              </span>
+            </div>
+
+            <!-- CONTROLES DE REASIGNACIÓN Y DESASIGNACIÓN -->
+            <div class="d-flex align-items-center gap-2 justify-content-end">
+              
+              <!-- REASIGNAR A OTRO ASESOR -->
+              <select (change)="reassignClientToNewAgent(client, $event)" class="form-select form-select-sm border-secondary-subtle small fw-semibold" style="width: 170px; font-size: 0.75rem;" title="Transferir cuenta a otro asesor">
+                <option value="">Reasignar a...</option>
+                <option *ngFor="let a of agentsList" [value]="a.id" [disabled]="a.id === selectedAgentForDetail?.id">
+                  {{ a.fullName }}
+                </option>
+              </select>
+
+              <!-- BOTÓN QUITAR / DESASIGNAR -->
+              <button type="button" (click)="unassignClientFromAgent(client)" class="btn btn-sm btn-outline-danger rounded-3 px-2 py-1 shadow-sm" title="Quitar de este asesor (Dejar libre)">
+                <i class="bi bi-x-circle-fill me-1"></i> Quitar
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer bg-white border-top p-3 px-4 d-flex justify-content-between align-items-center">
+        <span class="small text-muted font-monospace">Toyota Pachuca • Fuerza de Ventas</span>
+        <button type="button" class="btn btn-dark rounded-3 px-4 fw-semibold" (click)="closeAgentDetailModal()">Cerrar</button>
+      </div>
+
+    </div>
+  </div>
+</div>

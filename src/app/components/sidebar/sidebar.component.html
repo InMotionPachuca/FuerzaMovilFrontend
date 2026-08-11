@@ -1,0 +1,73 @@
+<aside class="sidebar p-3">
+  <div>
+    <!-- LOGO Y BRANDING TOYOTA PACHUCA -->
+    <div class="d-flex align-items-center justify-content-center mb-4 px-2 pt-2">
+      <div class="brand-logo-container text-center">
+        <img src="assets/toyotaPachuca.jpeg" alt="Toyota Pachuca"
+          class="img-fluid rounded-3 shadow-sm brand-logo-img" />
+      </div>
+    </div>
+
+    <hr class="border-secondary opacity-20 my-3" />
+
+    <!-- MENÚ DEPENDIENDO DEL ROL -->
+    <nav class="sidebar-nav">
+
+      <!-- MENÚ PARA AGENTES -->
+      <ng-container *ngIf="!isAdmin">
+        <a routerLink="/clients" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-person-vcard-fill"></i>
+          <span class="link-text">Mi Cartera</span>
+        </a>
+        <a routerLink="/agent-dashboard" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-bar-chart-line-fill"></i>
+          <span class="link-text">Analytics</span>
+        </a>
+      </ng-container>
+
+      <!-- MENÚ PARA ADMINISTRADORES -->
+      <ng-container *ngIf="isAdmin">
+        <a routerLink="/admin-dashboard" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-speedometer"></i>
+          <span class="link-text">Dashboard</span>
+        </a>
+        <a routerLink="/admin/analytics" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-pie-chart-fill"></i>
+          <span class="link-text">KPIs</span>
+        </a>
+        <a routerLink="/clients" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-building-gear"></i>
+          <span class="link-text">Gestión de Clientes</span>
+        </a>
+        <a routerLink="/admin/agents" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-person-badge-fill"></i>
+          <span class="link-text">Vendedores</span>
+        </a>
+        <a routerLink="/admin/users" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-gear-wide-connected"></i>
+          <span class="link-text">Configuración</span>
+        </a>
+      </ng-container>
+
+    </nav>
+  </div>
+
+  <!-- PERFIL Y LOGOUT INFERIOR -->
+  <div class="border-top border-secondary border-opacity-20 pt-3">
+    <div class="d-flex align-items-center justify-content-between px-2 mb-1">
+      <div class="user-details overflow-hidden me-2">
+        <span class="d-block text-white fw-bold text-truncate small">
+          {{ currentUser?.fullName || currentUser?.username || 'Administrador Principal' }}
+        </span>
+        <span
+          class="badge bg-danger text-white text-uppercase font-monospace d-inline-block mt-1"
+          style="font-size: 0.62rem; padding: 3px 8px;">
+          {{ userRoleDisplay }}
+        </span>
+      </div>
+      <button (click)="logout()" class="btn btn-sm btn-outline-light border-0 rounded-3 p-1.5" title="Cerrar Sesión">
+        <i class="bi bi-box-arrow-right fs-5 text-danger"></i>
+      </button>
+    </div>
+  </div>
+</aside>

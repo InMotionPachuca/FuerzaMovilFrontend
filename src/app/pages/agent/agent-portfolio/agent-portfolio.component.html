@@ -1,0 +1,152 @@
+<div class="app-container">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content bg-light min-vh-100 py-4 px-3 px-md-4">
+    
+    <!-- ENCABEZADO ASESOR -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+      <div>
+        <h3 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+          <i class="bi bi-person-workspace text-danger"></i>
+          Mi Cartera Comercial
+        </h3>
+        <p class="text-muted small mb-0">Gestión y seguimiento individual de mi lote de clientes asignados</p>
+      </div>
+    </div>
+
+    <!-- TARJETAS DE KPIS INDIVIDUALES PARA EL ASESOR -->
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-sm-6 col-xl-4">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-dark">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem;">Mi Lote Asignado</span>
+              <h3 class="fw-bold text-dark mb-0 font-monospace">{{ myAssignedTotal }}</h3>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Clientes en mi cartera</span>
+            </div>
+            <div class="bg-dark bg-opacity-10 rounded-3 p-3 text-dark d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+              <i class="bi bi-person-badge-fill fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-4">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-warning">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem;">En Proceso (1-2 Contactos)</span>
+              <h3 class="fw-bold text-warning-emphasis mb-0 font-monospace">{{ inProgressCount }}</h3>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Pendientes de llegar a 3/3</span>
+            </div>
+            <div class="bg-warning bg-opacity-10 rounded-3 p-3 text-warning-emphasis d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+              <i class="bi bi-hourglass-split fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-4">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-success">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem;">Meta Cumplida (3/3)</span>
+              <h3 class="fw-bold text-success mb-0 font-monospace">{{ completedGoalCount }}</h3>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Clientes contactados 3 veces</span>
+            </div>
+            <div class="bg-success bg-opacity-10 rounded-3 p-3 text-success d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+              <i class="bi bi-check2-all fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLA DE LOTE ACTIVO DEL ASESOR -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light border-bottom">
+            <tr class="text-secondary small text-uppercase" style="letter-spacing: 0.5px;">
+              <th class="ps-4 py-3">Segmento</th>
+              <th class="py-3">Razón Social / Cliente</th>
+              <th class="py-3">RFC / Identificador</th>
+              <th class="py-3">Contacto Directo</th>
+              <th class="text-center py-3">Seguimiento (Máx 3)</th>
+              <th class="text-end pe-4 py-3">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="border-0">
+            <tr *ngFor="let client of clients" class="align-middle">
+              <td class="ps-4">
+                <span class="badge font-monospace px-2.5 py-1"
+                  [ngClass]="(client.clientType === 'BENEFIT' || client.clientType === 'BENEFICIOS') ? 'bg-danger text-white' : 'bg-success text-white'">
+                  {{ (client.clientType === 'BENEFIT' || client.clientType === 'BENEFICIOS') ? 'VIP' : 'BASE' }}
+                </span>
+              </td>
+
+              <td>
+                <strong class="d-block text-dark small text-uppercase mb-0.5">{{ client.companyName || client.nombreDelCliente }}</strong>
+                <span *ngIf="client.vehicleModel" class="badge bg-light text-secondary border font-monospace" style="font-size: 0.68rem;">
+                  <i class="bi bi-car-front me-1"></i>{{ client.vehicleModel }}
+                </span>
+              </td>
+
+              <td>
+                <span class="small font-monospace fw-semibold text-dark">{{ client.taxId || client.rfc || 'N/A' }}</span>
+              </td>
+
+              <td>
+                <div class="small">
+                  <div class="text-truncate text-lowercase text-muted mb-0.5" style="max-width: 200px;">
+                    <i class="bi bi-envelope me-1 text-secondary"></i>{{ client.contactEmail || client.email || 'Sin correo' }}
+                  </div>
+                  <div class="fw-bold font-monospace text-dark">
+                    <i class="bi bi-telephone me-1 text-success"></i>{{ client.contactPhone || client.telefono1 || 'Sin teléfono' }}
+                  </div>
+                </div>
+              </td>
+
+              <td class="text-center">
+                <div class="d-flex flex-column align-items-center">
+                  <div class="d-flex align-items-center gap-1 mb-1">
+                    <i class="bi" [ngClass]="(client.followUpsCount || 0) >= 1 ? 'bi-check-circle-fill text-success' : 'bi-circle text-muted'" style="font-size: 0.85rem;"></i>
+                    <i class="bi" [ngClass]="(client.followUpsCount || 0) >= 2 ? 'bi-check-circle-fill text-success' : 'bi-circle text-muted'" style="font-size: 0.85rem;"></i>
+                    <i class="bi" [ngClass]="(client.followUpsCount || 0) >= 3 ? 'bi-check-circle-fill text-success' : 'bi-circle text-muted'" style="font-size: 0.85rem;"></i>
+                  </div>
+                  <span class="badge font-monospace px-2 py-0.5"
+                    [ngClass]="{
+                      'bg-light text-muted border': (client.followUpsCount || 0) === 0,
+                      'bg-warning-subtle text-warning-emphasis border border-warning-subtle': (client.followUpsCount || 0) > 0 && (client.followUpsCount || 0) < 3,
+                      'bg-success-subtle text-success border border-success-subtle fw-bold': (client.followUpsCount || 0) >= 3
+                    }">
+                    {{ client.followUpsCount || 0 }} / 3 Intentos
+                  </span>
+                </div>
+              </td>
+
+              <td class="text-end pe-4">
+                <div class="d-flex align-items-center justify-content-end gap-1.5">
+                  <button type="button" (click)="openClientDetailModal(client)" class="btn btn-sm btn-outline-dark rounded-3 px-2 py-1" title="Ver Ficha Comercial 360°">
+                    <i class="bi bi-eye-fill"></i>
+                  </button>
+                  <button type="button" (click)="openFollowUpModal(client)" class="btn btn-sm btn-danger rounded-3 px-2.5 py-1 fw-semibold shadow-sm" title="Registrar bitácora">
+                    <i class="bi bi-journal-plus me-1"></i> Bitácora
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr *ngIf="clients.length === 0 && !isLoading">
+              <td colspan="6" class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                No tienes clientes asignados en este momento.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>

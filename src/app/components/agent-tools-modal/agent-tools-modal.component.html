@@ -1,0 +1,154 @@
+<!-- FONDO OBSCURO CON BACKDROP REAL Y MANEJO DE Z-INDEX -->
+<div class="modal fade show d-block" tabindex="-1" role="dialog" style="background: rgba(0,0,0,0.65); backdrop-filter: blur(4px); z-index: 1070;" (click)="closeOnBackdrop($event)">
+  <div class="modal-dialog modal-dialog-centered modal-lg" (click)="$event.stopPropagation()">
+    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+      
+      <!-- ENCABEZADO -->
+      <div class="modal-header bg-black text-white p-3.5 px-4 border-bottom border-danger border-2">
+        <h5 class="modal-title fs-6 fw-bold d-flex align-items-center gap-2 mb-0">
+          <div class="bg-danger rounded-circle p-1.5 d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px;">
+            <i class="bi text-white" [ngClass]="activeTool === 'quote' ? 'bi-calculator-fill' : 'bi-steering-wheel'"></i>
+          </div>
+          <span>{{ activeTool === 'quote' ? 'Cotizador Financiero Toyota' : 'Agendar Prueba de Manejo (Demo Drive)' }}</span>
+          <span class="badge bg-light text-dark font-monospace ms-2 shadow-sm" *ngIf="client">{{ client.companyName }}</span>
+        </h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="closeModal.emit()"></button>
+      </div>
+
+      <!-- CUERPO MODAL -->
+      <div class="modal-body p-4 bg-light">
+        
+        <!-- PESTAÑAS DE NAVEGACIÓN DENTRO DEL MODAL -->
+        <div class="btn-group w-100 mb-4 shadow-sm rounded-3 overflow-hidden p-1 bg-white border" role="group">
+          <button 
+            type="button"
+            (click)="selectTool('quote')" 
+            class="btn btn-sm py-2 fw-semibold rounded-2 transition-all" 
+            [ngClass]="activeTool === 'quote' ? 'btn-dark text-white' : 'text-secondary border-0'">
+            <i class="bi bi-calculator me-1.5"></i>Cotizador Financiero
+          </button>
+          <button 
+            type="button"
+            (click)="selectTool('testDrive')" 
+            class="btn btn-sm py-2 fw-semibold rounded-2 transition-all" 
+            [ngClass]="activeTool === 'testDrive' ? 'btn-toyota text-white' : 'text-secondary border-0'">
+            <i class="bi bi-steering-wheel me-1.5"></i>Prueba de Manejo
+          </button>
+        </div>
+
+        <!-- OPCIÓN 1: COTIZADOR FINANCIERO -->
+        <div *ngIf="activeTool === 'quote'" class="bg-white p-4 rounded-4 shadow-sm border">
+          <div class="row g-3">
+            
+            <div class="col-12 col-md-6">
+              <label class="form-label small fw-bold text-dark mb-1"><i class="bi bi-car-front text-danger me-1"></i>Modelo Toyota *</label>
+              <select [(ngModel)]="selectedModelId" class="form-select form-select-sm fw-semibold">
+                <option *ngFor="let m of models" [value]="m.id">{{ m.name }} - {{ m.price | currency:'USD':'symbol':'1.0-0' }}</option>
+              </select>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="d-flex justify-content-between">
+                <label class="form-label small fw-bold text-dark mb-1"><i class="bi bi-percent text-danger me-1"></i>Enganche</label>
+                <span class="badge bg-danger-subtle text-danger font-monospace fw-bold">{{ downPaymentPercent }}%</span>
+              </div>
+              <input type="range" [(ngModel)]="downPaymentPercent" min="10" max="80" step="5" class="form-range mt-2" />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label small fw-bold text-dark mb-1"><i class="bi bi-calendar3 text-danger me-1"></i>Plazo de Financiamiento</label>
+              <select [(ngModel)]="termMonths" class="form-select form-select-sm fw-semibold">
+                <option [ngValue]="12">12 Meses</option>
+                <option [ngValue]="24">24 Meses</option>
+                <option [ngValue]="36">36 Meses</option>
+                <option [ngValue]="48">48 Meses</option>
+                <option [ngValue]="60">60 Meses</option>
+              </select>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label small fw-bold text-dark mb-1"><i class="bi bi-graph-up text-danger me-1"></i>Tasa Anual Estimada (%)</label>
+              <input type="number" [(ngModel)]="annualInterestRate" step="0.5" class="form-control form-control-sm font-monospace" />
+            </div>
+
+          </div>
+
+          <!-- TARJETA RESUMEN DE AMORTIZACIÓN -->
+          <div class="card border-0 bg-light p-3.5 mt-4 rounded-4 border-start border-4 border-danger shadow-sm">
+            <div class="row text-center align-items-center g-2">
+              <div class="col-6 col-md-3">
+                <span class="d-block small text-muted text-uppercase fw-semibold" style="font-size: 0.72rem;">Enganche</span>
+                <strong class="text-dark fs-6 font-monospace">{{ currentQuote.downPayment | currency:'USD':'symbol':'1.0-0' }}</strong>
+              </div>
+              <div class="col-6 col-md-3">
+                <span class="d-block small text-muted text-uppercase fw-semibold" style="font-size: 0.72rem;">Financiado</span>
+                <strong class="text-dark fs-6 font-monospace">{{ currentQuote.amountToFinance | currency:'USD':'symbol':'1.0-0' }}</strong>
+              </div>
+              <div class="col-6 col-md-3">
+                <span class="d-block small text-muted text-uppercase fw-semibold" style="font-size: 0.72rem;">Plazo</span>
+                <strong class="text-dark fs-6 font-monospace">{{ currentQuote.termMonths }} meses</strong>
+              </div>
+              <div class="col-6 col-md-3 bg-white p-2.5 rounded-3 border text-center shadow-sm">
+                <span class="d-block small text-danger fw-bold text-uppercase" style="font-size: 0.68rem;">Mensualidad Est.</span>
+                <strong class="text-danger fs-5 font-monospace">{{ currentQuote.monthlyPayment | currency:'USD':'symbol':'1.0-0' }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-end mt-4">
+            <button type="button" (click)="sendQuoteWhatsApp()" class="btn btn-success d-inline-flex align-items-center gap-2 fw-semibold px-4 shadow-sm rounded-3">
+              <i class="bi bi-whatsapp fs-5"></i>
+              <span>Enviar Cotización por WhatsApp</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- OPCIÓN 2: AGENDA PRUEBA DE MANEJO -->
+        <div *ngIf="activeTool === 'testDrive'" class="bg-white p-4 rounded-4 shadow-sm border">
+          <div class="row g-3">
+            
+            <div class="col-12 col-md-6">
+              <label class="form-label small fw-bold text-dark mb-1"><i class="bi bi-calendar-event text-danger me-1"></i>Fecha de Cita *</label>
+              <input type="date" [(ngModel)]="testDrive.date" class="form-control form-control-sm" />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label small fw-bold text-dark mb-1"><i class="bi bi-clock text-danger me-1"></i>Hora *</label>
+              <input type="time" [(ngModel)]="testDrive.time" class="form-control form-control-sm" />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label small fw-bold text-dark mb-1"><i class="bi bi-car-front-fill text-danger me-1"></i>Unidad Demo Solicitada *</label>
+              <select [(ngModel)]="testDrive.modelId" class="form-select form-select-sm fw-semibold">
+                <option *ngFor="let m of models" [value]="m.id">{{ m.name }}</option>
+              </select>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label small fw-bold text-dark mb-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Ruta Seleccionada</label>
+              <select [(ngModel)]="testDrive.routeType" class="form-select form-select-sm fw-semibold">
+                <option value="Urbana (Zona Galerías Pachuca)">Urbana (Zona Galerías Pachuca)</option>
+                <option value="Carretera Pachuca-Actopan">Carretera Pachuca-Actopan</option>
+                <option value="Domiciliaria / Entrega">Visita Domiciliaria</option>
+              </select>
+            </div>
+
+          </div>
+
+          <div class="text-end mt-4">
+            <button type="button" (click)="scheduleTestDrive()" class="btn btn-toyota d-inline-flex align-items-center gap-2 fw-semibold px-4 shadow-sm rounded-3">
+              <i class="bi bi-calendar-check-fill fs-6"></i>
+              <span>Confirmar Cita de Demo</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer bg-white border-top p-3 px-4 d-flex justify-content-end">
+        <button type="button" class="btn btn-sm btn-dark rounded-3 px-4 fw-semibold" (click)="closeModal.emit()">Cerrar</button>
+      </div>
+
+    </div>
+  </div>
+</div>

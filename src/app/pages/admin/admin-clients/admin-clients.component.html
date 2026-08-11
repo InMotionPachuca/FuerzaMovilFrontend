@@ -1,0 +1,194 @@
+<div class="app-container">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content bg-light min-vh-100 py-4 px-3 px-md-4">
+    
+    <!-- ENCABEZADO ADMIN -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+      <div>
+        <h3 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+          <i class="bi bi-shield-lock-fill text-danger"></i>
+          Gestión Corporativa de Clientes
+        </h3>
+        <p class="text-muted small mb-0">Control global de cartera, asignación masiva de cuentas e importación de padrón</p>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <label class="btn btn-white border shadow-sm rounded-3 fw-semibold text-dark px-3 py-2 cursor-pointer mb-0">
+          <i class="bi bi-file-earmark-excel-fill text-success me-1"></i> Importar Excel
+          <input type="file" (change)="onFileSelected($event)" accept=".xlsx, .xls" class="d-none">
+        </label>
+      </div>
+    </div>
+
+    <!-- TARJETAS DE KPIS GLOBALES PARA EL ADMINISTRADOR -->
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-dark">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem;">Total Cartera</span>
+              <h3 class="fw-bold text-dark mb-0 font-monospace">{{ totalElements }}</h3>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Cuentas unificadas</span>
+            </div>
+            <div class="bg-dark bg-opacity-10 rounded-3 p-3 text-dark d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+              <i class="bi bi-building-fill fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-danger">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem;">Beneficios VIP</span>
+              <h3 class="fw-bold text-danger mb-0 font-monospace">{{ benefitClientsCount }}</h3>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Cuentas preferenciales</span>
+            </div>
+            <div class="bg-danger bg-opacity-10 rounded-3 p-3 text-danger d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+              <i class="bi bi-star-fill fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-warning">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem;">Sin Agente</span>
+              <h3 class="fw-bold text-warning-emphasis mb-0 font-monospace">{{ unassignedClientsCount }}</h3>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Disponibles para reparto</span>
+            </div>
+            <div class="bg-warning bg-opacity-10 rounded-3 p-3 text-warning-emphasis d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+              <i class="bi bi-person-exclamation fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-success">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem;">Agentes Activos</span>
+              <h3 class="fw-bold text-success mb-0 font-monospace">{{ agents.length }}</h3>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Equipo comercial</span>
+            </div>
+            <div class="bg-success bg-opacity-10 rounded-3 p-3 text-success d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+              <i class="bi bi-people-fill fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BÚSQUEDA Y FILTROS -->
+    <div class="p-3 mb-4 bg-white rounded-4 shadow-sm border border-0 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+      <div class="btn-group p-1 bg-light border rounded-3" role="group">
+        <button type="button" (click)="onTypeChange('ALL')" class="btn btn-sm border-0 px-3 py-1.5 fw-semibold rounded-2" [ngClass]="selectedType === 'ALL' ? 'bg-dark text-white shadow-sm' : 'text-secondary'">
+          Todos
+        </button>
+        <button type="button" (click)="onTypeChange('BASE')" class="btn btn-sm border-0 px-3 py-1.5 fw-semibold rounded-2" [ngClass]="selectedType === 'BASE' ? 'bg-dark text-white shadow-sm' : 'text-secondary'">
+          Cartera Base
+        </button>
+        <button type="button" (click)="onTypeChange('BENEFIT')" class="btn btn-sm border-0 px-3 py-1.5 fw-semibold rounded-2" [ngClass]="selectedType === 'BENEFIT' ? 'bg-dark text-white shadow-sm' : 'text-secondary'">
+          Beneficios VIP
+        </button>
+      </div>
+
+      <div class="input-group shadow-sm rounded-3 overflow-hidden border" style="max-width: 360px;">
+        <span class="input-group-text bg-white border-0 text-muted ps-3"><i class="bi bi-search"></i></span>
+        <input type="text" [value]="searchQuery" (input)="onSearchInput($event)" class="form-control border-0 shadow-none py-1.5" placeholder="Buscar por cliente, RFC o teléfono..." />
+      </div>
+    </div>
+
+    <!-- TABLA ADMINISTRATIVA CON ASIGNACIÓN DE AGENTE -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light border-bottom">
+            <tr class="text-secondary small text-uppercase" style="letter-spacing: 0.5px;">
+              <th class="ps-4 py-3">Segmento</th>
+              <th class="py-3">Razón Social / Cliente</th>
+              <th class="py-3">RFC / Identificador</th>
+              <th class="py-3">Contacto Directo</th>
+              <th class="py-3">Agente Asignado</th>
+              <th class="text-end pe-4 py-3">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="border-0">
+            <tr *ngFor="let client of clients" class="align-middle">
+              <td class="ps-4">
+                <span class="badge font-monospace px-2.5 py-1"
+                  [ngClass]="(client.clientType === 'BENEFIT' || client.clientType === 'BENEFICIOS') ? 'bg-danger text-white' : 'bg-success text-white'">
+                  {{ (client.clientType === 'BENEFIT' || client.clientType === 'BENEFICIOS') ? 'VIP' : 'BASE' }}
+                </span>
+              </td>
+
+              <td>
+                <strong class="d-block text-dark small text-uppercase mb-0.5">{{ client.companyName || client.nombreDelCliente }}</strong>
+                <span *ngIf="client.vehicleModel" class="badge bg-light text-secondary border font-monospace" style="font-size: 0.68rem;">
+                  <i class="bi bi-car-front me-1"></i>{{ client.vehicleModel }}
+                </span>
+              </td>
+
+              <td>
+                <span class="small font-monospace fw-semibold text-dark">{{ client.taxId || client.rfc || 'N/A' }}</span>
+              </td>
+
+              <td>
+                <div class="small">
+                  <div class="text-truncate text-lowercase text-muted mb-0.5" style="max-width: 200px;">
+                    <i class="bi bi-envelope me-1 text-secondary"></i>{{ client.contactEmail || client.email || 'Sin correo' }}
+                  </div>
+                  <div class="fw-bold font-monospace text-dark">
+                    <i class="bi bi-telephone me-1 text-success"></i>{{ client.contactPhone || client.telefono1 || 'Sin teléfono' }}
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <select [value]="client.assignedUserId || 0" (change)="onAssignAgent(client, $event)" class="form-select form-select-sm border-secondary-subtle small fw-semibold font-monospace" style="max-width: 200px;">
+                  <option value="0">-- Sin Asignar --</option>
+                  <option *ngFor="let agent of agents" [value]="agent.id">{{ agent.fullName }}</option>
+                </select>
+              </td>
+
+              <td class="text-end pe-4">
+                <div class="d-flex align-items-center justify-content-end gap-1.5">
+                  <button type="button" (click)="openClientDetailModal(client)" class="btn btn-sm btn-outline-dark rounded-3 px-2 py-1" title="Ver Ficha Comercial 360°">
+                    <i class="bi bi-eye-fill"></i>
+                  </button>
+                  <button type="button" (click)="openDeleteModal(client)" class="btn btn-sm btn-outline-danger rounded-3 px-2 py-1" title="Eliminar cliente">
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr *ngIf="clients.length === 0 && !isLoading">
+              <td colspan="6" class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                No se encontraron registros de clientes en la base de datos.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card-footer bg-white border-top p-3 px-4 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+        <span class="small text-muted font-monospace">
+          Página <strong>{{ currentPage + 1 }}</strong> de <strong>{{ totalPages }}</strong> (Mostrando {{ clients.length }} de {{ totalElements }} clientes)
+        </span>
+
+        <div class="btn-group btn-group-sm">
+          <button type="button" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 0" class="btn btn-outline-secondary px-3">Anterior</button>
+          <button type="button" (click)="changePage(currentPage + 1)" [disabled]="currentPage >= totalPages - 1" class="btn btn-outline-secondary px-3">Siguiente</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>

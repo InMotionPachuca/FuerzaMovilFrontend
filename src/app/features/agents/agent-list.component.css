@@ -1,0 +1,73 @@
+/* --- ANIMACIÓN Y TRANSICIÓN DE PESTAÑAS --- */
+.btn-group .btn {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- TARJETAS EN MOSAICO (DIRECTORIO DE ASESORES) --- */
+.card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.08) !important;
+}
+
+/* --- LÍNEA DE TIEMPO EN AUDITORÍA E INSPECCIÓN --- */
+.timeline {
+  position: relative;
+  padding-left: 0.5rem;
+}
+
+.timeline .card {
+  transition: border-left-color 0.2s ease;
+}
+
+.timeline .card:hover {
+  border-left-color: #eb0a1e !important;
+}
+
+/* --- FUENTES MONOESPACIADAS Y BADGES --- */
+.font-monospace {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+}
+
+.bg-light-subtle {
+  background-color: #f9fafb !important;
+}
+
+/* --- HOVER EN BOTONES TOYOTA --- */
+.btn-danger {
+  background-color: #eb0a1e;
+  border-color: #eb0a1e;
+}
+
+.btn-danger:hover {
+  background-color: #cc0014;
+  border-color: #cc0014;
+}
+
+.btn-dark {
+  background-color: #111827;
+  border-color: #111827;
+}
+
+.btn-dark:hover {
+  background-color: #000000;
+  border-color: #000000;
+}
+
+/* --- MEJORAS DE ADAPTABILIDAD EN MÓVIL --- */
+@media (max-width: 768px) {
+  .btn-group {
+    width: 100%;
+    display: flex;
+  }
+  
+  .btn-group .btn {
+    flex: 1;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.2rem;
+  }
+}

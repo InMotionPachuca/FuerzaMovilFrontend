@@ -1,0 +1,19 @@
+.btn-toyota {
+  background-color: #EB0A1E;
+  border-color: #EB0A1E;
+  color: #ffffff;
+}
+
+.btn-toyota:hover {
+  background-color: #c80818;
+  border-color: #c80818;
+  color: #ffffff;
+}
+
+.form-range::-webkit-slider-thumb {
+  background: #EB0A1E;
+}
+
+.form-range::-moz-range-thumb {
+  background: #EB0A1E;
+}
