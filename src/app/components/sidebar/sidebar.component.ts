@@ -8,13 +8,15 @@ import Swal from 'sweetalert2';
   selector: 'app-sidebar',
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
-  templateUrl: './sidebar.component.html'
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
   public authService = inject(AuthService);
   private router = inject(Router);
 
   userRoleDisplay: string = 'AGENTE';
+  isMobileMenuOpen: boolean = false;
 
   ngOnInit(): void {
     this.refreshUserRole();
@@ -22,14 +24,12 @@ export class SidebarComponent implements OnInit {
 
   private refreshUserRole(): void {
     const rawRole = this.authService.getUserRole() || 'AGENT';
-    // Limpia el formato (ejemplo: ROLE_ADMIN -> ADMIN, ROLE_AGENT -> AGENT)
     this.userRoleDisplay = String(rawRole).replace('ROLE_', '').toUpperCase();
   }
 
   get isAdmin(): boolean {
     const rawRole = this.authService.getUserRole();
     if (!rawRole) return false;
-    
     const roleUpper = String(rawRole).toUpperCase();
     return roleUpper === 'ADMIN' || roleUpper === 'ROLE_ADMIN';
   }
@@ -38,7 +38,16 @@ export class SidebarComponent implements OnInit {
     return this.authService.getCurrentUser();
   }
 
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen = false;
+  }
+
   logout(): void {
+    this.closeMobileMenu();
     Swal.fire({
       title: '¿Cerrar Sesión?',
       text: 'Saldrás del sistema FuerzaMóvil - Toyota Pachuca',

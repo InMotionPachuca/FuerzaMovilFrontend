@@ -142,8 +142,37 @@ html, body {
 }
 
 /* RESPONSIVE */
-@media (max-width: 992px) {
-  .sidebar { width: 80px; }
-  .sidebar .brand-text, .sidebar .link-text, .sidebar .user-details { display: none; }
-  .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 1.5rem; }
+body {
+  background-color: #f4f6f9;
+  overflow-x: hidden;
+}
+
+/* Contenedor principal con margen adaptativo */
+.main-content {
+  margin-left: 260px; /* Ancho del sidebar en PC */
+  padding: 2rem;
+  transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 991.98px) {
+  .main-content {
+    margin-left: 0 !important;
+    padding: 1rem;
+    padding-top: 4.5rem; /* Margen para no chocar con el navbar móvil */
+  }
+}
+
+/* TABLAS ADAPTABLES CON SCROLL SUAVE EN CELULARES */
+.table-responsive {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Botones e inputs a pantalla completa en dispositivos pequeños */
+@media (max-width: 575.98px) {
+  h1, .h1 { font-size: 1.4rem !important; }
+  h2, .h2 { font-size: 1.2rem !important; }
+  .btn-mobile-full { width: 100%; margin-bottom: 0.5rem; }
+  .card-body { padding: 1rem !important; }
 }

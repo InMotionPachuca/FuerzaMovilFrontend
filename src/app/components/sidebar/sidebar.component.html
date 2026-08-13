@@ -1,73 +1,83 @@
-<aside class="sidebar p-3">
+<!-- BARRA SUPERIOR PARA CELULARES (Visible solo en < 992px) -->
+<div class="mobile-navbar d-lg-none d-flex align-items-center justify-content-between p-3 bg-dark text-white border-bottom border-secondary">
+  <div class="d-flex align-items-center gap-2">
+    <img src="assets/toyotaPachuca.jpeg" alt="Toyota Pachuca" class="img-fluid rounded-2" style="height: 32px;" />
+    <span class="fw-bold fs-6 tracking-wide text-danger">FUERZA<span class="text-white">MÓVIL</span></span>
+  </div>
+  <button (click)="toggleMobileMenu()" class="btn btn-outline-light border-0 fs-3 p-0" type="button">
+    <i class="bi" [ngClass]="isMobileMenuOpen ? 'bi-x-lg' : 'bi-list'"></i>
+  </button>
+</div>
+
+<!-- CAPA OSCURA DE FONDO AL ABRIR MENÚ EN MÓVIL -->
+<div class="sidebar-overlay d-lg-none" *ngIf="isMobileMenuOpen" (click)="closeMobileMenu()"></div>
+
+<!-- ASIDE SIDEBAR -->
+<aside class="sidebar p-3 d-flex flex-column justify-content-between" [ngClass]="{'show-mobile': isMobileMenuOpen}">
   <div>
-    <!-- LOGO Y BRANDING TOYOTA PACHUCA -->
-    <div class="d-flex align-items-center justify-content-center mb-4 px-2 pt-2">
+    <!-- LOGO Y BRANDING TOYOTA PACHUCA (Escritorio) -->
+    <div class="d-none d-lg-flex align-items-center justify-content-center mb-4 px-2 pt-2">
       <div class="brand-logo-container text-center">
-        <img src="assets/toyotaPachuca.jpeg" alt="Toyota Pachuca"
-          class="img-fluid rounded-3 shadow-sm brand-logo-img" />
+        <img src="assets/toyotaPachuca.jpeg" alt="Toyota Pachuca" class="img-fluid rounded-3 shadow-sm brand-logo-img" />
       </div>
     </div>
 
-    <hr class="border-secondary opacity-20 my-3" />
+    <hr class="border-secondary opacity-20 my-3 d-none d-lg-block" />
 
-    <!-- MENÚ DEPENDIENDO DEL ROL -->
+    <!-- NAVEGACIÓN -->
     <nav class="sidebar-nav">
-
-      <!-- MENÚ EXCLUSIVO PARA AGENTES -->
+      <!-- MÓDULOS DE AGENTE -->
       <ng-container *ngIf="!isAdmin">
-        <a routerLink="/agent-dashboard" routerLinkActive="active" class="nav-link">
-          <i class="bi bi-bar-chart-line-fill"></i>
+        <a routerLink="/agent-dashboard" routerLinkActive="active" (click)="closeMobileMenu()" class="nav-link">
+          <i class="bi bi-bar-chart-line-fill me-2"></i>
           <span class="link-text">Analytics</span>
         </a>
-        <a routerLink="/clients" routerLinkActive="active" class="nav-link">
-          <i class="bi bi-person-vcard-fill"></i>
+        <a routerLink="/clients" routerLinkActive="active" (click)="closeMobileMenu()" class="nav-link">
+          <i class="bi bi-person-vcard-fill me-2"></i>
           <span class="link-text">Mi Cartera</span>
         </a>
       </ng-container>
 
-      <!-- MENÚ EXCLUSIVO PARA ADMINISTRADORES -->
+      <!-- MÓDULOS DE ADMINISTRADOR -->
       <ng-container *ngIf="isAdmin">
-        <a routerLink="/admin-dashboard" routerLinkActive="active" class="nav-link">
-          <i class="bi bi-speedometer"></i>
+        <a routerLink="/admin-dashboard" routerLinkActive="active" (click)="closeMobileMenu()" class="nav-link">
+          <i class="bi bi-speedometer me-2"></i>
           <span class="link-text">Dashboard</span>
         </a>
-        <a routerLink="/admin/analytics" routerLinkActive="active" class="nav-link">
-          <i class="bi bi-pie-chart-fill"></i>
+        <a routerLink="/admin/analytics" routerLinkActive="active" (click)="closeMobileMenu()" class="nav-link">
+          <i class="bi bi-pie-chart-fill me-2"></i>
           <span class="link-text">KPIs</span>
         </a>
-        <a routerLink="/clients" routerLinkActive="active" class="nav-link">
-          <i class="bi bi-building-gear"></i>
+        <a routerLink="/clients" routerLinkActive="active" (click)="closeMobileMenu()" class="nav-link">
+          <i class="bi bi-building-gear me-2"></i>
           <span class="link-text">Gestión de Clientes</span>
         </a>
-        <a routerLink="/admin/agents" routerLinkActive="active" class="nav-link">
-          <i class="bi bi-person-badge-fill"></i>
+        <a routerLink="/admin/agents" routerLinkActive="active" (click)="closeMobileMenu()" class="nav-link">
+          <i class="bi bi-person-badge-fill me-2"></i>
           <span class="link-text">Vendedores</span>
         </a>
 
-        <!-- MÓDULO EXCLUSIVO TOP AGENTS -->
-        <a routerLink="/admin/top-agents" routerLinkActive="active" class="nav-link text-warning fw-bold">
-          <i class="bi bi-star-fill text-warning"></i>
+        <a routerLink="/admin/top-agents" routerLinkActive="active" (click)="closeMobileMenu()" class="nav-link text-warning fw-bold">
+          <i class="bi bi-star-fill text-warning me-2"></i>
           <span class="link-text text-warning">Top Agents</span>
         </a>
 
-        <a routerLink="/admin/users" routerLinkActive="active" class="nav-link">
-          <i class="bi bi-gear-wide-connected"></i>
+        <a routerLink="/admin/users" routerLinkActive="active" (click)="closeMobileMenu()" class="nav-link">
+          <i class="bi bi-gear-wide-connected me-2"></i>
           <span class="link-text">Configuración</span>
         </a>
       </ng-container>
-
     </nav>
   </div>
 
-  <!-- PERFIL Y LOGOUT INFERIOR -->
-  <div class="border-top border-secondary border-opacity-20 pt-3">
-    <div class="d-flex align-items-center justify-content-between px-2 mb-1">
+  <!-- PERFIL Y CERRAR SESIÓN -->
+  <div class="border-top border-secondary border-opacity-20 pt-3 mt-4">
+    <div class="d-flex align-items-center justify-content-between px-2">
       <div class="user-details overflow-hidden me-2">
         <span class="d-block text-white fw-bold text-truncate small">
           {{ currentUser?.fullName || currentUser?.username || 'Usuario Toyota' }}
         </span>
-        <span class="badge bg-danger text-white text-uppercase font-monospace d-inline-block mt-1"
-          style="font-size: 0.62rem; padding: 3px 8px;">
+        <span class="badge bg-danger text-white text-uppercase font-monospace d-inline-block mt-1" style="font-size: 0.62rem; padding: 3px 8px;">
           {{ userRoleDisplay }}
         </span>
       </div>
