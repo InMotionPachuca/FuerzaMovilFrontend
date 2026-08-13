@@ -1,15 +1,33 @@
+/* ESTRUCTURA Y ALINEACIÓN RÍGIDA DE LA TABLA */
+.table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.table th, 
+.table td {
+  vertical-align: middle !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ANCHOS PROPORCIONALES FIJOS POR COLUMNA */
+.table th:nth-child(1), .table td:nth-child(1) { width: 95px; }   /* Segmento */
+.table th:nth-child(2), .table td:nth-child(2) { width: 220px; }  /* Razón Social */
+.table th:nth-child(3), .table td:nth-child(3) { width: 110px; }  /* RFC */
+.table th:nth-child(4), .table td:nth-child(4) { width: 200px; }  /* Contacto */
+.table th:nth-child(5), .table td:nth-child(5) { width: 130px; }  /* Seguimiento */
+.table th:nth-child(6), .table td:nth-child(6) { width: 160px; }  /* Agente / Acciones */
+.table th:nth-child(7), .table td:nth-child(7) { width: 200px; }  /* Acciones */
+
+/* TRANSICIONES Y HOVERS */
 .transition-all {
   transition: all 0.2s ease-in-out;
 }
 
-.style-toyota-btn {
-  background-color: #EB0A1E;
-  border-color: #EB0A1E;
-}
-
-.style-toyota-btn:hover {
-  background-color: #c80818;
-  border-color: #c80818;
+.cursor-pointer {
+  cursor: pointer;
 }
 
 .hover-underline:hover {
@@ -21,6 +39,19 @@
   background-color: rgba(235, 10, 30, 0.02) !important;
 }
 
+/* ESTILOS DE BOTONES INSTITUCIONALES TOYOTA */
+.style-toyota-btn {
+  background-color: #EB0A1E;
+  border-color: #EB0A1E;
+  color: #ffffff;
+}
+
+.style-toyota-btn:hover {
+  background-color: #c80818;
+  border-color: #c80818;
+  color: #ffffff;
+}
+
 .btn-white {
   background-color: #ffffff;
   color: #212529;
@@ -30,7 +61,19 @@
   background-color: #f8f9fa;
 }
 
-/* SELECTOR DE ASESOR Y ESTATUS */
+.btn-outline-dark {
+  border-color: #cbd5e1;
+  background-color: #ffffff;
+  color: #1e293b;
+}
+
+.btn-outline-dark:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+/* SELECTORES Y BADGES */
 .agent-select {
   font-size: 0.82rem;
   font-weight: 600;
@@ -40,54 +83,45 @@
   cursor: pointer;
 }
 
-/* 1. SIN ASIGNAR -> VERDE (Libre / Disponible para reparto) */
 .agent-select-unassigned {
   background-color: #e6f4ea;
   color: #137333;
   border: 1px solid #ceebd6;
 }
 
-.agent-select-unassigned:hover {
-  background-color: #d2e9d9;
-}
-
-/* 2. ASIGNADO -> AMARILLO (Asignado pero sin interacciones registradas aún) */
 .agent-select-assigned {
   background-color: #fef7e0;
   color: #b06000;
   border: 1px solid #fce8b2;
 }
 
-.agent-select-assigned:hover {
-  background-color: #feefc3;
-}
-
-/* 3. ATENDIDO -> ROJO TOYOTA (Con 1 o más seguimientos registrados en bitácora) */
 .agent-select-attended {
   background-color: #fce8e6;
   color: #c5221f;
   border: 1px solid #fad2cf;
 }
 
-.agent-select-attended:hover {
-  background-color: #f9d5d2;
+/* MODALES Y SCROLLBARS ELEGANTES */
+.modal-body {
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
-/* BOTÓN DESASIGNAR (X) */
-.btn-unassign-quick {
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  color: #dc3545;
-  background-color: transparent;
-  transition: all 0.2s ease;
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-.btn-unassign-quick:hover {
-  background-color: #f8d7da;
-  color: #b02a37;
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #EB0A1E;
 }

@@ -10,7 +10,7 @@
           <i class="bi bi-person-workspace text-danger"></i>
           Mi Cartera Comercial
         </h3>
-        <p class="text-muted small mb-0">Gestión y seguimiento individual de mi lote de clientes asignados</p>
+        <p class="text-muted small mb-0">Gestión y seguimiento individual de mi lote asignado de prospectos</p>
       </div>
     </div>
 
@@ -80,8 +80,8 @@
             <tr *ngFor="let client of clients" class="align-middle">
               <td class="ps-4">
                 <span class="badge font-monospace px-2.5 py-1"
-                  [ngClass]="(client.clientType === 'BENEFIT' || client.clientType === 'BENEFICIOS') ? 'bg-danger text-white' : 'bg-success text-white'">
-                  {{ (client.clientType === 'BENEFIT' || client.clientType === 'BENEFICIOS') ? 'VIP' : 'BASE' }}
+                  [ngClass]="client.clientType === 'BENEFIT' ? 'bg-danger text-white' : 'bg-dark text-white'">
+                  {{ client.clientType === 'BENEFIT' ? 'VIP' : 'BASE' }}
                 </span>
               </td>
 

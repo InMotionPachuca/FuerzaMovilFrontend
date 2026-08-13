@@ -2,55 +2,54 @@
   <app-sidebar></app-sidebar>
 
   <main class="main-content bg-light min-vh-100 py-4 px-3 px-md-4">
-    
-    <!-- ENCABEZADO Y ACCIONES -->
+
+    <!-- ENCABEZADO -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
       <div>
         <h3 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
-          <i class="bi bi-person-workspace text-danger" *ngIf="!isAdmin"></i>
-          <i class="bi bi-people-fill text-danger" *ngIf="isAdmin"></i>
-          {{ isAdmin ? 'Cartera General de Clientes' : 'Mi Cartera Comercial' }}
+          <i class="bi bi-building-gear text-danger"></i>
+          Cartera General de Clientes
         </h3>
-        <p class="text-muted small mb-0">
-          {{ isAdmin ? 'Gestión corporativa de cuentas comerciales y asignación masiva' : 'Gestión y seguimiento individual de mi lote asignado de prospectos' }}
-        </p>
+        <p class="text-muted small mb-0">Gestión corporativa de cuentas comerciales y asignación masiva</p>
       </div>
 
-      <div class="d-flex align-items-center gap-2">
-        <label *ngIf="isAdmin" class="btn btn-white border shadow-sm rounded-3 fw-semibold text-dark px-3 py-2 cursor-pointer mb-0">
-          <i class="bi bi-file-earmark-excel-fill text-success me-1"></i> Importar Excel
-          <input type="file" (change)="onFileSelected($event)" accept=".xlsx, .xls" class="d-none">
+      <!-- BOTÓN IMPORTAR EXCEL (SOLO ADMIN) -->
+      <div *ngIf="isAdmin" class="d-flex align-items-center gap-2">
+        <label for="excelUpload" class="btn btn-outline-success bg-white rounded-3 px-3 py-1.5 fw-semibold shadow-sm cursor-pointer mb-0">
+          <i class="bi bi-file-earmark-excel-fill me-1"></i> Importar Excel
         </label>
+        <input id="excelUpload" type="file" (change)="onFileSelected($event)" accept=".xlsx, .xls" class="d-none" />
       </div>
     </div>
 
-    <!-- KPIS ADMINISTRADOR (ROLE_ADMIN) -->
-    <div *ngIf="isAdmin" class="row g-3 mb-4">
+    <!-- TARJETAS DE MÉTRICAS SUPERIORES -->
+    <div class="row g-3 mb-4">
       <div class="col-12 col-sm-6 col-xl-3">
         <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-dark">
           <div class="d-flex align-items-center justify-content-between">
             <div>
-              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem;">Total Cartera</span>
+              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.7rem;">Total Cartera</span>
               <h3 class="fw-bold text-dark mb-0 font-monospace">{{ summaryTotalPortfolio }}</h3>
-              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Cuentas unificadas</span>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.72rem;">Cuentas unificadas</span>
             </div>
-            <div class="bg-dark bg-opacity-10 rounded-3 p-3 text-dark d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-              <i class="bi bi-building-fill fs-4"></i>
+            <div class="bg-dark bg-opacity-10 rounded-3 p-3 text-dark d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+              <i class="bi bi-building-fill fs-5"></i>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- SE CAMBIÓ 'BENEFICIOS VIP' POR 'CLIENTES ASIGNADOS' -->
       <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-danger">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-primary">
           <div class="d-flex align-items-center justify-content-between">
             <div>
-              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem;">Beneficios</span>
-              <h3 class="fw-bold text-danger mb-0 font-monospace">{{ benefitClientsCount }}</h3>
-              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Cuentas preferenciales</span>
+              <span class="text-primary small fw-bold text-uppercase d-block mb-1" style="font-size: 0.7rem;">Clientes Asignados</span>
+              <h3 class="fw-bold text-primary mb-0 font-monospace">{{ summaryTotalPortfolio - unassignedClientsCount }}</h3>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.72rem;">En atención por la fuerza de ventas</span>
             </div>
-            <div class="bg-danger bg-opacity-10 rounded-3 p-3 text-danger d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-              <i class="bi bi-star-fill fs-4"></i>
+            <div class="bg-primary bg-opacity-10 rounded-3 p-3 text-primary d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+              <i class="bi bi-person-check-fill fs-5"></i>
             </div>
           </div>
         </div>
@@ -60,12 +59,12 @@
         <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-warning">
           <div class="d-flex align-items-center justify-content-between">
             <div>
-              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem;">Sin Agente</span>
-              <h3 class="fw-bold text-warning-emphasis mb-0 font-monospace">{{ unassignedClientsCount }}</h3>
-              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Disponibles para reparto</span>
+              <span class="text-warning-emphasis small fw-bold text-uppercase d-block mb-1" style="font-size: 0.7rem;">Sin Agente</span>
+              <h3 class="fw-bold text-dark mb-0 font-monospace">{{ unassignedClientsCount }}</h3>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.72rem;">Disponibles para reparto</span>
             </div>
-            <div class="bg-warning bg-opacity-10 rounded-3 p-3 text-warning-emphasis d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-              <i class="bi bi-person-exclamation fs-4"></i>
+            <div class="bg-warning bg-opacity-10 rounded-3 p-3 text-warning-emphasis d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+              <i class="bi bi-person-fill-add fs-5"></i>
             </div>
           </div>
         </div>
@@ -75,57 +74,44 @@
         <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-success">
           <div class="d-flex align-items-center justify-content-between">
             <div>
-              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.72rem;">Avance Atención</span>
+              <span class="text-success small fw-bold text-uppercase d-block mb-1" style="font-size: 0.7rem;">Avance Atención</span>
               <h3 class="fw-bold text-success mb-0 font-monospace">{{ completedFollowUpsCount }}</h3>
-              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Seguimientos realizados</span>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.72rem;">Seguimientos realizados</span>
             </div>
-            <div class="bg-success bg-opacity-10 rounded-3 p-3 text-success d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-              <i class="bi bi-check-circle-fill fs-4"></i>
+            <div class="bg-success bg-opacity-10 rounded-3 p-3 text-success d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+              <i class="bi bi-check-circle-fill fs-5"></i>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- BÚSQUEDA Y FILTROS ESTRUCTURADOS -->
-    <div class="p-3 mb-4 bg-white rounded-4 shadow-sm border border-0 d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+    <!-- PESTAÑAS (DOS OPCIONES BASE) Y BUSCADOR -->
+    <div class="p-3 mb-4 bg-white rounded-4 shadow-sm border border-0 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
       
-      <div class="d-flex flex-wrap align-items-center gap-2">
-        <!-- SEGMENTO DE VEHÍCULO -->
-        <div class="btn-group p-1 bg-light border rounded-3" role="group">
-          <button type="button" (click)="onTypeChange('ALL')" class="btn btn-sm border-0 px-3 py-1.5 fw-semibold rounded-2" [ngClass]="selectedType === 'ALL' ? 'bg-dark text-white shadow-sm' : 'text-secondary'">
-            Todos
-          </button>
-          <button type="button" (click)="onTypeChange('BASE')" class="btn btn-sm border-0 px-3 py-1.5 fw-semibold rounded-2" [ngClass]="selectedType === 'BASE' ? 'bg-dark text-white shadow-sm' : 'text-secondary'">
-            Cartera Base
-          </button>
-          <button type="button" (click)="onTypeChange('BENEFIT')" class="btn btn-sm border-0 px-3 py-1.5 fw-semibold rounded-2" [ngClass]="selectedType === 'BENEFIT' ? 'bg-dark text-white shadow-sm' : 'text-secondary'">
-            Beneficios VIP
-          </button>
-        </div>
+      <div *ngIf="isAdmin" class="btn-group p-1 bg-light border rounded-3 overflow-hidden" role="group">
+        <button type="button" (click)="setFilterMode('UNASSIGNED')" class="btn btn-sm border-0 px-3 py-1.5 fw-semibold rounded-2 transition-all" [ngClass]="currentFilterMode === 'UNASSIGNED' ? 'bg-dark text-white shadow-sm' : 'text-secondary'">
+          <i class="bi bi-inbox-fill me-1"></i> Bolsa Disponible (Sin Asignar)
+        </button>
 
-        <!-- ESTATUS DE ASIGNACIÓN (ADMIN) -->
-        <div *ngIf="isAdmin" class="btn-group p-1 bg-light border rounded-3 ms-md-2" role="group">
-          <button type="button" (click)="onAssignmentStatusChange('ALL')" class="btn btn-sm border-0 px-3 py-1.5 fw-semibold rounded-2" [ngClass]="assignmentStatusFilter === 'ALL' ? 'bg-secondary text-white shadow-sm' : 'text-secondary'">
-            Ver Todos
-          </button>
-          <button type="button" (click)="onAssignmentStatusChange('UNASSIGNED')" class="btn btn-sm border-0 px-3 py-1.5 fw-semibold rounded-2" [ngClass]="assignmentStatusFilter === 'UNASSIGNED' ? 'bg-warning text-dark shadow-sm' : 'text-secondary'">
-            <i class="bi bi-person-exclamation me-1"></i> Sin Asignar
-          </button>
-          <button type="button" (click)="onAssignmentStatusChange('ASSIGNED')" class="btn btn-sm border-0 px-3 py-1.5 fw-semibold rounded-2" [ngClass]="assignmentStatusFilter === 'ASSIGNED' ? 'bg-success text-white shadow-sm' : 'text-secondary'">
-            <i class="bi bi-person-check-fill me-1"></i> Asignados
-          </button>
-        </div>
+        <button type="button" (click)="setFilterMode('ASSIGNED')" class="btn btn-sm border-0 px-3 py-1.5 fw-semibold rounded-2 transition-all" [ngClass]="currentFilterMode === 'ASSIGNED' ? 'bg-success text-white shadow-sm' : 'text-secondary'">
+          <i class="bi bi-person-check-fill me-1"></i> Clientes Asignados
+        </button>
       </div>
 
-      <!-- BÚSQUEDA RÁPIDA -->
-      <div class="input-group shadow-sm rounded-3 overflow-hidden border" style="max-width: 340px;">
+      <div *ngIf="!isAdmin" class="d-flex align-items-center gap-2 text-danger fw-bold">
+        <i class="bi bi-person-vcard-fill fs-5"></i>
+        <span>Mi Cartera Comercial Asignada</span>
+      </div>
+
+      <!-- BUSCADOR -->
+      <div class="input-group shadow-sm rounded-3 overflow-hidden border" style="max-width: 320px;">
         <span class="input-group-text bg-white border-0 text-muted ps-3"><i class="bi bi-search"></i></span>
-        <input type="text" [value]="searchQuery" (input)="onSearchInput($event)" class="form-control border-0 shadow-none py-1.5" placeholder="Buscar cliente, RFC o teléfono..." />
+        <input type="text" [value]="searchQuery" (input)="onSearchInput($event)" class="form-control border-0 shadow-none py-1.5" placeholder="Buscar por cliente, RFC o teléfono..." />
       </div>
     </div>
 
-    <!-- TABLA PRINCIPAL DE CLIENTES -->
+    <!-- TABLA DE CLIENTES -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
@@ -136,448 +122,306 @@
               <th class="py-3">RFC / Identificador</th>
               <th class="py-3">Contacto Directo</th>
               <th class="text-center py-3">Seguimiento (Máx 3)</th>
-              <th *ngIf="isAdmin" class="py-3">Agente Asignado</th>
+              <th *ngIf="isAdmin && currentFilterMode === 'UNASSIGNED'" class="py-3">Agente Asignado</th>
               <th class="text-end pe-4 py-3">Acciones</th>
             </tr>
           </thead>
           <tbody class="border-0">
+
+            <!-- LOADER -->
+            <tr *ngIf="isLoading">
+              <td [attr.colspan]="isAdmin ? 7 : 6" class="text-center py-5">
+                <div class="spinner-border text-danger spinner-border-sm me-2" role="status"></div>
+                <span class="small text-muted">Cargando cartera de clientes...</span>
+              </td>
+            </tr>
+
+            <!-- SI NO HAY DATOS -->
+            <tr *ngIf="!isLoading && clients.length === 0">
+              <td [attr.colspan]="isAdmin ? 7 : 6" class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary opacity-50"></i>
+                <span>No se encontraron clientes registrados en esta vista.</span>
+              </td>
+            </tr>
+
+            <!-- LISTA DE CLIENTES -->
             <tr *ngFor="let client of clients" class="align-middle">
-              <!-- SEGMENTO -->
+              
+              <!-- 1. SEGMENTO -->
               <td class="ps-4">
-                <span class="badge font-monospace px-2.5 py-1"
-                  [ngClass]="(client.clientType === 'BENEFIT' || client.clientType === 'BENEFICIOS') ? 'bg-danger text-white' : 'bg-dark text-white'">
-                  {{ (client.clientType === 'BENEFIT' || client.clientType === 'BENEFICIOS') ? 'VIP' : 'BASE' }}
+                <span class="badge font-monospace px-2.5 py-1 rounded-2 shadow-sm"
+                      [ngClass]="(client.clientType === 'VIP' || client.isVip || client.isBenefit) ? 'bg-danger text-white' : 'bg-dark text-white'"
+                      style="font-size: 0.68rem; letter-spacing: 0.5px;">
+                  {{ (client.clientType === 'VIP' || client.isVip || client.isBenefit) ? 'VIP' : 'BASE' }}
                 </span>
               </td>
 
-              <!-- CLIENTE -->
-              <td (click)="openClientDetailModal(client)" style="cursor: pointer;" title="Haga clic para ver la Ficha Comercial 360°">
-                <strong class="d-block text-dark small text-uppercase mb-0.5 text-primary-hover">
-                  {{ client.companyName || client.nombreDelCliente || 'SIN RAZÓN SOCIAL' }}
-                </strong>
-                <span *ngIf="client.vehicleModel || client.vehiculoComprado" class="badge bg-light text-secondary border font-monospace" style="font-size: 0.68rem;">
-                  <i class="bi bi-car-front me-1"></i>{{ client.vehicleModel || client.vehiculoComprado }}
-                </span>
-              </td>
-
-              <!-- RFC -->
+              <!-- 2. RAZÓN SOCIAL / CLIENTE -->
               <td>
-                <span class="small font-monospace fw-semibold text-dark">{{ client.taxId || client.rfc || 'N/A' }}</span>
+                <strong class="d-block text-dark small text-uppercase text-truncate" style="max-width: 200px;" title="{{ client.companyName || client.nombreDelCliente }}">{{ client.companyName || client.nombreDelCliente }}</strong>
+                <span class="badge bg-light text-secondary border fw-normal" style="font-size: 0.68rem;">
+                  <i class="bi bi-car-front me-1"></i>{{ client.vehicleModel || client.brand || 'TOYOTA' }}
+                </span>
               </td>
 
-              <!-- CONTACTO -->
+              <!-- 3. RFC / IDENTIFICADOR -->
+              <td>
+                <span class="small font-monospace text-muted fw-bold">{{ client.taxId || client.rfc || 'N/A' }}</span>
+              </td>
+
+              <!-- 4. CONTACTO DIRECTO -->
               <td>
                 <div class="small">
-                  <div class="text-truncate text-lowercase text-muted mb-0.5" style="max-width: 180px;">
-                    <i class="bi bi-envelope me-1 text-secondary"></i>{{ client.contactEmail || client.email || 'Sin correo' }}
-                  </div>
-                  <div class="fw-bold font-monospace text-dark">
-                    <i class="bi bi-telephone me-1 text-success"></i>{{ client.contactPhone || client.telefono1 || 'Sin teléfono' }}
-                  </div>
-                </div>
-              </td>
-
-              <!-- SEGUIMIENTO -->
-              <td class="text-center">
-                <div class="d-flex flex-column align-items-center">
-                  <div class="d-flex align-items-center gap-1 mb-1">
-                    <i class="bi" [ngClass]="(client.followUpsCount || 0) >= 1 ? 'bi-check-circle-fill text-success' : 'bi-circle text-muted'" style="font-size: 0.85rem;"></i>
-                    <i class="bi" [ngClass]="(client.followUpsCount || 0) >= 2 ? 'bi-check-circle-fill text-success' : 'bi-circle text-muted'" style="font-size: 0.85rem;"></i>
-                    <i class="bi" [ngClass]="(client.followUpsCount || 0) >= 3 ? 'bi-check-circle-fill text-success' : 'bi-circle text-muted'" style="font-size: 0.85rem;"></i>
-                  </div>
-                  <span class="badge font-monospace px-2 py-0.5"
-                    [ngClass]="{
-                      'bg-light text-muted border': (client.followUpsCount || 0) === 0,
-                      'bg-warning-subtle text-warning-emphasis border border-warning-subtle': (client.followUpsCount || 0) > 0 && (client.followUpsCount || 0) < 3,
-                      'bg-success-subtle text-success border border-success-subtle fw-bold': (client.followUpsCount || 0) >= 3
-                    }">
-                    {{ client.followUpsCount || 0 }} / 3 Intentos
+                  <span *ngIf="client.contactEmail" class="d-block text-muted text-truncate" style="max-width: 190px;" title="{{ client.contactEmail }}">
+                    <i class="bi bi-envelope me-1"></i>{{ client.contactEmail }}
+                  </span>
+                  <span *ngIf="client.contactPhone || client.telefonoContacto" class="fw-semibold text-dark">
+                    <i class="bi bi-telephone-fill me-1 text-success"></i>{{ client.contactPhone || client.telefonoContacto }}
                   </span>
                 </div>
               </td>
 
-              <!-- COLUMNA AGENTE ASIGNADO -->
-              <td *ngIf="isAdmin">
-                <div class="d-flex align-items-center gap-1.5">
-                  <select [ngModel]="client.assignedUserId || 0" (change)="onAssignAgent(client, $event)" 
-                    class="form-select form-select-sm agent-select-enterprise shadow-none font-monospace"
-                    [ngClass]="client.assignedUserId ? 'agent-badge-assigned' : 'agent-badge-unassigned'"
-                    style="max-width: 180px;">
-                    
-                    <option value="0" *ngIf="!client.assignedUserId" class="text-muted bg-white">
-                      -- Sin Asignar --
-                    </option>
-
-                    <option *ngFor="let agent of agents" [value]="agent.id" class="text-dark bg-white fw-semibold">
-                      👤 {{ agent.fullName }}
-                    </option>
-                  </select>
-
-                  <button *ngIf="client.assignedUserId" type="button" (click)="unassignClient(client)" 
-                    class="btn btn-sm btn-outline-danger font-monospace px-2 py-0.5 rounded-3 fw-bold d-flex align-items-center gap-1 shadow-sm"
-                    style="font-size: 0.72rem; white-space: nowrap;"
-                    title="Liberar cliente a la bolsa sin asignar">
-                    <i class="bi bi-person-x-fill"></i>
-                    <span>Liberar</span>
-                  </button>
+              <!-- 5. SEGUIMIENTO (MÁX 3) -->
+              <td class="text-center">
+                <div class="d-flex align-items-center justify-content-center gap-1 mb-1">
+                  <i class="bi" [ngClass]="(client.followUpsCount || 0) >= 1 ? 'bi-circle-fill text-danger' : 'bi-circle text-muted opacity-50'" style="font-size: 0.65rem;"></i>
+                  <i class="bi" [ngClass]="(client.followUpsCount || 0) >= 2 ? 'bi-circle-fill text-danger' : 'bi-circle text-muted opacity-50'" style="font-size: 0.65rem;"></i>
+                  <i class="bi" [ngClass]="(client.followUpsCount || 0) >= 3 ? 'bi-circle-fill text-danger' : 'bi-circle text-muted opacity-50'" style="font-size: 0.65rem;"></i>
                 </div>
+                <span class="small text-muted font-monospace" style="font-size: 0.7rem;">{{ client.followUpsCount || 0 }} / 3 Intentos</span>
               </td>
 
-              <!-- ACCIONES -->
+              <!-- DESPLEGABLE ASIGNAR (SOLO SI ADMIN Y BOLSA DISPONIBLE) -->
+              <td *ngIf="isAdmin && currentFilterMode === 'UNASSIGNED'">
+                <select class="form-select form-select-sm border shadow-none" (change)="onAssignAgent(client, $event)">
+                  <option value="" selected>-- Sin Asignar --</option>
+                  <option *ngFor="let agent of agents" [value]="agent.id">
+                    {{ agent.fullName || agent.username }}
+                  </option>
+                </select>
+              </td>
+
+              <!-- 6. ACCIONES -->
               <td class="text-end pe-4">
                 <div class="d-flex align-items-center justify-content-end gap-1.5">
-                  <button type="button" (click)="openClientDetailModal(client)" class="btn btn-sm btn-outline-dark rounded-3 px-2 py-1" title="Ver Ficha Comercial 360°">
+                  
+                  <button type="button" (click)="openClientDetailModal(client)" class="btn btn-sm btn-outline-secondary rounded-2 p-1.5" title="Ver Ficha Técnica">
                     <i class="bi bi-eye-fill"></i>
                   </button>
 
-                  <button type="button" (click)="openFollowUpModal(client)" class="btn btn-sm btn-danger rounded-3 px-2.5 py-1 fw-semibold shadow-sm" title="Registrar bitácora">
-                    <i class="bi bi-journal-plus me-1"></i> Bitácora
+                  <button *ngIf="!isAdmin" type="button" (click)="openFollowUpModal(client)" class="btn btn-sm btn-danger text-white rounded-2 px-2.5 py-1 fw-bold shadow-sm d-flex align-items-center gap-1 text-nowrap">
+                    <i class="bi bi-journal-plus"></i> Bitácora
                   </button>
 
-                  <button *ngIf="isAdmin" type="button" (click)="openDeleteModal(client)" class="btn btn-sm btn-outline-danger rounded-3 px-2 py-1" title="Eliminar cliente">
+                  <button *ngIf="isAdmin" 
+                          type="button" 
+                          (click)="openFollowUpModal(client)" 
+                          class="btn btn-sm btn-outline-dark rounded-2 px-2.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 text-nowrap shadow-sm" 
+                          title="Ver historial de interacciones registradas">
+                    <i class="bi bi-journal-text text-danger"></i>
+                    <span>Ver Historial</span>
+                  </button>
+
+                  <button *ngIf="isAdmin && (client.assignedUserId || client.assignedUserName || currentFilterMode === 'ASSIGNED')" 
+                          type="button" 
+                          (click)="unassignClient(client)" 
+                          class="btn btn-sm btn-outline-warning text-dark fw-semibold rounded-2 px-2 py-1 text-nowrap" 
+                          title="Liberar cliente y regresar a Bolsa Disponible">
+                    <i class="bi bi-person-x-fill text-danger me-1"></i>Liberar
+                  </button>
+
+                  <button *ngIf="isAdmin" type="button" (click)="openDeleteModal(client)" class="btn btn-sm btn-outline-danger rounded-2 p-1.5" title="Eliminar Definitivamente">
                     <i class="bi bi-trash-fill"></i>
                   </button>
+
                 </div>
               </td>
-            </tr>
 
-            <tr *ngIf="clients.length === 0 && !isLoading">
-              <td [attr.colspan]="isAdmin ? 7 : 6" class="text-center py-5 text-muted">
-                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                No se encontraron registros en este filtro de cartera.
-              </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- PIE DE TABLA PAGINADO (GARANTIZADO) -->
-      <div class="card-footer bg-white border-top p-3 px-4 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
-        <span class="small text-muted font-monospace">
-          Página <strong>{{ currentPage + 1 }}</strong> de <strong>{{ totalPages > 0 ? totalPages : 1 }}</strong> 
-          (Mostrando {{ clients.length }} de {{ totalElements }} clientes)
+      <!-- PAGINACIÓN FOOTER -->
+      <div class="card-footer bg-white border-0 p-3 d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
+        <span class="small text-muted">
+          Página <strong>{{ currentPage + 1 }}</strong> de <strong>{{ totalPages }}</strong> (Mostrando {{ clients.length }} de {{ totalElements }} clientes)
         </span>
 
-        <div class="btn-group btn-group-sm">
-          <button type="button" 
-            (click)="changePage(currentPage - 1)" 
-            [disabled]="currentPage === 0" 
-            class="btn btn-outline-secondary px-3 shadow-none">
+        <div class="btn-group">
+          <button type="button" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 0" class="btn btn-sm btn-outline-secondary rounded-start-3 px-3">
             <i class="bi bi-chevron-left me-1"></i> Anterior
           </button>
-
-          <button type="button" 
-            (click)="changePage(currentPage + 1)" 
-            [disabled]="currentPage >= (totalPages - 1) || totalPages <= 1" 
-            class="btn btn-outline-secondary px-3 shadow-none">
+          <button type="button" (click)="changePage(currentPage + 1)" [disabled]="(currentPage + 1) >= totalPages" class="btn btn-sm btn-outline-secondary rounded-end-3 px-3">
             Siguiente <i class="bi bi-chevron-right ms-1"></i>
           </button>
         </div>
       </div>
     </div>
 
-  </main>
-</div>
-
-<!-- MODAL BITÁCORA -->
-<div *ngIf="showToolsModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(6px); z-index: 1060;">
-  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-      
-      <div class="modal-header bg-black text-white p-3.5 px-4 border-bottom border-danger border-2">
-        <div class="d-flex align-items-center gap-3">
-          <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm fw-bold fs-5" style="width: 44px; height: 44px;">
-            <i class="bi bi-journal-text"></i>
-          </div>
-          <div>
-            <h5 class="modal-title fw-bold mb-0 text-white text-uppercase fs-6">
-              Bitácora Comercial & Historial
-            </h5>
-            <span class="small opacity-75 font-monospace">
-              Cliente: <strong>{{ selectedClientForTools?.companyName || selectedClientForTools?.nombreDelCliente }}</strong>
-            </span>
-          </div>
-        </div>
-        <button type="button" class="btn-close btn-close-white" (click)="showToolsModal = false"></button>
-      </div>
-
-      <div class="modal-body p-4 bg-light">
-        <div class="row g-4">
+    <!-- MODAL BITÁCORA -->
+    <div *ngIf="showToolsModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.6);">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
           
-          <div class="col-12">
-            <div class="bg-white p-3 rounded-3 border d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
-              <div>
-                <span class="text-muted d-block small text-uppercase fw-bold" style="font-size: 0.68rem;">Avance de Contacto Obligatorio</span>
-                <div class="d-flex align-items-center gap-2 mt-1">
-                  <span class="badge font-monospace px-3 py-1.5 fs-6"
-                    [ngClass]="(selectedClientForTools?.followUpsCount || 0) >= 3 ? 'bg-success text-white' : 'bg-warning text-dark'">
-                    Intento {{ (selectedClientForTools?.followUpsCount || 0) + 1 }} de 3
-                  </span>
-                  <span class="small text-muted" *ngIf="(selectedClientForTools?.followUpsCount || 0) >= 3">
-                    <i class="bi bi-check-circle-fill text-success me-1"></i>¡Meta de 3 seguimientos alcanzada!
-                  </span>
-                </div>
-              </div>
-
-              <button type="button" (click)="sendInventoryWhatsApp(selectedClientForTools)" class="btn btn-success fw-semibold shadow-sm d-flex align-items-center gap-2 px-3 py-2 rounded-3">
-                <i class="bi bi-whatsapp fs-5"></i>
-                <span>Enviar Mensaje de WhatsApp</span>
-              </button>
+          <div class="modal-header bg-black text-white p-3 px-4 border-bottom border-danger border-2">
+            <div>
+              <h5 class="fw-bold mb-0 text-white d-flex align-items-center gap-2">
+                <i class="bi bi-journal-check text-danger"></i>
+                {{ isAdmin ? 'Historial de Interacciones Comercial' : 'Bitácora de Seguimiento Comercial' }}
+              </h5>
+              <span class="small text-white-50">Cliente: <strong class="text-warning">{{ selectedClientForTools?.companyName || selectedClientForTools?.nombreDelCliente }}</strong></span>
             </div>
+            <button type="button" class="btn-close btn-close-white" (click)="showToolsModal = false"></button>
           </div>
 
-          <!-- HISTORIAL PREVIO -->
-          <div class="col-12">
-            <div class="card border-0 shadow-sm rounded-3 p-3.5 bg-white">
-              <h6 class="fw-bold text-dark mb-3 small text-uppercase d-flex align-items-center justify-content-between" style="letter-spacing: 0.5px;">
-                <span class="d-flex align-items-center gap-2">
-                  <i class="bi bi-clock-history text-danger"></i> Bitácora e Historial Registrado
-                </span>
-                <span class="badge bg-light text-dark border font-monospace">{{ clientFollowUpsHistory.length }} Registros</span>
-              </h6>
-
-              <div *ngIf="isLoadingHistory" class="text-center py-3">
-                <div class="spinner-border spinner-border-sm text-danger me-2" role="status"></div>
-                <span class="small text-muted font-monospace">Cargando bitácora previa...</span>
+          <div class="modal-body p-4 bg-light">
+            
+            <ng-container *ngIf="!isAdmin">
+              <div class="p-3 mb-4 bg-white rounded-3 border d-flex align-items-center justify-content-between gap-3">
+                <div>
+                  <strong class="d-block text-dark small">Enviar Mensaje de Prospección</strong>
+                  <span class="small text-muted">Abre WhatsApp Web directamente con la plantilla institucional</span>
+                </div>
+                <button type="button" (click)="sendInventoryWhatsApp(selectedClientForTools)" class="btn btn-sm btn-success rounded-3 px-3 py-1.5 fw-bold shadow-sm">
+                  <i class="bi bi-whatsapp me-1"></i> WhatsApp Directo
+                </button>
               </div>
 
-              <div *ngIf="!isLoadingHistory && clientFollowUpsHistory.length === 0" class="text-center py-3 text-muted bg-light rounded-3 border">
-                <i class="bi bi-journal-x fs-3 d-block mb-1 text-secondary"></i>
-                <span class="small d-block">No hay interacciones registradas previamente para este cliente.</span>
-              </div>
+              <div class="card border-0 shadow-sm rounded-3 p-3 mb-4 bg-white">
+                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-pencil-square me-1 text-danger"></i>Registrar Nuevo Intento de Contacto</h6>
+                
+                <div class="row g-3">
+                  <div class="col-12 col-md-6">
+                    <label class="form-label small fw-semibold text-secondary">Medio de Contacto</label>
+                    <select [(ngModel)]="contactMethod" class="form-select form-select-sm border shadow-none">
+                      <option value="WhatsApp">WhatsApp</option>
+                      <option value="Llamada Telefónica">Llamada Telefónica</option>
+                      <option value="Correo Electrónico">Correo Electrónico</option>
+                      <option value="Visita en Agencia">Visita en Agencia</option>
+                    </select>
+                  </div>
 
-              <div *ngIf="!isLoadingHistory && clientFollowUpsHistory.length > 0" class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;">
-                <div *ngFor="let item of clientFollowUpsHistory; let i = index" class="p-2.5 rounded-3 border bg-light d-flex align-items-start justify-content-between gap-3">
-                  <div>
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                      <span class="badge bg-dark font-monospace text-white" style="font-size: 0.68rem;">Intento #{{ clientFollowUpsHistory.length - i }}</span>
-                      <span class="badge bg-danger-subtle text-danger border border-danger-subtle fw-semibold" style="font-size: 0.68rem;">
-                        {{ item.contactMethod || item.action || 'WHATSAPP' }}
-                      </span>
-                      <span class="small text-muted font-monospace" style="font-size: 0.7rem;">
-                        <i class="bi bi-calendar-event me-1"></i>{{ item.timestamp | date:'dd/MMM/yyyy hh:mm a' }}
-                      </span>
-                    </div>
-                    <p class="small text-dark mb-0 fw-medium">{{ item.comments || item.description || 'Sin comentarios adicionales.' }}</p>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label small fw-semibold text-secondary">Estatus / Calificación</label>
+                    <select [(ngModel)]="followUpStatus" class="form-select form-select-sm border shadow-none">
+                      <option value="Interesado en Auto Nuevo / Seminuevo">Interesado en Auto Nuevo / Seminuevo</option>
+                      <option value="Cita Agendada en Agencia">Cita Agendada en Agencia</option>
+                      <option value="Prueba de Manejo Solicitada">Prueba de Manejo Solicitada</option>
+                      <option value="Solicitud de Crédito enviada">Solicitud de Crédito enviada</option>
+                      <option value="No Contesta / Enviar de nuevo">No Contesta / Enviar de nuevo</option>
+                      <option value="No Interesado por el momento">No Interesado por el momento</option>
+                    </select>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label small fw-semibold text-secondary">Observaciones / Comentarios</label>
+                    <textarea [(ngModel)]="followUpComments" rows="3" class="form-control form-control-sm border shadow-none" placeholder="Escribe los detalles del avance comercial con el cliente..."></textarea>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
 
-          <!-- NUEVA INTERACCIÓN -->
-          <div class="col-12">
-            <div class="card border-0 shadow-sm rounded-3 p-3.5 bg-white border-start border-4 border-danger">
-              <h6 class="fw-bold text-dark mb-3 small text-uppercase d-flex align-items-center gap-2" style="letter-spacing: 0.5px;">
-                <i class="bi bi-plus-circle-fill text-danger"></i> Agregar Nueva Interacción
-              </h6>
-
-              <div class="row g-3">
-                <div class="col-12 col-md-6">
-                  <label class="form-label small text-muted mb-1">Canal de Contacto:</label>
-                  <select [(ngModel)]="contactMethod" class="form-select border-secondary-subtle fw-semibold small rounded-3 py-2">
-                    <option value="WHATSAPP">💬 Mensaje de WhatsApp</option>
-                    <option value="LLAMADA">📞 Llamada Telefónica</option>
-                    <option value="CORREO">✉️ Correo Electrónico</option>
-                    <option value="AGENCIA">🏢 Visita a Agencia Toyota Pachuca</option>
-                  </select>
-                </div>
-
-                <div class="col-12 col-md-6">
-                  <label class="form-label small text-muted mb-1">Estatus Comercial:</label>
-                  <select [(ngModel)]="followUpStatus" class="form-select border-secondary-subtle fw-semibold small rounded-3 py-2">
-                    <option value="INTERESADO">🔥 Interesado en Auto Nuevo / Seminuevo</option>
-                    <option value="RECONTACTAR">📅 Recontactar Después</option>
-                    <option value="CITADO">🏁 Cita Agendada en Agencia</option>
-                    <option value="NO_INTERESADO">❄️ No Interesado por el momento</option>
-                  </select>
-                </div>
-
-                <div class="col-12">
-                  <label class="form-label small text-muted mb-1">Observaciones y Acuerdos:</label>
-                  <textarea [(ngModel)]="followUpComments" rows="3" class="form-control border-secondary-subtle small rounded-3" placeholder="Escribe el resumen de la conversación..."></textarea>
+                <div class="text-end mt-3">
+                  <button type="button" (click)="saveFollowUpLog()" class="btn btn-sm btn-danger text-white rounded-3 px-4 py-1.5 fw-bold shadow-sm">
+                    <i class="bi bi-save me-1"></i> Guardar Avance en Bitácora
+                  </button>
                 </div>
               </div>
-            </div>
-          </div>
+            </ng-container>
 
-        </div>
-      </div>
-
-      <div class="modal-footer bg-white border-top p-3 px-4 d-flex justify-content-end">
-        <button type="button" class="btn btn-light border px-3 rounded-3 font-medium" (click)="showToolsModal = false">Cancelar</button>
-        <button type="button" (click)="saveFollowUpLog()" class="btn btn-danger px-4 rounded-3 fw-semibold shadow-sm d-flex align-items-center gap-1.5 ms-2">
-          <i class="bi bi-check-circle-fill"></i> Guardar Bitácora
-        </button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- MODAL FICHA COMERCIAL 360° ENRIQUECIDA -->
-<div *ngIf="showDetailModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); z-index: 1060;">
-  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-      
-      <div class="modal-header bg-black text-white p-4 border-bottom border-danger border-2">
-        <div class="d-flex align-items-center gap-3 w-100">
-          <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm fs-5 fw-bold" style="width: 52px; height: 52px; min-width: 52px;">
-            {{ (selectedClientForDetail?.companyName || 'C').charAt(0) }}
-          </div>
-          <div class="flex-grow-1 overflow-hidden">
-            <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-              <h5 class="modal-title fw-bold text-white fs-5 mb-0 text-truncate">
-                {{ selectedClientForDetail?.companyName }}
-              </h5>
-              <span class="badge px-2.5 py-1 small font-monospace fw-semibold"
-                [ngClass]="(selectedClientForDetail?.clientType === 'BENEFIT' || selectedClientForDetail?.clientType === 'BENEFICIOS') ? 'bg-danger text-white' : 'bg-secondary text-white'">
-                {{ (selectedClientForDetail?.clientType === 'BENEFIT' || selectedClientForDetail?.clientType === 'BENEFICIOS') ? 'BENEFICIOS VIP' : 'CARTERA BASE' }}
-              </span>
-
-              <span class="badge font-monospace px-2.5 py-1"
-                [ngClass]="selectedClientForDetail?.isAssigned ? 'bg-success text-white' : 'bg-warning text-dark'">
-                <i class="bi" [ngClass]="selectedClientForDetail?.isAssigned ? 'bi-lock-fill me-1' : 'bi-unlock-fill me-1'"></i>
-                {{ selectedClientForDetail?.assignmentStatusText }}
-              </span>
-            </div>
-
-            <div class="d-flex align-items-center gap-3 text-white-50 small font-monospace">
-              <span>RFC: <strong class="text-white">{{ selectedClientForDetail?.taxId }}</strong></span>
-              <span>•</span>
-              <span>ID REGISTRO: <strong class="text-white">#{{ selectedClientForDetail?.id }}</strong></span>
-            </div>
-          </div>
-        </div>
-        <button type="button" class="btn-close btn-close-white ms-2" (click)="closeClientDetailModal()"></button>
-      </div>
-
-      <div class="modal-body p-4 bg-white">
-        <div class="bg-light p-3 rounded-3 border d-flex align-items-center justify-content-between mb-4">
-          <div class="d-flex align-items-center gap-3">
-            <div class="p-2.5 bg-danger bg-opacity-10 text-danger rounded-3">
-              <i class="bi bi-car-front-fill fs-4"></i>
-            </div>
-            <div>
-              <span class="text-muted d-block small text-uppercase fw-bold" style="font-size: 0.68rem;">Vehículo Adquirido / Interés</span>
-              <h6 class="fw-bold text-dark mb-0 fs-6">
-                {{ selectedClientForDetail?.brand || 'Toyota' }} {{ selectedClientForDetail?.vehicleModel }}
-              </h6>
-            </div>
-          </div>
-          <span class="badge bg-white text-dark border px-3 py-2 font-monospace fw-semibold shadow-sm">
-            <i class="bi bi-shop me-1 text-danger"></i> {{ selectedClientForDetail?.dealership }}
-          </span>
-        </div>
-
-        <div class="row g-4 mb-4">
-          <div class="col-12 col-md-6">
-            <div class="border-bottom pb-2 mb-3">
-              <h6 class="fw-bold text-dark mb-0 small text-uppercase"><i class="bi bi-person-lines-fill text-danger me-1"></i> Información de Contacto</h6>
-            </div>
-            <dl class="row g-2 mb-0 small">
-              <dt class="col-5 text-muted fw-normal">Correo Elec.:</dt>
-              <dd class="col-7 fw-semibold text-dark text-truncate mb-2">{{ selectedClientForDetail?.contactEmail }}</dd>
+            <div class="card border-0 shadow-sm rounded-3 p-3 bg-white">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h6 class="fw-bold text-dark mb-0"><i class="bi bi-clock-history me-1 text-danger"></i>Avances Registrados por el Asesor</h6>
+                <span *ngIf="selectedClientForTools?.assignedUserName" class="badge bg-light text-dark border fw-semibold">
+                  <i class="bi bi-person-fill text-danger me-1"></i>Asesor: {{ selectedClientForTools?.assignedUserName }}
+                </span>
+              </div>
               
-              <dt class="col-5 text-muted fw-normal">Teléfono 1:</dt>
-              <dd class="col-7 fw-bold text-dark font-monospace mb-2">
-                <i class="bi bi-telephone-fill text-success me-1"></i>{{ selectedClientForDetail?.contactPhone }}
-              </dd>
-
-              <dt class="col-5 text-muted fw-normal" *ngIf="selectedClientForDetail?.secondaryPhone">Teléfono 2:</dt>
-              <dd class="col-7 fw-bold text-muted font-monospace mb-2" *ngIf="selectedClientForDetail?.secondaryPhone">
-                {{ selectedClientForDetail?.secondaryPhone }}
-              </dd>
-
-              <dt class="col-5 text-muted fw-normal">VIN Serie:</dt>
-              <dd class="col-7 fw-bold font-monospace text-dark text-uppercase mb-0">{{ selectedClientForDetail?.vin || 'No registrado' }}</dd>
-            </dl>
-          </div>
-
-          <div class="col-12 col-md-6">
-            <div class="border-bottom pb-2 mb-3">
-              <h6 class="fw-bold text-dark mb-0 small text-uppercase"><i class="bi bi-person-badge-fill text-danger me-1"></i> Equipo Comercial & Operación</h6>
-            </div>
-            <dl class="row g-2 mb-0 small">
-              <dt class="col-5 text-muted fw-normal">Tipo Operación:</dt>
-              <dd class="col-7 mb-2"><span class="badge bg-dark font-monospace text-white">{{ selectedClientForDetail?.operationType }}</span></dd>
-
-              <dt class="col-5 text-muted fw-normal">Vendedor Original:</dt>
-              <dd class="col-7 mb-2">
-                <span class="badge bg-secondary-subtle text-secondary-emphasis border font-monospace px-2.5 py-1">
-                  {{ selectedClientForDetail?.vendedor || selectedClientForDetail?.nombreDeUsuario || 'Sin registrar' }}
-                </span>
-              </dd>
-
-              <dt class="col-5 text-muted fw-normal">Asesor Asignado:</dt>
-              <dd class="col-7 mb-2">
-                <span class="badge font-monospace px-2.5 py-1 fw-bold"
-                  [ngClass]="selectedClientForDetail?.assignedUserName ? 'bg-danger-subtle text-danger border border-danger-subtle' : 'bg-warning-subtle text-dark border border-warning-subtle'">
-                  <i class="bi" [ngClass]="selectedClientForDetail?.assignedUserName ? 'bi-person-check-fill me-1' : 'bi-person-exclamation me-1'"></i>
-                  {{ selectedClientForDetail?.assignedUserName || 'DISPONIBLE SIN AGENTE' }}
-                </span>
-              </dd>
-
-              <dt class="col-5 text-muted fw-normal">Calificación:</dt>
-              <dd class="col-7 mb-0"><span class="badge bg-warning text-dark">{{ selectedClientForDetail?.qualification || 'PROSPECTO A' }}</span></dd>
-            </dl>
-          </div>
-
-          <div class="col-12">
-            <div class="border-bottom pb-2 mb-3">
-              <h6 class="fw-bold text-dark mb-0 small text-uppercase"><i class="bi bi-geo-alt-fill text-danger me-1"></i> Dirección / Domicilio Registrado</h6>
-            </div>
-            <div class="p-3 bg-light rounded-3 border row g-2 small">
-              <div class="col-12 col-md-6">
-                <span class="text-muted d-block" style="font-size: 0.7rem;">Calle y Número:</span>
-                <strong class="text-dark">{{ selectedClientForDetail?.calle }}</strong>
+              <div *ngIf="isLoadingHistory" class="text-center py-3">
+                <div class="spinner-border text-danger spinner-border-sm me-2"></div>
+                <span class="small text-muted">Cargando reporte de interacciones...</span>
               </div>
-              <div class="col-12 col-md-6">
-                <span class="text-muted d-block" style="font-size: 0.7rem;">Colonia:</span>
-                <strong class="text-dark">{{ selectedClientForDetail?.colonia }}</strong>
+
+              <div *ngIf="!isLoadingHistory && clientFollowUpsHistory.length === 0" class="text-center py-4 text-muted small">
+                <i class="bi bi-chat-square-dots fs-3 d-block text-secondary opacity-50 mb-1"></i>
+                <span>El asesor aún no ha capturado seguimientos para esta cuenta.</span>
               </div>
-              <div class="col-12 col-md-4">
-                <span class="text-muted d-block" style="font-size: 0.7rem;">Municipio / Sucursal:</span>
-                <strong class="text-dark">{{ selectedClientForDetail?.municipio }}</strong>
-              </div>
-              <div class="col-12 col-md-4">
-                <span class="text-muted d-block" style="font-size: 0.7rem;">Estado:</span>
-                <strong class="text-dark">{{ selectedClientForDetail?.estadoRepublica }}</strong>
-              </div>
-              <div class="col-12 col-md-4">
-                <span class="text-muted d-block" style="font-size: 0.7rem;">Código Postal:</span>
-                <strong class="font-monospace text-dark">{{ selectedClientForDetail?.cp }}</strong>
+
+              <div *ngIf="!isLoadingHistory && clientFollowUpsHistory.length > 0" class="d-flex flex-column gap-2">
+                <div *ngFor="let item of clientFollowUpsHistory; let i = index" class="p-3 rounded-3 bg-light border">
+                  <div class="d-flex align-items-center justify-content-between mb-1">
+                    <span class="badge bg-black text-white font-monospace" style="font-size: 0.65rem;">{{ item.contactMethod || item.action || 'INTERACCIÓN' }}</span>
+                    <span class="small text-muted font-monospace" style="font-size: 0.72rem;"><i class="bi bi-calendar3 me-1"></i>{{ item.timestamp || item.createdAt | date:'medium' }}</span>
+                  </div>
+                  <p class="small text-dark mb-0 fw-medium mt-1">{{ item.comments || item.description || 'Sin observaciones especificadas.' }}</p>
+                </div>
               </div>
             </div>
+
           </div>
+
+          <div class="modal-footer bg-white border-top p-3">
+            <button type="button" class="btn btn-secondary rounded-3 px-4 fw-semibold" (click)="showToolsModal = false">Cerrar</button>
+          </div>
+
         </div>
-
-        <div class="border-top pt-3">
-          <h6 class="fw-bold text-dark mb-3 small text-uppercase d-flex align-items-center gap-2">
-            <i class="bi bi-journal-text text-danger"></i> Historial de Interacciones Registradas
-          </h6>
-
-          <div *ngIf="clientFollowUpsHistory.length === 0" class="p-3 bg-light rounded-3 text-center text-muted small border">
-            Sin seguimiento registrado aún.
-          </div>
-
-          <div *ngIf="clientFollowUpsHistory.length > 0" class="d-flex flex-column gap-2" style="max-height: 180px; overflow-y: auto;">
-            <div *ngFor="let item of clientFollowUpsHistory" class="p-2.5 rounded-3 border bg-light">
-              <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="badge bg-danger text-white font-monospace" style="font-size: 0.65rem;">{{ item.contactMethod || item.action || 'WHATSAPP' }}</span>
-                <span class="small text-muted font-monospace" style="font-size: 0.7rem;">{{ item.timestamp | date:'dd/MMM/yyyy hh:mm a' }}</span>
-              </div>
-              <p class="small text-dark mb-0 fw-medium">{{ item.comments || item.description }}</p>
-            </div>
-          </div>
-        </div>
-
       </div>
-
-      <div class="modal-footer bg-light border-top p-3 px-4 d-flex justify-content-end">
-        <button type="button" class="btn btn-dark px-4 rounded-3 fw-semibold" (click)="closeClientDetailModal()">Cerrar Ficha</button>
-      </div>
-
     </div>
-  </div>
+
+    <!-- MODAL DETALLE DE CLIENTE -->
+    <div *ngIf="showDetailModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.6);">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+          
+          <div class="modal-header bg-black text-white p-3 px-4 border-bottom border-danger border-2">
+            <div>
+              <h5 class="fw-bold mb-0 text-white d-flex align-items-center gap-2">
+                <i class="bi bi-person-vcard text-danger"></i>
+                Ficha Técnica de Cuenta
+              </h5>
+              <span class="small text-white-50">RFC: <strong class="text-warning">{{ selectedClientForDetail?.taxId || selectedClientForDetail?.rfc }}</strong></span>
+            </div>
+            <button type="button" class="btn-close btn-close-white" (click)="closeClientDetailModal()"></button>
+          </div>
+
+          <div class="modal-body p-4 bg-light">
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <div class="p-3 bg-white rounded-3 border h-100">
+                  <span class="text-muted d-block small mb-1">Razón Social / Nombre</span>
+                  <strong class="d-block text-dark fs-6 text-uppercase">{{ selectedClientForDetail?.companyName || selectedClientForDetail?.nombreDelCliente }}</strong>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <div class="p-3 bg-white rounded-3 border h-100">
+                  <span class="text-muted d-block small mb-1">Vehículo / Interés</span>
+                  <strong class="d-block text-dark fs-6">{{ selectedClientForDetail?.brand || 'Toyota' }} {{ selectedClientForDetail?.vehicleModel }}</strong>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <div class="p-3 bg-white rounded-3 border h-100">
+                  <span class="text-muted d-block small mb-1">Correo de Contacto</span>
+                  <strong class="d-block text-dark small font-monospace">{{ selectedClientForDetail?.contactEmail || 'Sin Registro' }}</strong>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <div class="p-3 bg-white rounded-3 border h-100">
+                  <span class="text-muted d-block small mb-1">Teléfono Principal</span>
+                  <strong class="d-block text-dark small font-monospace"><i class="bi bi-telephone-fill me-1 text-success"></i>{{ selectedClientForDetail?.contactPhone || selectedClientForDetail?.telefonoContacto }}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer bg-white border-top p-3">
+            <button type="button" class="btn btn-secondary rounded-3 px-4 fw-semibold" (click)="closeClientDetailModal()">Cerrar Ficha</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </main>
 </div>

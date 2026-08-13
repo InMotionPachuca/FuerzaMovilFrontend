@@ -7,6 +7,7 @@ import { AdminUsersComponent } from './pages/admin-users/admin-users.component';
 import { AgentListComponent } from './features/agents/agent-list.component';
 import { AdminAnalyticsComponent } from './components/dashboard-analytics/admin-analytics.component';
 import { authGuard } from './core/guards/auth.guard';
+import { TopAgentsComponent } from './pages/admin/top-agents/top-agents.component';
 
 export const routes: Routes = [
   // Redirección inicial obligatoria al Login
@@ -20,6 +21,7 @@ export const routes: Routes = [
   { path: 'admin/users', component: AdminUsersComponent, canActivate: [authGuard] },
   { path: 'admin/agents', component: AgentListComponent, canActivate: [authGuard] },
   { path: 'admin/analytics', component: AdminAnalyticsComponent, canActivate: [authGuard] },
+  { path: 'admin/top-agents', component: TopAgentsComponent },
 
   // Cualquier otra ruta no encontrada redirige al Login
   { path: '**', redirectTo: 'login' }

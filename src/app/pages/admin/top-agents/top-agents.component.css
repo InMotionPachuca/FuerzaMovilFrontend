@@ -1,0 +1,19 @@
+/* Animaciones de transición suave para los botones y tarjetas */
+.transition-all {
+  transition: all 0.25s ease-in-out;
+}
+
+/* Efecto hover suave sobre las filas de la tabla */
+.table-hover tbody tr:hover {
+  background-color: rgba(255, 193, 7, 0.05) !important;
+}
+
+/* Sombra ligera personalizada para tarjetas VIP */
+.card-vip {
+  border-left: 4px solid #ffc107 !important;
+}
+
+/* Ajustes de tipografía para etiquetas compactas */
+.font-monospace {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+}
