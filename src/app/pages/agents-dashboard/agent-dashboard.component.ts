@@ -1,13 +1,21 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { ClientService } from '../../core/services/client.service';
 import { AuthService } from '../../core/services/auth.service';
 
+export interface TodayLogItem {
+  clientName: string;
+  action: string;
+  comments: string;
+  timestamp: string;
+}
+
 @Component({
   selector: 'app-agent-dashboard',
   standalone: true,
-  imports: [CommonModule, SidebarComponent],
+  imports: [CommonModule, RouterLink, SidebarComponent],
   templateUrl: './agent-dashboard.component.html',
   styleUrl: './agent-dashboard.component.css'
 })
@@ -16,24 +24,44 @@ export class AgentDashboardComponent implements OnInit {
   private authService = inject(AuthService);
 
   isLoading = true;
+  agentName = '';
+  greetingMessage = '¡Buenas tardes!';
 
-  // Métricas operativas en tiempo real
+  // Métricas operativas
   totalAssigned = 0;
   todayContactsCount = 0;
-  completedGoalClients = 0; // Clientes con 3/3 intentos
+  completedGoalClients = 0; // Clientes con 3 o más intentos
 
-  // Actividades realizadas HOY
-  todayLogs: any[] = [];
+  // Actividades registradas
+  todayLogs: TodayLogItem[] = [];
 
   get progressPercentage(): number {
     if (this.totalAssigned === 0) return 0;
-    // Meta estimada: 3 contactos por cliente asignado
-    const percentage = Math.round((this.todayContactsCount / (this.totalAssigned * 3)) * 100);
+    const targetContacts = this.totalAssigned * 3;
+    const percentage = Math.round((this.todayContactsCount / targetContacts) * 100);
+    return Math.min(percentage, 100);
+  }
+
+  get goalCompletionPercentage(): number {
+    if (this.totalAssigned === 0) return 0;
+    const percentage = Math.round((this.completedGoalClients / this.totalAssigned) * 100);
     return Math.min(percentage, 100);
   }
 
   ngOnInit(): void {
+    this.setGreeting();
     this.loadAgentMetrics();
+  }
+
+  setGreeting(): void {
+    const hour = new Date().getHours();
+    if (hour < 12) {
+      this.greetingMessage = '¡Buenos días!';
+    } else if (hour < 19) {
+      this.greetingMessage = '¡Buenas tardes!';
+    } else {
+      this.greetingMessage = '¡Buenas noches!';
+    }
   }
 
   loadAgentMetrics(): void {
@@ -44,82 +72,75 @@ export class AgentDashboardComponent implements OnInit {
     }
 
     this.isLoading = true;
+    this.agentName = user.fullName || user.username || 'Asesor';
     const userIdNum = Number(user.id);
     const userRole = String(user.role || 'AGENT');
 
-    // 1. Cargar únicamente el lote activo asignado al agente
-    this.clientService.getClientsPaged('ALL', '', 0, 1000, userIdNum, userRole).subscribe({
+    // 1. Obtener la cartera asignada
+    this.clientService.getClientsPaged('ALL', 'ASSIGNED', 0, 1000, userIdNum, userRole).subscribe({
       next: (res: any) => {
-        const rawClients = res.content || res || [];
-        this.totalAssigned = res.totalElements !== undefined ? res.totalElements : rawClients.length;
+        const clients = res.content || res || [];
+        this.totalAssigned = res.totalElements !== undefined ? res.totalElements : clients.length;
 
-        if (rawClients.length === 0) {
-          this.isLoading = false;
-          return;
-        }
+        // Mapeo rápido para calcular clientes con meta de 3 intentos
+        let goalReached = 0;
+        clients.forEach((c: any) => {
+          if ((c.followUpsCount || 0) >= 3) {
+            goalReached++;
+          }
+        });
+        this.completedGoalClients = goalReached;
 
-        let loadedCount = 0;
-        this.todayContactsCount = 0;
-        this.completedGoalClients = 0;
-        this.todayLogs = [];
+        // 2. Obtener Bitácoras globales del Asesor (Eficiente y en una sola petición)
+        this.clientService.getFollowUpsByAgent(userIdNum).subscribe({
+          next: (logs: any[]) => {
+            const rawLogs = logs || [];
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const todayStr = `${year}-${month}-${day}`;
 
-        // Obtener fecha de HOY en formato YYYY-MM-DD local
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const todayStr = `${year}-${month}-${day}`;
+            // Filtrar las bitácoras registradas el día de HOY
+            const filteredToday = rawLogs.filter((log: any) => {
+              if (!log.timestamp && !log.createdAt) return false;
+              const dateVal = String(log.timestamp || log.createdAt);
+              return dateVal.substring(0, 10) === todayStr;
+            });
 
-        // 2. Consultar logs cliente por cliente para obtener conteo estricto del día
-        rawClients.forEach((client: any) => {
-          this.clientService.getClientAuditLogs(client.id).subscribe({
-            next: (logs: any[]) => {
-              const clientLogs = logs || [];
+            this.todayContactsCount = filteredToday.length;
 
-              if (clientLogs.length >= 3) {
-                this.completedGoalClients++;
-              }
+            this.todayLogs = filteredToday.map((log: any) => ({
+              clientName: log.batchName || log.clientName || 'Cliente en Cartera',
+              action: log.action || 'INTERACCIÓN',
+              comments: log.description || log.comments || 'Sin observaciones.',
+              timestamp: log.timestamp || log.createdAt
+            }));
 
-              // Filtrar bitácoras registradas HOY
-              const logsToday = clientLogs.filter(log => {
-                if (!log.timestamp) return false;
-                const logDateStr = String(log.timestamp).substring(0, 10);
-                return logDateStr === todayStr;
-              });
+            // Ordenar de más reciente a más antiguo
+            this.todayLogs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-              this.todayContactsCount += logsToday.length;
-
-              logsToday.forEach(log => {
-                this.todayLogs.push({
-                  clientName: client.companyName || client.nombreDelCliente,
-                  action: log.action || 'CONTACTO',
-                  comments: log.description || log.comments,
-                  timestamp: log.timestamp
-                });
-              });
-
-              loadedCount++;
-              if (loadedCount === rawClients.length) {
-                this.finishLoading();
-              }
-            },
-            error: () => {
-              loadedCount++;
-              if (loadedCount === rawClients.length) this.finishLoading();
-            }
-          });
+            this.isLoading = false;
+          },
+          error: (err) => {
+            console.error('Error al cargar bitácoras del agente:', err);
+            this.isLoading = false;
+          }
         });
       },
       error: (err) => {
-        console.error('Error al consultar cartera del agente:', err);
+        console.error('Error al cargar la cartera del agente:', err);
         this.isLoading = false;
       }
     });
   }
 
-  private finishLoading(): void {
-    // Ordenar actividad por hora más reciente
-    this.todayLogs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-    this.isLoading = false;
+  getActionBadgeClass(action: string): string {
+    const act = (action || '').toUpperCase();
+    if (act.includes('WHATSAPP')) return 'bg-success text-white';
+    if (act.includes('LLAMADA') || act.includes('TEL')) return 'bg-primary text-white';
+    if (act.includes('CORREO') || act.includes('EMAIL')) return 'bg-info text-dark';
+    if (act.includes('AGENCIA') || act.includes('VISITA')) return 'bg-warning text-dark';
+    return 'bg-danger text-white';
   }
 }

@@ -7,15 +7,30 @@
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace !important;
 }
 
-/* KPIS ESTILIZADOS */
+/* BANNER INSTITUCIONAL */
+.header-banner {
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  border-left: 5px solid #EB0A1E !important;
+}
+
+.banner-watermark {
+  position: absolute;
+  right: -15px;
+  bottom: -25px;
+  font-size: 11rem;
+  color: rgba(255, 255, 255, 0.03);
+  pointer-events: none;
+}
+
+/* KPIS ESTILIZADOS CON HOVER */
 .kpi-card {
   transition: all 0.2s ease-in-out;
-  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
 }
 
 .kpi-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06) !important;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
 }
 
 .kpi-title {
@@ -28,16 +43,17 @@
 
 /* RECTOR DE ACTIVIDAD CON HOVER SUAVE */
 .activity-card {
-  border-left: 3.5px solid #EB0A1E !important;
+  border-left: 4px solid #EB0A1E !important;
   transition: all 0.15s ease-in-out;
 }
 
 .activity-card:hover {
   background-color: #f8f9fa !important;
-  border-color: #ced4da !important;
+  border-color: #adb5bd !important;
+  transform: translateX(2px);
 }
 
-/* ANIMACIÓN SPINNER */
+/* ANIMACIÓN SPINNER DE ACTUALIZACIÓN */
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -48,12 +64,21 @@
   display: inline-block;
 }
 
-/* SCROLLBAR */
+/* SCROLLBAR MODERNO Y DISCRETO */
 div[style*="max-height"]::-webkit-scrollbar {
-  width: 4px;
+  width: 5px;
+}
+
+div[style*="max-height"]::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
 }
 
 div[style*="max-height"]::-webkit-scrollbar-thumb {
-  background: #ced4da;
+  background: #ccc;
   border-radius: 4px;
+}
+
+div[style*="max-height"]::-webkit-scrollbar-thumb:hover {
+  background: #EB0A1E;
 }

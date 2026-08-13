@@ -1,97 +1,78 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-export interface AuditLogDTO {
-  id?: number;
-  action: string;
-  description: string;
-  actorName: string;
-  batchName?: string;
-  timestamp: string;
-}
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClientService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/v1/clients';
-
-  getClientsPaged(clientType: string, assignmentStatus: string, page: number, size: number, userId?: number, userRole?: string, search?: string): Observable<any> {
-    let params = new HttpParams()
-      .set('clientType', clientType || 'ALL')
-      .set('assignmentStatus', assignmentStatus || 'UNASSIGNED')
-      .set('page', page.toString())
-      .set('size', size.toString());
-
-    if (search) params = params.set('search', search);
-    if (userId) params = params.set('userId', userId.toString());
-    if (userRole) params = params.set('userRole', userRole);
-
-    return this.http.get<any>(`${this.apiUrl}/paged`, { params });
-  }
+  private apiUrl = environment.apiUrl;
 
   getSummaryMetrics(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/metrics/summary`);
+    return this.http.get(`${this.apiUrl}/clients/metrics/summary`);
   }
 
-  assignClientToUser(clientId: number, userId: number, actorName?: string): Observable<any> {
-    let params = new HttpParams();
-    if (actorName) params = params.set('actorName', actorName);
-    return this.http.put<any>(`${this.apiUrl}/${clientId}/assign/${userId}`, {}, { params });
-  }
-
-  unassignClient(clientId: number, actorName?: string): Observable<any> {
-    let params = new HttpParams();
-    if (actorName) params = params.set('actorName', actorName);
-    return this.http.put<any>(`${this.apiUrl}/${clientId}/assign/0`, {}, { params });
-  }
-
-  assignBatchToAgent(agentId: number, count: number, actorName?: string): Observable<any> {
-    let params = new HttpParams().set('count', count.toString());
-    if (actorName) params = params.set('actorName', actorName);
-    return this.http.post<any>(`${this.apiUrl}/assign-batch/${agentId}`, {}, { params });
-  }
-
-  assignVIPBatchToAgent(agentId: number, count: number, actorName?: string): Observable<any> {
-    let params = new HttpParams().set('count', count.toString());
-    if (actorName) params = params.set('actorName', actorName);
-    return this.http.post<any>(`${this.apiUrl}/assign-vip-batch/${agentId}`, {}, { params });
-  }
-
-  autoDistributeClients(countPerAgent: number, actorName?: string): Observable<any> {
-    let params = new HttpParams().set('countPerAgent', countPerAgent.toString());
-    if (actorName) params = params.set('actorName', actorName);
-    return this.http.post<any>(`${this.apiUrl}/auto-distribute`, {}, { params });
-  }
-
-  addFollowUp(clientId: number, payload: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/${clientId}/follow-ups`, payload);
-  }
-
-  uploadExcel(file: File, actorName?: string): Observable<any> {
-    const formData = new FormData();
-    formData.append('file', file);
-    let params = new HttpParams();
-    if (actorName) params = params.set('actorName', actorName);
-    return this.http.post<any>(`${this.apiUrl}/import-excel`, formData, { params });
-  }
-
-  deleteClient(clientId: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${clientId}`);
-  }
-
-  // OPCIÓN A: RUTA CORREGIDA A /api/v1/auth/users
   getAgents(): Observable<any[]> {
-    return this.http.get<any[]>('http://localhost:8080/api/v1/auth/users');
+    return this.http.get<any[]>(`${this.apiUrl}/agents`);
+  }
+
+  toggleTopAgentStatus(agentId: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/agents/${agentId}/toggle-top-agent`, {});
+  }
+
+  getClientsPaged(
+    type: string,
+    status: string,
+    page: number,
+    size: number,
+    agentId?: number,
+    role?: string,
+    search?: string
+  ): Observable<any> {
+    let url = `${this.apiUrl}/clients/paged?clientType=${type}&assignmentStatus=${status}&page=${page}&size=${size}`;
+    if (agentId) url += `&userId=${agentId}`;
+    if (role) url += `&userRole=${role}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    return this.http.get(url);
+  }
+
+  assignClientToUser(clientId: number, userId: number, actorName: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/clients/${clientId}/assign/${userId}?actorName=${encodeURIComponent(actorName)}`, {});
+  }
+
+  unassignClient(clientId: number, actorName: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/clients/${clientId}/assign/0?actorName=${encodeURIComponent(actorName)}`, {});
+  }
+
+  assignBatchToAgent(agentId: number, count: number, actorName: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/clients/assign-batch/${agentId}?count=${count}&actorName=${encodeURIComponent(actorName)}`, {});
+  }
+
+  autoDistributeClients(countPerAgent: number, actorName: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/clients/auto-distribute?countPerAgent=${countPerAgent}&actorName=${encodeURIComponent(actorName)}`, {});
+  }
+
+  getClientAuditLogs(clientId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/clients/${clientId}/audit-logs`);
   }
 
   getFollowUpsByAgent(agentId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/follow-ups/agent/${agentId}`);
+    return this.http.get<any[]>(`${this.apiUrl}/clients/follow-ups/agent/${agentId}`);
   }
 
-  getClientAuditLogs(clientId: number): Observable<AuditLogDTO[]> {
-    return this.http.get<AuditLogDTO[]>(`${this.apiUrl}/${clientId}/audit-logs`);
+  addFollowUp(clientId: number, payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/clients/${clientId}/follow-ups`, payload);
+  }
+
+  deleteClient(clientId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/clients/${clientId}`);
+  }
+
+  uploadExcel(file: File, actorName: string): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post(`${this.apiUrl}/clients/import-excel?actorName=${encodeURIComponent(actorName)}`, formData);
   }
 }

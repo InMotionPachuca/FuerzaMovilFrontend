@@ -73,8 +73,6 @@ export class TopAgentsComponent implements OnInit {
 
     this.clientService.getAgents().subscribe({
       next: (users: any[]) => {
-        const savedTopIds: number[] = JSON.parse(localStorage.getItem('top_agent_ids') || '[]');
-
         const agentsOnly = (users || []).filter((u: any) => 
           u.role && (u.role === 'AGENT' || u.role === 'ROLE_AGENT' || u.role.name === 'AGENT') && 
           u.username !== 'admin@agencia.com'
@@ -84,7 +82,7 @@ export class TopAgentsComponent implements OnInit {
           id: a.id,
           fullName: a.fullName || a.username,
           username: a.username,
-          isTopAgent: savedTopIds.includes(a.id)
+          isTopAgent: a.isTopAgent || a.topAgent || false
         }));
 
         this.isLoading = false;
@@ -97,21 +95,31 @@ export class TopAgentsComponent implements OnInit {
   }
 
   toggleTopAgentStatus(agent: TopAgentRow): void {
+    const previousState = agent.isTopAgent;
     agent.isTopAgent = !agent.isTopAgent;
-    this.saveTopAgentsState();
 
-    const title = agent.isTopAgent ? '¡Asesor Ascendido a Top Agent!' : 'Asesor Removido';
-    const text = agent.isTopAgent 
-      ? `${agent.fullName} ahora es elegible para recibir cartera con Beneficios VIP.` 
-      : `${agent.fullName} regresó al listado general de FuerzaMóvil.`;
+    // AHORA USA EL CLIENTSERVICE CON LA RUTA REAL HACIA AGENTCONTROLLER
+    this.clientService.toggleTopAgentStatus(agent.id).subscribe({
+      next: () => {
+        const title = agent.isTopAgent ? '¡Asesor Ascendido a Top Agent!' : 'Asesor Removido';
+        const text = agent.isTopAgent 
+          ? `${agent.fullName} ahora es elegible para recibir cartera con Beneficios VIP.` 
+          : `${agent.fullName} regresó al listado general de FuerzaMóvil.`;
 
-    Swal.fire({
-      icon: agent.isTopAgent ? 'success' : 'info',
-      title: title,
-      text: text,
-      confirmButtonColor: '#EB0A1E',
-      timer: 1500,
-      showConfirmButton: false
+        Swal.fire({
+          icon: agent.isTopAgent ? 'success' : 'info',
+          title: title,
+          text: text,
+          confirmButtonColor: '#EB0A1E',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        console.error('Error al actualizar estatus:', err);
+        agent.isTopAgent = previousState;
+        Swal.fire('Error', 'No se pudo guardar la preferencia en el servidor.', 'error');
+      }
     });
   }
 
@@ -126,12 +134,6 @@ export class TopAgentsComponent implements OnInit {
     event.target.value = '';
   }
 
-  saveTopAgentsState(): void {
-    const topIds = this.allAgents.filter(a => a.isTopAgent).map(a => a.id);
-    localStorage.setItem('top_agent_ids', JSON.stringify(topIds));
-  }
-
-  // ABRIR MODAL DE SELECCIÓN MANUAL DE CLIENTES VIP
   openManualAssignModal(agent: TopAgentRow): void {
     this.selectedAgentForAssign = agent;
     this.showAssignModal = true;
@@ -159,8 +161,7 @@ export class TopAgentsComponent implements OnInit {
     });
   }
 
-  // ASIGNAR UN CLIENTE ESPECÍFICO DE FORMA MANUAL
-assignSpecificVIPClient(client: any): void {
+  assignSpecificVIPClient(client: any): void {
     if (!this.selectedAgentForAssign) return;
 
     const agentName = this.selectedAgentForAssign.fullName;

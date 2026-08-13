@@ -73,7 +73,7 @@ export class AdminAnalyticsComponent implements OnInit {
       error: (err) => console.error('Error al cargar métricas globales:', err)
     });
 
-    // 2. Cargar Asesores y desplegarlos INMEDIATAMENTE
+    // 2. Cargar Asesores (Filtrando administradores)
     this.clientService.getAgents().subscribe({
       next: (agents: any[]) => {
         if (!agents || agents.length === 0) {
@@ -82,8 +82,16 @@ export class AdminAnalyticsComponent implements OnInit {
           return;
         }
 
+        // FILTRO EXCLUSIVO DE ASESORES REALES
+        const realAgents = agents.filter((u: any) => {
+          const roleStr = String(u.role || u.role?.name || '').toUpperCase();
+          const isAdmin = roleStr.includes('ADMIN');
+          const isAdminEmail = u.username === 'admin@agencia.com' || u.username === 'cjuarez@toyotapachuca.com.mx';
+          return !isAdmin && !isAdminEmail;
+        });
+
         // Mapeo inicial
-        this.agentsMetrics = agents.map(agent => ({
+        this.agentsMetrics = realAgents.map(agent => ({
           id: Number(agent.id),
           fullName: agent.fullName || agent.username || 'Asesor Comercial',
           username: agent.username || 'agente',
@@ -94,19 +102,16 @@ export class AdminAnalyticsComponent implements OnInit {
           effectiveness: 0
         }));
 
-        // Quitamos la pantalla de carga para que el mosaico se pinte en pantalla inmediatamente
         this.isLoading = false;
 
-        // Cargar métricas en segundo plano para cada asesor
+        // Cargar métricas por asesor
         this.agentsMetrics.forEach(metric => {
           this.clientService.getClientsPaged('ALL', '', 0, 1000, metric.id, 'AGENT').subscribe({
             next: (res: any) => {
               const assignedList = res.content || [];
               metric.totalAssigned = res.totalElements !== undefined ? res.totalElements : assignedList.length;
-              metric.baseCount = assignedList.filter((c: any) => c.clientType === 'BASE').length;
-              metric.benefitCount = assignedList.filter((c: any) => c.clientType === 'BENEFIT' || c.clientType === 'BENEFICIOS').length;
 
-              // Obtener seguimiento individual de bitácoras por agente
+              // Obtener bitácoras reales
               this.clientService.getFollowUpsByAgent(metric.id).subscribe({
                 next: (followUps: any[]) => {
                   metric.completedFollowUps = followUps ? followUps.length : 0;
@@ -131,14 +136,14 @@ export class AdminAnalyticsComponent implements OnInit {
     });
   }
 
-  // REPARTO MASIVO RÁPIDO
+  // REPARTO RÁPIDO LOTE BASE
   assignBatchToAgent(agentId: number, count: number): void {
     const agent = this.agentsMetrics.find(a => a.id === agentId);
     const agentName = agent ? agent.fullName : 'Asesor';
 
     Swal.fire({
       title: `¿Asignar ${count} clientes a ${agentName}?`,
-      text: 'Se tomarán cuentas de la Cartera Base sin asignar.',
+      text: 'Se tomarán cuentas libres de la Cartera Base.',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#EB0A1E',

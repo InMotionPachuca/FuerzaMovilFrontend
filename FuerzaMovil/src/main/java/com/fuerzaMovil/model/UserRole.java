@@ -1,7 +1,0 @@
-package com.fuerzaMovil.model;
-
-public enum UserRole {
-	ADMIN,
-	AGENT
-
-}

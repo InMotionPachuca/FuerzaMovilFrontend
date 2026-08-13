@@ -17,22 +17,19 @@ export class ClientsComponent implements OnInit {
   private clientService = inject(ClientService);
   private authService = inject(AuthService);
 
-  // METRICAS SUPERIORES
+  // MÉTRICAS PERSONALIZADAS
   summaryTotalPortfolio = 0;
-  benefitClientsCount = 0;
-  unassignedClientsCount = 0;
+  assignedToMeCount = 0;
+  pendingFollowUpsCount = 0;
   completedFollowUpsCount = 0;
 
-  // PESTAÑAS Y ESTADOS (Solo Bolsa Libre y Asignados)
-  currentFilterMode: 'UNASSIGNED' | 'ASSIGNED' = 'UNASSIGNED';
+  currentFilterMode: 'UNASSIGNED' | 'ASSIGNED' = 'ASSIGNED';
   isAdmin = false;
   currentUser: any = null;
 
-  // LISTAS
   clients: any[] = [];
   agents: any[] = [];
 
-  // PAGINACIÓN
   currentPage = 0;
   pageSize = 10;
   totalPages = 1;
@@ -40,7 +37,6 @@ export class ClientsComponent implements OnInit {
   searchQuery = '';
   isLoading = false;
 
-  // MODALES
   showToolsModal = false;
   selectedClientForTools: any = null;
   clientFollowUpsHistory: any[] = [];
@@ -61,40 +57,24 @@ export class ClientsComponent implements OnInit {
     this.currentUser = this.authService.getCurrentUser();
     const role = String(this.currentUser?.role || '').toUpperCase();
     this.isAdmin = role === 'ADMIN' || role === 'ROLE_ADMIN';
-
-    if (!this.isAdmin) {
-      this.currentFilterMode = 'ASSIGNED';
-    } else {
-      this.currentFilterMode = 'UNASSIGNED';
-    }
+    this.currentFilterMode = this.isAdmin ? 'UNASSIGNED' : 'ASSIGNED';
   }
 
   loadInitialData(): void {
-    this.loadSummaryMetrics();
     if (this.isAdmin) {
+      this.loadSummaryMetricsGlobal();
       this.loadAgentsList();
     }
     this.loadClients();
   }
 
-  loadSummaryMetrics(): void {
+  loadSummaryMetricsGlobal(): void {
     this.clientService.getSummaryMetrics().subscribe({
       next: (m: any) => {
         this.summaryTotalPortfolio = m.total || 0;
-        this.benefitClientsCount = m.benefit || 0;
-        this.unassignedClientsCount = m.unassigned || 0;
+        this.assignedToMeCount = (m.total || 0) - (m.unassigned || 0);
+        this.pendingFollowUpsCount = m.unassigned || 0;
         this.completedFollowUpsCount = m.base || 0;
-      }
-    });
-  }
-
-  loadAgentsList(): void {
-    this.clientService.getAgents().subscribe({
-      next: (users: any[]) => {
-        this.agents = (users || []).filter((u: any) => 
-          u.role && (u.role === 'AGENT' || u.role === 'ROLE_AGENT' || u.role.name === 'AGENT') &&
-          u.username !== 'admin@agencia.com'
-        );
       }
     });
   }
@@ -102,7 +82,7 @@ export class ClientsComponent implements OnInit {
   loadClients(): void {
     this.isLoading = true;
 
-    // SI ES VENDEDOR/AGENTE: Solo carga sus clientes asignados
+    // VISTA DE AGENTE COMERCIAL
     if (!this.isAdmin) {
       const agentId = this.currentUser?.id;
       this.clientService.getClientsPaged('ALL', 'ASSIGNED', this.currentPage, this.pageSize, agentId, 'AGENT', this.searchQuery).subscribe({
@@ -110,6 +90,16 @@ export class ClientsComponent implements OnInit {
           this.clients = res.content || [];
           this.totalElements = res.totalElements || this.clients.length;
           this.totalPages = res.totalPages || Math.ceil(this.totalElements / this.pageSize) || 1;
+
+          // Calcular métricas personales del asesor
+          this.assignedToMeCount = this.totalElements;
+          let completed = 0;
+          this.clients.forEach(c => {
+            if ((c.followUpsCount || 0) >= 3) completed++;
+          });
+          this.completedFollowUpsCount = completed;
+          this.pendingFollowUpsCount = this.totalElements - completed;
+
           this.isLoading = false;
         },
         error: () => {
@@ -120,18 +110,10 @@ export class ClientsComponent implements OnInit {
       return;
     }
 
-    // SI ES ADMIN: Carga completa usando 'ALL' para devolver todo el universo de cuentas
+    // VISTA ADMINISTRADOR
     const assignmentStatus = this.currentFilterMode === 'ASSIGNED' ? 'ASSIGNED' : 'UNASSIGNED';
 
-    this.clientService.getClientsPaged(
-      'ALL', 
-      assignmentStatus, 
-      this.currentPage, 
-      this.pageSize, 
-      undefined, 
-      'ADMIN', 
-      this.searchQuery
-    ).subscribe({
+    this.clientService.getClientsPaged('ALL', assignmentStatus, this.currentPage, this.pageSize, undefined, 'ADMIN', this.searchQuery).subscribe({
       next: (res: any) => {
         this.clients = res.content || [];
         this.totalElements = res.totalElements || this.clients.length;
@@ -143,6 +125,28 @@ export class ClientsComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  loadAgentsList(): void {
+    this.clientService.getAgents().subscribe({
+      next: (users: any[]) => {
+        this.agents = (users || []).filter((u: any) =>
+          u.role && (u.role === 'AGENT' || u.role === 'ROLE_AGENT' || u.role.name === 'AGENT') &&
+          u.username !== 'admin@agencia.com'
+        );
+      }
+    });
+  }
+
+  isVipClient(client: any): boolean {
+    if (!client) return false;
+    if (client.isVip || client.isBenefit) return true;
+
+    const rawType = String(
+      client.clientType || client.operationType || client.tipoDeCredito || ''
+    ).toUpperCase().trim();
+
+    return ['VIP', 'BENEFIT', 'BENEFICIO', 'BENEFICIOS', 'PREFERENCIAL'].includes(rawType);
   }
 
   setFilterMode(mode: 'UNASSIGNED' | 'ASSIGNED'): void {
@@ -185,7 +189,6 @@ export class ClientsComponent implements OnInit {
           timer: 1500,
           showConfirmButton: false
         });
-        this.loadSummaryMetrics();
         this.loadClients();
       },
       error: () => Swal.fire('Error', 'No se pudo asignar el cliente.', 'error')
@@ -206,7 +209,6 @@ export class ClientsComponent implements OnInit {
         this.clientService.unassignClient(client.id, 'Administrador Principal').subscribe({
           next: () => {
             Swal.fire('Liberado', 'El cliente regresó a la bolsa libre.', 'success');
-            this.loadSummaryMetrics();
             this.loadClients();
           }
         });
@@ -228,7 +230,6 @@ export class ClientsComponent implements OnInit {
     this.clientService.uploadExcel(file, 'Administrador Principal').subscribe({
       next: (res: any) => {
         Swal.fire('¡Éxito!', `Se importaron ${res.importedCount || 0} registros.`, 'success');
-        this.loadSummaryMetrics();
         this.loadClients();
       },
       error: () => Swal.fire('Error', 'No se pudo procesar el archivo Excel.', 'error')
@@ -273,6 +274,7 @@ export class ClientsComponent implements OnInit {
         Swal.fire('Guardado', 'Se registró el avance comercial.', 'success');
         this.loadAuditHistory(this.selectedClientForTools.id);
         this.followUpComments = '';
+        this.loadClients();
       },
       error: () => Swal.fire('Error', 'No se pudo guardar la interacción.', 'error')
     });
@@ -284,11 +286,55 @@ export class ClientsComponent implements OnInit {
       Swal.fire('Sin teléfono', 'El cliente no tiene un teléfono registrado.', 'warning');
       return;
     }
-    const cleanPhone = phone.replace(/\D/g, '');
-    const msg = encodeURIComponent(`Hola ${client.companyName || 'Cliente'}, le saludamos de Toyota Pachuca.`);
-    window.open(`https://wa.me/52${cleanPhone}?text=${msg}`, '_blank');
-  }
 
+    // Sanitizar teléfono a 10 dígitos limpios
+    const cleanPhone = phone.replace(/\D/g, '');
+    const tenDigitPhone = cleanPhone.length > 10 ? cleanPhone.slice(-10) : cleanPhone;
+
+    const clientName = client.companyName || client.nombreDelCliente || 'Estimado(a) cliente';
+    const agentName = this.currentUser?.fullName || 'Su Asesor Comercial';
+    const vehicleInterest = client.vehicleModel ? ` sobre la unidad *${client.vehicleModel}*` : '';
+
+    // Verificar si es cliente VIP / Beneficios usando nuestro helper
+    const isVip = this.isVipClient(client);
+
+    let messageText = '';
+
+    if (isVip) {
+      // =========================================================================
+      // PLANTILLA 1: CLIENTES DE BENEFICIOS VIP / CARTERA PREFERENCIAL
+      // =========================================================================
+      messageText =
+        `Estimado(a) *${clientName}*, le saluda *${agentName}* asesor de ventas de *Toyota & Carsline Pachuca*.
+Me pongo en contacto con usted porque tenemos un *beneficio especial de financiamiento* que podría ayudarle a estrenar
+una nueva unidad con condiciones preferenciales.
+Me gustaría revisar con usted las opciones disponibles y encontrar la alternativa que mejor se adapte a sus necesidades.
+¿Le gustaría que le comparta la información y hagamos una propuesta sin compromiso?
+¡Que tenga un excelente día!
+*${agentName} | Toyota & Carsline Pachuca*
+*Catálogo de Vehículos Nuevos:* https://toyotapachuca.com.mx/
+*Inventario de Seminuevos:* https://toyotapachuca.com.mx/Seminuevos/`;
+
+
+
+    } else {
+      // =========================================================================
+      // PLANTILLA 2: CONTACTO NORMAL / CARTERA BASE
+      // =========================================================================
+      messageText =
+        `Estimado(a) *${clientName}*, le saluda *${agentName}* asesor de ventas de *Toyota & Carsline Pachuca*.
+Quiero ponerme a sus órdenes para apoyarle si está pensando en cambiar o renovar su vehículo. 
+Actualmente contamos con diferentes modelos y opciones que podrían adaptarse a lo que busca.
+¿Le gustaría que le comparta algunas opciones y promociones disponibles?
+¡Será un gusto atenderle!
+*${agentName} | Toyota & Carsline Pachuca*
+*Vehículos Nuevos:* https://toyotapachuca.com.mx/
+*Inventario de Seminuevos:* https://toyotapachuca.com.mx/Seminuevos/`;
+    }
+
+    const encodedMsg = encodeURIComponent(messageText);
+    window.open(`https://wa.me/52${tenDigitPhone}?text=${encodedMsg}`, '_blank');
+  }
   openClientDetailModal(client: any): void {
     this.selectedClientForDetail = client;
     this.showDetailModal = true;
@@ -314,16 +360,11 @@ export class ClientsComponent implements OnInit {
         this.clientService.deleteClient(client.id).subscribe({
           next: () => {
             Swal.fire('Eliminado', 'El cliente fue eliminado.', 'success');
-            this.loadSummaryMetrics();
             this.loadClients();
           },
           error: () => Swal.fire('Error', 'No se pudo eliminar el cliente.', 'error')
         });
       }
     });
-  }
-
-  Number(val: any): number {
-    return Number(val);
   }
 }

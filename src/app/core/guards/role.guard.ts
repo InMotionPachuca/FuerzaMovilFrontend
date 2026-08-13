@@ -6,14 +6,19 @@ export const roleGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  const expectedRole = route.data?.['expectedRole'];
-  const userRole = authService.getUserRole();
+  if (!authService.isLoggedIn()) {
+    router.navigate(['/login']);
+    return false;
+  }
 
-  if (authService.isLoggedIn() && userRole === expectedRole) {
+  const expectedRole = String(route.data?.['expectedRole'] || '').toUpperCase().replace('ROLE_', '');
+  const userRole = String(authService.getUserRole() || '').toUpperCase().replace('ROLE_', '');
+
+  if (userRole === expectedRole) {
     return true;
   }
 
-  console.warn(`Acceso denegado a ${state.url}: Se requiere rol ${expectedRole} (Rol actual: ${userRole})`);
+  console.warn(`[roleGuard] Acceso denegado a ${state.url}: Se requiere ${expectedRole} (Actual: ${userRole})`);
   router.navigate(['/clients']);
   return false;
 };
