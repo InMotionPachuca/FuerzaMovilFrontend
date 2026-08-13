@@ -147,10 +147,10 @@ body {
   overflow-x: hidden;
 }
 
-/* Contenedor principal con margen adaptativo */
+/* Margen del contenedor principal ajustado al nuevo ancho del sidebar */
 .main-content {
-  margin-left: 260px; /* Ancho del sidebar en PC */
-  padding: 2rem;
+  margin-left: 210px !important;
+  padding: 1.5rem;
   transition: margin-left 0.3s ease;
 }
 
@@ -158,8 +158,14 @@ body {
   .main-content {
     margin-left: 0 !important;
     padding: 1rem;
-    padding-top: 4.5rem; /* Margen para no chocar con el navbar móvil */
+    padding-top: 4.5rem;
   }
+}
+
+.table-responsive {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  -webkit-overflow-scrolling: touch;
 }
 
 /* TABLAS ADAPTABLES CON SCROLL SUAVE EN CELULARES */

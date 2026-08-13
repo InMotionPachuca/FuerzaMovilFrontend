@@ -1,7 +1,7 @@
-<!-- BARRA SUPERIOR PARA CELULARES -->
+<!-- BARRA SUPERIOR PARA CELULARES (Visible solo en < 992px) -->
 <div class="mobile-navbar d-lg-none d-flex align-items-center justify-content-between p-3 bg-dark text-white border-bottom border-secondary">
   <div class="d-flex align-items-center gap-2">
-    <img src="assets/toyotaPachuca.jpeg" alt="Toyota Pachuca" class="img-fluid rounded-2" style="height: 32px;" />
+    <img src="assets/toyotaPachuca.jpeg" alt="Toyota Pachuca" class="img-fluid rounded-2" style="height: 28px;" />
     <span class="fw-bold fs-6 tracking-wide text-danger">FUERZA<span class="text-white">MÓVIL</span></span>
   </div>
   <button (click)="toggleMobileMenu()" class="btn btn-outline-light border-0 fs-3 p-0" type="button">
@@ -13,18 +13,18 @@
 <div class="sidebar-overlay d-lg-none" *ngIf="isMobileMenuOpen" (click)="closeMobileMenu()"></div>
 
 <!-- ASIDE SIDEBAR -->
-<aside class="sidebar p-3 d-flex flex-column justify-content-between" [ngClass]="{'show-mobile': isMobileMenuOpen}">
+<aside class="sidebar p-2.5 d-flex flex-column justify-content-between" [ngClass]="{'show-mobile': isMobileMenuOpen}">
   
   <!-- CONTENEDOR SUPERIOR CON SCROLL INTERNO -->
-  <div class="sidebar-content-scroll flex-grow-1 overflow-y-auto mb-3">
+  <div class="sidebar-content-scroll flex-grow-1 overflow-y-auto mb-2">
     <!-- LOGO Y BRANDING (ESCRITORIO) -->
-    <div class="d-none d-lg-flex align-items-center justify-content-center mb-4 px-2 pt-2">
+    <div class="d-none d-lg-flex align-items-center justify-content-center mb-3 px-1 pt-2">
       <div class="brand-logo-container text-center">
         <img src="assets/toyotaPachuca.jpeg" alt="Toyota Pachuca" class="img-fluid rounded-3 shadow-sm brand-logo-img" />
       </div>
     </div>
 
-    <hr class="border-secondary opacity-20 my-3 d-none d-lg-block" />
+    <hr class="border-secondary opacity-20 my-2.5 d-none d-lg-block" />
 
     <!-- NAVEGACIÓN -->
     <nav class="sidebar-nav">
@@ -52,7 +52,7 @@
         </a>
         <a routerLink="/clients" routerLinkActive="active" (click)="closeMobileMenu()" class="nav-link">
           <i class="bi bi-building-gear me-2"></i>
-          <span class="link-text">Gestión de Clientes</span>
+          <span class="link-text">Gestión Clientes</span>
         </a>
         <a routerLink="/admin/agents" routerLinkActive="active" (click)="closeMobileMenu()" class="nav-link">
           <i class="bi bi-person-badge-fill me-2"></i>
@@ -72,19 +72,19 @@
     </nav>
   </div>
 
-  <!-- FOOTER CON PERFIL Y LOGOUT (SIEMPRE FIJO ABAJO) -->
-  <div class="border-top border-secondary border-opacity-20 pt-3 mt-auto">
-    <div class="d-flex align-items-center justify-content-between px-2">
-      <div class="user-details overflow-hidden me-2">
-        <span class="d-block text-white fw-bold text-truncate small">
+  <!-- FOOTER CON PERFIL Y LOGOUT -->
+  <div class="border-top border-secondary border-opacity-20 pt-2.5 mt-auto">
+    <div class="d-flex align-items-center justify-content-between px-1">
+      <div class="user-details overflow-hidden me-1">
+        <span class="d-block text-white fw-bold text-truncate small" style="font-size: 0.8rem;">
           {{ currentUser?.fullName || currentUser?.username || 'Usuario Toyota' }}
         </span>
-        <span class="badge bg-danger text-white text-uppercase font-monospace d-inline-block mt-1" style="font-size: 0.62rem; padding: 3px 8px;">
+        <span class="badge bg-danger text-white text-uppercase font-monospace d-inline-block mt-0.5" style="font-size: 0.58rem; padding: 2px 6px;">
           {{ userRoleDisplay }}
         </span>
       </div>
-      <button (click)="logout()" class="btn btn-sm btn-outline-light border-0 rounded-3 p-2 d-flex align-items-center justify-content-center" title="Cerrar Sesión">
-        <i class="bi bi-box-arrow-right fs-4 text-danger"></i>
+      <button (click)="logout()" class="btn btn-sm btn-outline-light border-0 rounded-3 p-1.5 d-flex align-items-center justify-content-center" title="Cerrar Sesión">
+        <i class="bi bi-box-arrow-right fs-5 text-danger"></i>
       </button>
     </div>
   </div>
