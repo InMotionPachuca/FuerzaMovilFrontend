@@ -1,4 +1,4 @@
-<!-- BARRA SUPERIOR PARA CELULARES (Visible solo en < 992px) -->
+<!-- BARRA SUPERIOR PARA CELULARES -->
 <div class="mobile-navbar d-lg-none d-flex align-items-center justify-content-between p-3 bg-dark text-white border-bottom border-secondary">
   <div class="d-flex align-items-center gap-2">
     <img src="assets/toyotaPachuca.jpeg" alt="Toyota Pachuca" class="img-fluid rounded-2" style="height: 32px;" />
@@ -14,8 +14,10 @@
 
 <!-- ASIDE SIDEBAR -->
 <aside class="sidebar p-3 d-flex flex-column justify-content-between" [ngClass]="{'show-mobile': isMobileMenuOpen}">
-  <div>
-    <!-- LOGO Y BRANDING TOYOTA PACHUCA (Escritorio) -->
+  
+  <!-- CONTENEDOR SUPERIOR CON SCROLL INTERNO -->
+  <div class="sidebar-content-scroll flex-grow-1 overflow-y-auto mb-3">
+    <!-- LOGO Y BRANDING (ESCRITORIO) -->
     <div class="d-none d-lg-flex align-items-center justify-content-center mb-4 px-2 pt-2">
       <div class="brand-logo-container text-center">
         <img src="assets/toyotaPachuca.jpeg" alt="Toyota Pachuca" class="img-fluid rounded-3 shadow-sm brand-logo-img" />
@@ -70,8 +72,8 @@
     </nav>
   </div>
 
-  <!-- PERFIL Y CERRAR SESIÓN -->
-  <div class="border-top border-secondary border-opacity-20 pt-3 mt-4">
+  <!-- FOOTER CON PERFIL Y LOGOUT (SIEMPRE FIJO ABAJO) -->
+  <div class="border-top border-secondary border-opacity-20 pt-3 mt-auto">
     <div class="d-flex align-items-center justify-content-between px-2">
       <div class="user-details overflow-hidden me-2">
         <span class="d-block text-white fw-bold text-truncate small">
@@ -81,8 +83,8 @@
           {{ userRoleDisplay }}
         </span>
       </div>
-      <button (click)="logout()" class="btn btn-sm btn-outline-light border-0 rounded-3 p-1.5" title="Cerrar Sesión">
-        <i class="bi bi-box-arrow-right fs-5 text-danger"></i>
+      <button (click)="logout()" class="btn btn-sm btn-outline-light border-0 rounded-3 p-2 d-flex align-items-center justify-content-center" title="Cerrar Sesión">
+        <i class="bi bi-box-arrow-right fs-4 text-danger"></i>
       </button>
     </div>
   </div>

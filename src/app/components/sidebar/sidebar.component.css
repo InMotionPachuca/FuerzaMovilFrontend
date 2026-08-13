@@ -1,7 +1,7 @@
-/* Sidebar en Escritorio */
+/* Sidebar por defecto (Escritorio) */
 .sidebar {
   width: 260px;
-  min-height: 100vh;
+  height: 100vh;
   background-color: #111111;
   color: #ffffff;
   position: fixed;
@@ -33,20 +33,29 @@
   background-color: #eb0a1e;
 }
 
-/* Transición para Pantallas Móviles (< 992px) */
+/* Scroll discreto para la lista de enlaces */
+.sidebar-content-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-content-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+/* Adaptación Celular (< 992px) */
 @media (max-width: 991.98px) {
   .sidebar {
     position: fixed;
-    top: 57px; /* Altura de la barra móvil superior */
+    top: 57px;
     left: 0;
     height: calc(100vh - 57px);
     width: 280px;
-    transform: translateX(-100%); /* Oculto fuera de pantalla por defecto */
+    transform: translateX(-100%);
     box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
   }
 
   .sidebar.show-mobile {
-    transform: translateX(0); /* Deslizar hacia la pantalla */
+    transform: translateX(0);
   }
 
   .sidebar-overlay {
