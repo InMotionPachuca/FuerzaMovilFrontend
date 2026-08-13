@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface Agent {
   id?: number;
@@ -16,9 +17,9 @@ export interface Agent {
 })
 export class AgentService {
   private http = inject(HttpClient);
-  private authUrl = 'http://localhost:8080/api/v1/auth';
+  private authUrl = `${environment.apiUrl}/auth`;
 
-  // Obtiene los 50 usuarios reales (Admins y Agentes)
+  // Obtiene los usuarios reales (Admins y Agentes)
   getAgents(): Observable<Agent[]> {
     return this.http.get<Agent[]>(`${this.authUrl}/users`);
   }

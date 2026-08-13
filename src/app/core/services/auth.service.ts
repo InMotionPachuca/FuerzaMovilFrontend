@@ -15,7 +15,6 @@ export interface UserDTO {
 })
 export class AuthService {
   private http = inject(HttpClient);
-  // USAR ENVIRONMENT DINÁMICO EN LUGAR DE LOCALHOST
   private apiUrl = `${environment.apiUrl}/auth`;
 
   login(credentials: any): Observable<any> {

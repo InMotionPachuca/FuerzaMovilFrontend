@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface AgentPerformance {
   agentId: number;
@@ -27,7 +28,7 @@ export interface AnalyticsData {
 })
 export class AnalyticsService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/v1/analytics';
+  private apiUrl = `${environment.apiUrl}/analytics`;
 
   getAdminAnalytics(): Observable<AnalyticsData> {
     return this.http.get<AnalyticsData>(`${this.apiUrl}/admin`);

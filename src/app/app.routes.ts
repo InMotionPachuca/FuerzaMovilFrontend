@@ -21,7 +21,7 @@ export const routes: Routes = [
   { path: 'admin/users', component: AdminUsersComponent, canActivate: [authGuard] },
   { path: 'admin/agents', component: AgentListComponent, canActivate: [authGuard] },
   { path: 'admin/analytics', component: AdminAnalyticsComponent, canActivate: [authGuard] },
-  { path: 'admin/top-agents', component: TopAgentsComponent },
+  { path: 'admin/top-agents', component: TopAgentsComponent, canActivate: [authGuard] },
 
   // Cualquier otra ruta no encontrada redirige al Login
   { path: '**', redirectTo: 'login' }
