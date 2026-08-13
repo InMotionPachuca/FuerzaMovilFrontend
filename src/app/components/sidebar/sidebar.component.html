@@ -13,7 +13,7 @@
     <!-- MENÚ DEPENDIENDO DEL ROL -->
     <nav class="sidebar-nav">
 
-      <!-- MENÚ PARA AGENTES -->
+      <!-- MENÚ EXCLUSIVO PARA AGENTES -->
       <ng-container *ngIf="!isAdmin">
         <a routerLink="/agent-dashboard" routerLinkActive="active" class="nav-link">
           <i class="bi bi-bar-chart-line-fill"></i>
@@ -25,7 +25,7 @@
         </a>
       </ng-container>
 
-      <!-- MENÚ PARA ADMINISTRADORES -->
+      <!-- MENÚ EXCLUSIVO PARA ADMINISTRADORES -->
       <ng-container *ngIf="isAdmin">
         <a routerLink="/admin-dashboard" routerLinkActive="active" class="nav-link">
           <i class="bi bi-speedometer"></i>
@@ -44,7 +44,7 @@
           <span class="link-text">Vendedores</span>
         </a>
 
-        <!-- NUEVO MÓDULO INTEGRADO EXCLUSIVAMENTE PARA TOP AGENTS VIP -->
+        <!-- MÓDULO EXCLUSIVO TOP AGENTS -->
         <a routerLink="/admin/top-agents" routerLinkActive="active" class="nav-link text-warning fw-bold">
           <i class="bi bi-star-fill text-warning"></i>
           <span class="link-text text-warning">Top Agents</span>
@@ -64,7 +64,7 @@
     <div class="d-flex align-items-center justify-content-between px-2 mb-1">
       <div class="user-details overflow-hidden me-2">
         <span class="d-block text-white fw-bold text-truncate small">
-          {{ currentUser?.fullName || currentUser?.username || 'Administrador Principal' }}
+          {{ currentUser?.fullName || currentUser?.username || 'Usuario Toyota' }}
         </span>
         <span class="badge bg-danger text-white text-uppercase font-monospace d-inline-block mt-1"
           style="font-size: 0.62rem; padding: 3px 8px;">

@@ -14,25 +14,24 @@ export class SidebarComponent implements OnInit {
   public authService = inject(AuthService);
   private router = inject(Router);
 
-  userRoleDisplay: string = 'ADMIN';
+  userRoleDisplay: string = 'AGENTE';
 
   ngOnInit(): void {
     this.refreshUserRole();
   }
 
   private refreshUserRole(): void {
-    const user = this.currentUser;
-    if (user) {
-      const rawRole = user.role || user.userRole || (user.roles && user.roles[0]) || 'ADMIN';
-      this.userRoleDisplay = String(rawRole).replace('ROLE_', '').toUpperCase();
-    }
+    const rawRole = this.authService.getUserRole() || 'AGENT';
+    // Limpia el formato (ejemplo: ROLE_ADMIN -> ADMIN, ROLE_AGENT -> AGENT)
+    this.userRoleDisplay = String(rawRole).replace('ROLE_', '').toUpperCase();
   }
 
   get isAdmin(): boolean {
-    const user = this.currentUser;
-    if (!user) return false;
-    const role = String(user.role || '').toUpperCase();
-    return role === 'ADMIN' || role === 'ROLE_ADMIN';
+    const rawRole = this.authService.getUserRole();
+    if (!rawRole) return false;
+    
+    const roleUpper = String(rawRole).toUpperCase();
+    return roleUpper === 'ADMIN' || roleUpper === 'ROLE_ADMIN';
   }
 
   get currentUser(): any {
@@ -52,12 +51,6 @@ export class SidebarComponent implements OnInit {
     }).then((result: any) => {
       if (result.isConfirmed) {
         this.authService.logout();
-        localStorage.clear();
-        sessionStorage.clear();
-
-        this.router.navigate(['/login']).then(() => {
-          window.location.reload();
-        });
       }
     });
   }

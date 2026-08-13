@@ -7,22 +7,21 @@ import { AdminUsersComponent } from './pages/admin-users/admin-users.component';
 import { AgentListComponent } from './features/agents/agent-list.component';
 import { AdminAnalyticsComponent } from './components/dashboard-analytics/admin-analytics.component';
 import { authGuard } from './core/guards/auth.guard';
-import { TopAgentsComponent } from './pages/admin/top-agents/top-agents.component';
+import { adminGuard } from './core/guards/admin.guard'; // <-- Asegúrate de importar tu Guard de Admin
 
 export const routes: Routes = [
-  // Redirección inicial obligatoria al Login
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
 
-  // Rutas protegidas por sesión
+  // Rutas accesibles por cualquier usuario autenticado
   { path: 'clients', component: ClientsComponent, canActivate: [authGuard] },
   { path: 'agent-dashboard', component: AgentDashboardComponent, canActivate: [authGuard] },
-  { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [authGuard] },
-  { path: 'admin/users', component: AdminUsersComponent, canActivate: [authGuard] },
-  { path: 'admin/agents', component: AgentListComponent, canActivate: [authGuard] },
-  { path: 'admin/analytics', component: AdminAnalyticsComponent, canActivate: [authGuard] },
-  { path: 'admin/top-agents', component: TopAgentsComponent, canActivate: [authGuard] },
 
-  // Cualquier otra ruta no encontrada redirige al Login
+  // 🛡️ RUTAS EXCLUSIVAS DE ADMIN (Protegidas con adminGuard)
+  { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [authGuard, adminGuard] },
+  { path: 'admin/users', component: AdminUsersComponent, canActivate: [authGuard, adminGuard] },
+  { path: 'admin/agents', component: AgentListComponent, canActivate: [authGuard, adminGuard] },
+  { path: 'admin/analytics', component: AdminAnalyticsComponent, canActivate: [authGuard, adminGuard] },
+
   { path: '**', redirectTo: 'login' }
 ];
