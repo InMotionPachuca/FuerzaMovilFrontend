@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { AgentService, Agent } from '../../core/services/agent.service';
+import { AuthService } from '../../core/services/auth.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -13,9 +14,11 @@ import Swal from 'sweetalert2';
 })
 export class AdminUsersComponent implements OnInit {
   private agentService = inject(AgentService);
+  private authService = inject(AuthService);
 
   activeTab: 'users' | 'rules' | 'whatsapp' = 'users';
   roleFilter: 'ALL' | 'ADMIN' | 'AGENT' = 'ALL';
+  searchTerm = '';
 
   users: Agent[] = [];
   isLoading = false;
@@ -36,41 +39,82 @@ export class AdminUsersComponent implements OnInit {
     role: 'AGENT'
   };
 
-  batchSizeBase = 5;
+  // Reglas de Lote Masivo (Persistidas)
+  batchSizeBase = 10;
   batchSizeBenefit = 5;
 
-  welcomeTemplate = 'Hola {nombre}, le saludamos de Toyota Pachuca. Nos ponemos a sus órdenes para brindarle atención personalizada sobre su cuenta.';
-  followupTemplate = 'Hola {nombre}, le escribimos de Toyota Pachuca para dar seguimiento a nuestra conversación previa sobre su vehículo.';
-
-  get filteredUsers(): Agent[] {
-    if (this.roleFilter === 'ALL') return this.users;
-    return this.users.filter(u => u.role === this.roleFilter);
-  }
-
-  get adminCount(): number {
-    return this.users.filter(u => u.role === 'ADMIN').length;
-  }
-
-  get agentCount(): number {
-    return this.users.filter(u => u.role === 'AGENT').length;
-  }
+  // Plantillas de WhatsApp (Persistidas)
+  welcomeTemplate = 'Estimado(a) {nombre}, le saluda {asesor} de Toyota Pachuca. Nos ponemos a sus órdenes para brindarle atención personalizada sobre su cuenta.';
+  followupTemplate = 'Estimado(a) {nombre}, le escribe {asesor} de Toyota Pachuca para dar seguimiento a nuestra conversación previa sobre las promociones y opciones para su vehículo.';
 
   ngOnInit(): void {
     this.loadUsers();
+    this.loadSettings();
+  }
+
+  // Normalizador de roles seguro
+  private normalizeRole(role: any): string {
+    const r = String(role || '').toUpperCase().trim();
+    if (r.includes('ADMIN')) return 'ADMIN';
+    return 'AGENT';
+  }
+
+  get filteredUsers(): Agent[] {
+    return this.users.filter(u => {
+      const normalized = this.normalizeRole(u.role);
+      const matchesRole = this.roleFilter === 'ALL' || normalized === this.roleFilter;
+      
+      const search = this.searchTerm.toLowerCase().trim();
+      const matchesSearch = !search || 
+        (u.fullName && u.fullName.toLowerCase().includes(search)) ||
+        (u.username && u.username.toLowerCase().includes(search));
+
+      return matchesRole && matchesSearch;
+    });
+  }
+
+  get adminCount(): number {
+    return this.users.filter(u => this.normalizeRole(u.role) === 'ADMIN').length;
+  }
+
+  get agentCount(): number {
+    return this.users.filter(u => this.normalizeRole(u.role) === 'AGENT').length;
   }
 
   loadUsers(): void {
     this.isLoading = true;
-    this.agentService.getAgents().subscribe({
-      next: (data) => {
+    // Usamos getAllUsers de AuthService para traer la lista completa (Admins + Asesores)
+    this.authService.getAllUsers().subscribe({
+      next: (data: any[]) => {
         this.users = data || [];
         this.isLoading = false;
       },
-      error: (err) => {
-        console.error('Error al cargar usuarios:', err);
-        this.isLoading = false;
+      error: () => {
+        // Fallback a agentService si fuera necesario
+        this.agentService.getAgents().subscribe({
+          next: (data) => {
+            this.users = data || [];
+            this.isLoading = false;
+          },
+          error: (err) => {
+            console.error('Error al cargar directorio:', err);
+            this.isLoading = false;
+          }
+        });
       }
     });
+  }
+
+  loadSettings(): void {
+    const savedBatchBase = localStorage.getItem('cfg_batch_base');
+    const savedBatchBenefit = localStorage.getItem('cfg_batch_benefit');
+    if (savedBatchBase) this.batchSizeBase = parseInt(savedBatchBase, 10);
+    if (savedBatchBenefit) this.batchSizeBenefit = parseInt(savedBatchBenefit, 10);
+
+    const savedWelcome = localStorage.getItem('cfg_tpl_welcome');
+    const savedFollowup = localStorage.getItem('cfg_tpl_followup');
+    if (savedWelcome) this.welcomeTemplate = savedWelcome;
+    if (savedFollowup) this.followupTemplate = savedFollowup;
   }
 
   openCreateModal(): void {
@@ -92,7 +136,7 @@ export class AdminUsersComponent implements OnInit {
       fullName: user.fullName || '',
       username: user.username || '',
       password: '',
-      role: user.role || 'AGENT'
+      role: this.normalizeRole(user.role)
     };
     this.showModal = true;
   }
@@ -102,30 +146,30 @@ export class AdminUsersComponent implements OnInit {
   }
 
   onSaveUser(): void {
-    if (!this.userForm.fullName || !this.userForm.username) {
-      Swal.fire('Campos Incompletos', 'Por favor llena el nombre y correo/usuario.', 'warning');
+    if (!this.userForm.fullName.trim() || !this.userForm.username.trim()) {
+      Swal.fire('Campos Incompletos', 'Por favor llena el nombre completo y usuario/correo.', 'warning');
       return;
     }
 
-    if (!this.isEditing && !this.userForm.password) {
+    if (!this.isEditing && !this.userForm.password?.trim()) {
       Swal.fire('Contraseña Requerida', 'Ingresa una contraseña para la nueva cuenta.', 'warning');
       return;
     }
 
     Swal.fire({
-      title: this.isEditing ? 'Guardando en BD...' : 'Registrando en BD...',
+      title: this.isEditing ? 'Guardando cambios...' : 'Creando usuario...',
       allowOutsideClick: false,
       didOpen: () => Swal.showLoading()
     });
 
     const payload: Agent = {
-      fullName: this.userForm.fullName,
-      username: this.userForm.username,
+      fullName: this.userForm.fullName.trim(),
+      username: this.userForm.username.trim(),
       role: this.userForm.role
     };
 
-    if (this.userForm.password) {
-      payload.password = this.userForm.password;
+    if (this.userForm.password?.trim()) {
+      payload.password = this.userForm.password.trim();
     }
 
     if (this.isEditing && this.userForm.id) {
@@ -133,34 +177,30 @@ export class AdminUsersComponent implements OnInit {
         next: () => {
           Swal.fire({
             icon: 'success',
-            title: '¡Usuario Actualizado!',
-            text: `Se guardaron los cambios en la BD para ${this.userForm.fullName}.`,
-            confirmButtonColor: '#EB0A1E'
+            title: 'Usuario Actualizado',
+            text: `Se guardaron los datos para ${payload.fullName}.`,
+            timer: 1500,
+            showConfirmButton: false
           });
           this.closeModal();
           this.loadUsers();
         },
-        error: (err) => {
-          console.error('Error al editar:', err);
-          Swal.fire('Error', 'No se pudo actualizar el usuario en la Base de Datos.', 'error');
-        }
+        error: () => Swal.fire('Error', 'No se pudo actualizar el usuario.', 'error')
       });
     } else {
       this.agentService.createAgent(payload).subscribe({
         next: () => {
           Swal.fire({
             icon: 'success',
-            title: '¡Usuario Registrado!',
-            text: `Se creó el usuario ${this.userForm.fullName} en la Base de Datos.`,
-            confirmButtonColor: '#EB0A1E'
+            title: '¡Usuario Creado!',
+            text: `Cuenta creada exitosamente para ${payload.fullName}.`,
+            timer: 1500,
+            showConfirmButton: false
           });
           this.closeModal();
           this.loadUsers();
         },
-        error: (err) => {
-          console.error('Error al crear:', err);
-          Swal.fire('Error', 'No se pudo crear el usuario en la Base de Datos.', 'error');
-        }
+        error: () => Swal.fire('Error', 'No se pudo registrar el usuario.', 'error')
       });
     }
   }
@@ -169,61 +209,56 @@ export class AdminUsersComponent implements OnInit {
     if (!user.id) return;
 
     Swal.fire({
-      title: '¿Eliminar Usuario?',
-      text: `Se desasociarán sus clientes y se eliminará a ${user.fullName} de la Base de Datos.`,
+      title: '¿Eliminar usuario?',
+      text: `Esta acción removerá a ${user.fullName} (${user.username}) del sistema.`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#EB0A1E',
-      cancelButtonColor: '#222222',
+      cancelButtonColor: '#333333',
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: 'Eliminando...',
-          allowOutsideClick: false,
-          didOpen: () => Swal.showLoading()
-        });
-
         this.agentService.deleteAgent(user.id!).subscribe({
           next: () => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Eliminado',
-              text: 'Usuario removido con éxito.',
-              timer: 2000,
-              showConfirmButton: false
-            });
+            Swal.fire('Eliminado', 'Usuario removido con éxito.', 'success');
             this.loadUsers();
           },
-          error: (err) => {
-            console.error('Error al eliminar:', err);
-            Swal.fire('Error', 'No se pudo eliminar el usuario de la Base de Datos.', 'error');
-          }
+          error: () => Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error')
         });
       }
     });
   }
 
   saveRules(): void {
+    localStorage.setItem('cfg_batch_base', String(this.batchSizeBase));
+    localStorage.setItem('cfg_batch_benefit', String(this.batchSizeBenefit));
+
     Swal.fire({
-      toast: true,
-      position: 'top-end',
       icon: 'success',
-      title: 'Reglas de asignación actualizadas',
-      showConfirmButton: false,
-      timer: 2000
+      title: 'Reglas Guardadas',
+      text: 'Los parámetros de asignación diaria fueron actualizados.',
+      timer: 1500,
+      showConfirmButton: false
     });
   }
 
   saveTemplates(): void {
+    localStorage.setItem('cfg_tpl_welcome', this.welcomeTemplate);
+    localStorage.setItem('cfg_tpl_followup', this.followupTemplate);
+
     Swal.fire({
-      toast: true,
-      position: 'top-end',
       icon: 'success',
-      title: 'Plantillas de WhatsApp guardadas',
-      showConfirmButton: false,
-      timer: 2000
+      title: 'Plantillas Actualizadas',
+      text: 'Los mensajes predeterminados para asesores han sido guardados.',
+      timer: 1500,
+      showConfirmButton: false
     });
+  }
+
+  resetTemplates(): void {
+    this.welcomeTemplate = 'Estimado(a) {nombre}, le saluda {asesor} de Toyota Pachuca. Nos ponemos a sus órdenes para brindarle atención personalizada sobre su cuenta.';
+    this.followupTemplate = 'Estimado(a) {nombre}, le escribe {asesor} de Toyota Pachuca para dar seguimiento a nuestra conversación previa sobre las promociones y opciones para su vehículo.';
+    this.saveTemplates();
   }
 }

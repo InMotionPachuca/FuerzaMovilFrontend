@@ -1,7 +1,7 @@
 <div class="app-container">
   <app-sidebar></app-sidebar>
 
-  <main class="main-content">
+  <main class="main-content bg-light min-vh-100 py-4 px-3 px-md-4">
     
     <!-- ENCABEZADO -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
@@ -13,7 +13,7 @@
         <p class="text-muted small mb-0">Gestión de credenciales, roles de acceso y reglas operativas de Toyota Pachuca</p>
       </div>
 
-      <button (click)="openCreateModal()" class="btn btn-toyota d-flex align-items-center gap-2 shadow-sm rounded-3 px-3.5 py-2 fw-semibold">
+      <button (click)="openCreateModal()" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm rounded-3 px-3.5 py-2 fw-semibold">
         <i class="bi bi-person-plus-fill fs-5"></i>
         <span>Agregar Nuevo Usuario</span>
       </button>
@@ -50,10 +50,10 @@
     <!-- PESTAÑA 1: GESTIÓN DE USUARIOS -->
     <div *ngIf="activeTab === 'users'">
       
-      <!-- SUB-FILTRO POR ROL -->
-      <div class="d-flex flex-wrap align-items-center justify-content-between bg-white p-3.5 rounded-4 shadow-sm border mb-4 gap-3">
-        <div class="d-flex align-items-center gap-2">
-          <span class="small fw-bold text-dark me-2">Filtrar por Rol:</span>
+      <!-- SUB-FILTRO POR ROL Y BUSCADOR -->
+      <div class="d-flex flex-wrap align-items-center justify-content-between bg-white p-3 rounded-4 shadow-sm border mb-4 gap-3">
+        <div class="d-flex flex-wrap align-items-center gap-2">
+          <span class="small fw-bold text-dark me-1">Filtrar por Rol:</span>
           
           <button 
             (click)="roleFilter = 'ALL'" 
@@ -72,14 +72,20 @@
           <button 
             (click)="roleFilter = 'AGENT'" 
             class="btn btn-sm px-3 py-1.5 fw-semibold rounded-2 transition-all"
-            [ngClass]="roleFilter === 'AGENT' ? 'btn-toyota text-white' : 'btn-outline-dark border-0'">
+            [ngClass]="roleFilter === 'AGENT' ? 'btn-dark text-white' : 'btn-outline-dark border-0'">
             <i class="bi bi-person-badge-fill me-1"></i>Asesores Comerciales ({{ agentCount }})
           </button>
+        </div>
+
+        <!-- Buscador rápido en el directorio -->
+        <div class="input-group input-group-sm" style="max-width: 280px;">
+          <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" [(ngModel)]="searchTerm" class="form-control border-start-0 shadow-none" placeholder="Buscar por nombre o correo..." />
         </div>
       </div>
 
       <!-- TABLA DE DIRECTORIO INSTITUCIONAL -->
-      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
         <div class="card-header bg-black text-white p-3.5 px-4 d-flex justify-content-between align-items-center border-bottom border-danger border-2">
           <h6 class="card-title mb-0 fw-bold d-flex align-items-center gap-2">
             <i class="bi bi-person-badge-fill text-danger"></i>
@@ -102,13 +108,22 @@
                 </tr>
               </thead>
               <tbody class="border-0">
+                
+                <!-- LOADER -->
+                <tr *ngIf="isLoading">
+                  <td colspan="6" class="text-center py-5">
+                    <div class="spinner-border text-danger spinner-border-sm me-2"></div>
+                    <span class="small text-muted">Cargando directorio de usuarios...</span>
+                  </td>
+                </tr>
+
+                <!-- FILAS DE USUARIO -->
                 <tr *ngFor="let u of filteredUsers">
-                  
                   <td class="ps-4 py-3">
                     <div class="d-flex align-items-center gap-2.5">
                       <div 
                         class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
-                        [ngClass]="u.role === 'ADMIN' ? 'bg-danger' : 'bg-dark'"
+                        [ngClass]="(u.role && u.role.includes('ADMIN')) ? 'bg-danger' : 'bg-dark'"
                         style="width: 36px; height: 36px; font-size: 0.85rem;">
                         {{ u.fullName ? u.fullName.charAt(0).toUpperCase() : 'U' }}
                       </div>
@@ -122,9 +137,9 @@
                   <td>
                     <span 
                       class="badge px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 rounded-pill"
-                      [ngClass]="u.role === 'ADMIN' ? 'bg-danger text-white' : 'bg-dark text-white'">
-                      <i class="bi" [ngClass]="u.role === 'ADMIN' ? 'bi-shield-lock-fill' : 'bi-person-badge-fill'"></i>
-                      {{ u.role === 'ADMIN' ? 'ADMINISTRADOR' : 'ASESOR COMERCIAL' }}
+                      [ngClass]="(u.role && u.role.includes('ADMIN')) ? 'bg-danger text-white' : 'bg-dark text-white'">
+                      <i class="bi" [ngClass]="(u.role && u.role.includes('ADMIN')) ? 'bi-shield-lock-fill' : 'bi-person-badge-fill'"></i>
+                      {{ (u.role && u.role.includes('ADMIN')) ? 'ADMINISTRADOR' : 'ASESOR COMERCIAL' }}
                     </span>
                   </td>
 
@@ -151,12 +166,12 @@
                       </button>
                     </div>
                   </td>
-
                 </tr>
 
-                <tr *ngIf="filteredUsers.length === 0">
+                <!-- ESTADO VACÍO -->
+                <tr *ngIf="!isLoading && filteredUsers.length === 0">
                   <td colspan="6" class="text-center py-5 text-muted">
-                    <i class="bi bi-people fs-1 d-block mb-2 text-secondary"></i>
+                    <i class="bi bi-people fs-1 d-block mb-2 text-secondary opacity-50"></i>
                     No se encontraron usuarios bajo este filtro.
                   </td>
                 </tr>
@@ -165,7 +180,6 @@
           </div>
         </div>
       </div>
-
     </div>
 
     <!-- PESTAÑA 2: REGLAS -->
@@ -175,22 +189,22 @@
           <i class="bi bi-diagram-3-fill text-danger fs-5"></i>
           <span>Parámetros de Lote Diario Automático</span>
         </h6>
-        <p class="text-muted small mb-4">Define cuántas cuentas se asignarán a cada asesor cuando ejecute la asignación automática.</p>
+        <p class="text-muted small mb-4">Define cuántas cuentas se asignarán a cada asesor comercial cuando se ejecute el reparto masivo.</p>
 
         <div class="row g-3">
           <div class="col-12 col-md-6">
             <label class="form-label small fw-bold text-dark">Cantidad de Clientes 'Base':</label>
-            <input type="number" [(ngModel)]="batchSizeBase" class="form-control font-monospace" />
+            <input type="number" [(ngModel)]="batchSizeBase" min="1" max="100" class="form-control font-monospace" />
           </div>
 
           <div class="col-12 col-md-6">
-            <label class="form-label small fw-bold text-dark">Cantidad de Clientes 'Beneficios':</label>
-            <input type="number" [(ngModel)]="batchSizeBenefit" class="form-control font-monospace" />
+            <label class="form-label small fw-bold text-dark">Cantidad de Clientes 'Beneficios VIP':</label>
+            <input type="number" [(ngModel)]="batchSizeBenefit" min="1" max="100" class="form-control font-monospace" />
           </div>
         </div>
 
         <div class="mt-4 text-end">
-          <button (click)="saveRules()" class="btn btn-toyota px-4 rounded-3 fw-semibold shadow-sm">
+          <button (click)="saveRules()" class="btn btn-danger px-4 rounded-3 fw-semibold shadow-sm">
             <i class="bi bi-floppy-fill me-1.5"></i>Guardar Parámetros
           </button>
         </div>
@@ -199,25 +213,30 @@
 
     <!-- PESTAÑA 3: WHATSAPP -->
     <div *ngIf="activeTab === 'whatsapp'">
-      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white border-start border-4 border-success">
-        <h6 class="fw-bold text-dark mb-2 d-flex align-items-center gap-2">
-          <i class="bi bi-whatsapp text-success fs-5"></i>
-          <span>Mensajes Institucionales Predeterminados</span>
-        </h6>
-        <p class="text-muted small mb-4">Estas plantillas aparecerán en los menús desplegables de acceso rápido de los asesores.</p>
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white border-start border-4 border-success" style="max-width: 850px;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+            <i class="bi bi-whatsapp text-success fs-5"></i>
+            <span>Mensajes Institucionales Predeterminados</span>
+          </h6>
+          <button (click)="resetTemplates()" class="btn btn-sm btn-outline-secondary rounded-2">
+            <i class="bi bi-arrow-counterclockwise me-1"></i>Restablecer
+          </button>
+        </div>
+        <p class="text-muted small mb-4">Usa <code>&#123;nombre&#125;</code> para insertar el nombre del cliente y <code>&#123;asesor&#125;</code> para el nombre del vendedor.</p>
 
         <div class="mb-3">
           <label class="form-label small fw-bold text-dark">Plantilla #1: Bienvenida e Introducción</label>
-          <textarea [(ngModel)]="welcomeTemplate" rows="3" class="form-control"></textarea>
+          <textarea [(ngModel)]="welcomeTemplate" rows="3" class="form-control font-monospace small"></textarea>
         </div>
 
         <div class="mb-3">
           <label class="form-label small fw-bold text-dark">Plantilla #2: Recordatorio de Seguimiento</label>
-          <textarea [(ngModel)]="followupTemplate" rows="3" class="form-control"></textarea>
+          <textarea [(ngModel)]="followupTemplate" rows="3" class="form-control font-monospace small"></textarea>
         </div>
 
         <div class="text-end mt-4">
-          <button (click)="saveTemplates()" class="btn btn-toyota px-4 rounded-3 fw-semibold shadow-sm">
+          <button (click)="saveTemplates()" class="btn btn-success px-4 rounded-3 fw-semibold shadow-sm">
             <i class="bi bi-floppy-fill me-1.5"></i>Actualizar Plantillas
           </button>
         </div>
@@ -269,7 +288,7 @@
 
           <div class="mb-3">
             <label class="form-label small fw-bold text-dark">
-              Contraseña {{ isEditing ? '(Opcional para mantener actual)' : '*' }}
+              Contraseña {{ isEditing ? '(Dejar en blanco para mantener la actual)' : '*' }}
             </label>
             <input 
               type="password" 
@@ -290,7 +309,7 @@
 
           <div class="d-flex justify-content-end gap-2 pt-2 border-top">
             <button type="button" (click)="closeModal()" class="btn btn-sm btn-secondary px-3 rounded-3 fw-semibold">Cancelar</button>
-            <button type="submit" class="btn btn-sm btn-toyota px-4 rounded-3 fw-semibold shadow-sm">
+            <button type="submit" class="btn btn-sm btn-danger px-4 rounded-3 fw-semibold shadow-sm">
               <i class="bi bi-floppy-fill me-1.5"></i>{{ isEditing ? 'Guardar Cambios' : 'Registrar Usuario' }}
             </button>
           </div>
