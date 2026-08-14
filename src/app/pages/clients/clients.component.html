@@ -1,13 +1,13 @@
-<div class="d-flex" style="min-height: 100vh; background-color: #f8fafc;">
+<div class="d-flex" style="min-height: 100vh; background-color: #f8fafc; overflow-x: hidden;">
   <!-- Sidebar -->
   <app-sidebar></app-sidebar>
 
   <!-- Contenedor Principal -->
-  <div class="flex-grow-1 d-flex flex-column" style="overflow-x: hidden;">
+  <div class="flex-grow-1 d-flex flex-column min-vw-0" style="overflow-x: hidden;">
     
     <!-- Topbar / Header Institucional -->
     <header class="bg-white border-bottom px-4 py-3 shadow-sm d-flex flex-wrap justify-content-between align-items-center gap-3 sticky-top">
-      <div>
+      <div class="d-flex flex-column">
         <div class="d-flex align-items-center gap-2">
           <h4 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
             <span>🛡️</span> Gestión de Cartera Global
@@ -16,11 +16,11 @@
             TOYOTA PACHUCA
           </span>
         </div>
-        <small class="text-muted">{{ greetingMessage }}</small>
+        <small class="text-muted mt-1">{{ greetingMessage }}</small>
       </div>
 
       <!-- Métricas Superiores Rápidas -->
-      <div class="d-flex align-items-center gap-2 flex-wrap">
+      <div class="d-flex align-items-center gap-3 flex-wrap">
         
         <!-- Total Cartera (Solo Admin) -->
         <div *ngIf="isAdmin" class="card border-0 bg-light px-3 py-1 shadow-sm d-flex flex-row align-items-center gap-2">
@@ -68,15 +68,15 @@
         <div class="row g-3 align-items-center justify-content-between">
           
           <!-- Pestañas (Modo Admin) -->
-          <div class="col-md-6" *ngIf="isAdmin">
-            <div class="btn-group" role="group">
+          <div class="col-12 col-md-6" *ngIf="isAdmin">
+            <div class="btn-group shadow-sm" role="group">
               <button (click)="setFilterMode('UNASSIGNED')" 
-                      [ngClass]="currentFilterMode === 'UNASSIGNED' ? 'btn btn-danger active fw-bold shadow-sm' : 'btn btn-outline-secondary'"
+                      [ngClass]="currentFilterMode === 'UNASSIGNED' ? 'btn btn-danger active fw-bold' : 'btn btn-outline-secondary'"
                       class="btn btn-sm">
                 📦 Bolsa Sin Asignar
               </button>
               <button (click)="setFilterMode('ASSIGNED')" 
-                      [ngClass]="currentFilterMode === 'ASSIGNED' ? 'btn btn-success active fw-bold shadow-sm' : 'btn btn-outline-secondary'"
+                      [ngClass]="currentFilterMode === 'ASSIGNED' ? 'btn btn-success active fw-bold' : 'btn btn-outline-secondary'"
                       class="btn btn-sm">
                 👥 Cartera Asignada
               </button>
@@ -84,14 +84,14 @@
           </div>
 
           <!-- Indicador para Asesor -->
-          <div class="col-md-6" *ngIf="!isAdmin">
+          <div class="col-12 col-md-6" *ngIf="!isAdmin">
             <span class="badge bg-success-subtle text-success border border-success-subtle p-2">
               🟢 Cartera Activa de Asesor
             </span>
           </div>
 
           <!-- Buscador en Vivo -->
-          <div class="col-md-6 col-lg-5 ms-auto">
+          <div class="col-12 col-md-6 col-lg-5 ms-auto">
             <div class="input-group input-group-sm">
               <span class="input-group-text bg-light border-end-0">🔍</span>
               <input type="text" 
@@ -111,13 +111,13 @@
           <table class="table table-hover align-middle mb-0" style="font-size: 0.85rem;">
             <thead class="table-dark" style="font-size: 0.78rem;">
               <tr>
-                <th style="width: 100px;">Segmento</th>
-                <th>Razón Social / Cliente</th>
-                <th style="width: 130px;">RFC / ID</th>
-                <th>Contacto Directo</th>
-                <th>Vehículo / Crédito</th>
-                <th style="width: 180px;">{{ isAdmin ? 'Asesor Asignado' : 'Estatus' }}</th>
-                <th class="text-center" style="width: 160px;">Acciones</th>
+                <th style="width: 110px;" class="ps-3">Segmento</th>
+                <th style="min-width: 220px;">Razón Social / Cliente</th>
+                <th style="width: 120px;">RFC / ID</th>
+                <th style="min-width: 180px;">Contacto Directo</th>
+                <th style="min-width: 170px;">Vehículo / Crédito</th>
+                <th style="width: 200px;">{{ isAdmin ? 'Asesor Asignado' : 'Estatus' }}</th>
+                <th class="text-center pe-3" style="width: 160px;">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -143,8 +143,8 @@
               <tr *ngFor="let client of clients">
                 
                 <!-- 1. Segmento VIP vs BASE -->
-                <td>
-                  <span class="badge" [ngClass]="isVipClient(client) ? 'bg-warning text-dark' : 'bg-secondary text-white'">
+                <td class="ps-3">
+                  <span class="badge" [ngClass]="isVipClient(client) ? 'bg-warning text-dark border border-warning' : 'bg-secondary text-white'">
                     {{ isVipClient(client) ? '💎 VIP' : '📦 BASE' }}
                   </span>
                 </td>
@@ -192,10 +192,10 @@
 
                 <!-- 5. Vehículo / Tipo de Crédito -->
                 <td>
-                  <div class="text-dark fw-medium text-truncate" style="max-width: 160px;">
+                  <div class="text-dark fw-medium text-truncate" style="max-width: 170px;">
                     {{ client.vehicleModel || client.vehiculoComprado || 'Sin Modelo' }}
                   </div>
-                  <small class="text-muted d-block text-truncate" style="max-width: 160px;">
+                  <small class="text-muted d-block text-truncate" style="max-width: 170px;">
                     {{ client.operationType || client.tipoDeCredito || client.qualification || 'Tradicional' }}
                   </small>
                 </td>
@@ -222,7 +222,7 @@
                 </td>
 
                 <!-- 7. Acciones -->
-                <td class="text-center">
+                <td class="text-center pe-3">
                   <div class="btn-group btn-group-sm">
                     <button (click)="openClientDetailModal(client)" class="btn btn-outline-secondary" title="Ficha Técnica">
                       🪪
