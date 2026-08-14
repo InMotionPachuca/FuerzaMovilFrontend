@@ -77,8 +77,8 @@ export class TopAgentsComponent implements OnInit {
 
     this.clientService.getAgents().subscribe({
       next: (users: any[]) => {
-        const agentsOnly = (users || []).filter((u: any) => 
-          u.role && (u.role === 'AGENT' || u.role === 'ROLE_AGENT' || u.role.name === 'AGENT') && 
+        const agentsOnly = (users || []).filter((u: any) =>
+          u.role && (u.role === 'AGENT' || u.role === 'ROLE_AGENT' || u.role.name === 'AGENT') &&
           u.username !== 'admin@agencia.com'
         );
 
@@ -105,8 +105,8 @@ export class TopAgentsComponent implements OnInit {
     this.clientService.toggleTopAgentStatus(agent.id).subscribe({
       next: () => {
         const title = agent.isTopAgent ? '¡Asesor Ascendido a Top Agent!' : 'Asesor Removido';
-        const text = agent.isTopAgent 
-          ? `${agent.fullName} ahora es elegible para recibir cartera con Beneficios VIP.` 
+        const text = agent.isTopAgent
+          ? `${agent.fullName} ahora es elegible para recibir cartera con Beneficios VIP.`
           : `${agent.fullName} regresó al listado general de FuerzaMóvil.`;
 
         Swal.fire({
@@ -152,7 +152,8 @@ export class TopAgentsComponent implements OnInit {
 
   loadUnassignedVIPClients(): void {
     this.isLoadingVIPClients = true;
-    this.clientService.getClientsPaged('VIP', 'UNASSIGNED', 0, 100, undefined, 'ADMIN', '').subscribe({
+    // Cambiamos 'VIP' por 'BENEFIT' para consultar estrictamente la tabla benefits
+    this.clientService.getClientsPaged('BENEFIT', 'UNASSIGNED', 0, 100, undefined, 'ADMIN', '').subscribe({
       next: (res: any) => {
         this.unassignedVIPClients = res.content || [];
         this.isLoadingVIPClients = false;

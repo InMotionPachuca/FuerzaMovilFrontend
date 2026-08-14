@@ -337,14 +337,13 @@ export class ClientsComponent implements OnInit {
     });
   }
 
-  sendInventoryWhatsApp(client: any): void {
-    const phone = client?.contactPhone || client?.telefono1 || client?.telefono2;
-    if (!phone) {
+  sendInventoryWhatsAppTo(client: any, targetPhone: any): void {
+    if (!targetPhone) {
       Swal.fire('Sin teléfono', 'El cliente no tiene un teléfono registrado.', 'warning');
       return;
     }
 
-    const cleanPhone = phone.replace(/\D/g, '');
+    const cleanPhone = String(targetPhone).replace(/\D/g, '');
     const tenDigitPhone = cleanPhone.length > 10 ? cleanPhone.slice(-10) : cleanPhone;
 
     const clientName = client.companyName || client.nombreDelCliente || 'Estimado(a) cliente';
@@ -365,7 +364,7 @@ export class ClientsComponent implements OnInit {
     } else {
       messageText =
         `Estimado(a) *${clientName}*, le saluda *${agentName}* asesor de ventas de *Toyota & Carsline Pachuca*.\n` +
-        `Quiero ponerme a sus órdenes para apoyarle si está pensando en cambiar o renovar su vehículo. \n` +
+        `Quiero ponerme a sus órdenes para apoyarle si está pensando en cambiar o renovar su vehículo.\n` +
         `Actualmente contamos con diferentes modelos y promociones disponibles.\n` +
         `¿Le gustaría revisar alternativas?\n` +
         `¡Será un gusto atenderle!\n` +

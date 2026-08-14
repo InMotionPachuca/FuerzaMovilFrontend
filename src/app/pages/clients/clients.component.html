@@ -2,7 +2,7 @@
   <!-- Sidebar Fijo (210px) -->
   <app-sidebar></app-sidebar>
 
-  <!-- Contenedor Principal desplazado para convivir con el Sidebar -->
+  <!-- Contenedor Principal con margen izquierdo de 210px -->
   <div class="flex-grow-1 d-flex flex-column clients-main-content" style="margin-left: 210px; min-width: 0; background-color: #f8fafc;">
     
     <!-- Topbar / Header Institucional -->
@@ -19,10 +19,9 @@
         <small class="text-muted mt-1">{{ greetingMessage }}</small>
       </div>
 
-      <!-- Métricas Superiores Rápidas -->
+      <!-- Métricas Rápidas -->
       <div class="d-flex align-items-center gap-3 flex-wrap">
         
-        <!-- Total Cartera (Solo Admin) -->
         <div *ngIf="isAdmin" class="card border-0 bg-light px-3 py-1 shadow-sm d-flex flex-row align-items-center gap-2">
           <span class="fs-5">🏢</span>
           <div>
@@ -31,7 +30,6 @@
           </div>
         </div>
 
-        <!-- Asignados / Mis Asignados -->
         <div class="card border-0 bg-light px-3 py-1 shadow-sm d-flex flex-row align-items-center gap-2">
           <span class="fs-5">👤</span>
           <div>
@@ -40,7 +38,6 @@
           </div>
         </div>
 
-        <!-- Cartera Benefit -->
         <div *ngIf="isAdmin" class="card border-0 bg-light px-3 py-1 shadow-sm d-flex flex-row align-items-center gap-2">
           <span class="fs-5">💎</span>
           <div>
@@ -49,7 +46,6 @@
           </div>
         </div>
 
-        <!-- Botón Importar Excel (Solo Admin) -->
         <div *ngIf="isAdmin" class="ms-2">
           <input type="file" #fileInput (change)="onFileSelected($event)" accept=".xlsx, .xls" class="d-none" />
           <button (click)="fileInput.click()" class="btn btn-danger btn-sm fw-bold d-flex align-items-center gap-1 shadow-sm">
@@ -67,25 +63,21 @@
       <div class="card border-0 shadow-sm p-3 mb-4 rounded-3 bg-white">
         <div class="row g-3 align-items-center justify-content-between">
           
-          <!-- 3 Pestañas (Modo Admin) -->
+          <!-- 3 Pestañas (Admin) -->
           <div class="col-12 col-lg-7" *ngIf="isAdmin">
             <div class="btn-group shadow-sm" role="group">
-              
-              <!-- Pestaña 1: Base -->
               <button (click)="setFilterMode('UNASSIGNED')" 
                       [ngClass]="currentFilterMode === 'UNASSIGNED' ? 'btn btn-danger active fw-bold' : 'btn btn-outline-secondary'"
                       class="btn btn-sm">
                 📦 Bolsa Base
               </button>
 
-              <!-- Pestaña 2: Benefit -->
               <button (click)="setFilterMode('BENEFIT')" 
                       [ngClass]="currentFilterMode === 'BENEFIT' ? 'btn btn-warning active fw-bold text-dark' : 'btn btn-outline-warning text-dark'"
                       class="btn btn-sm">
                 💎 Cartera Benefit
               </button>
 
-              <!-- Pestaña 3: Asignados -->
               <button (click)="setFilterMode('ASSIGNED')" 
                       [ngClass]="currentFilterMode === 'ASSIGNED' ? 'btn btn-success active fw-bold' : 'btn btn-outline-secondary'"
                       class="btn btn-sm">
@@ -94,21 +86,21 @@
             </div>
           </div>
 
-          <!-- Indicador para Asesor -->
+          <!-- Indicador Asesor -->
           <div class="col-12 col-lg-7" *ngIf="!isAdmin">
             <span class="badge bg-success-subtle text-success border border-success-subtle p-2">
               🟢 Mi Cartera Asignada
             </span>
           </div>
 
-          <!-- Buscador en Tiempo Real -->
+          <!-- Buscador -->
           <div class="col-12 col-lg-5">
             <div class="input-group input-group-sm">
               <span class="input-group-text bg-light border-end-0">🔍</span>
               <input type="text" 
                      [value]="searchQuery" 
                      (input)="onSearchInput($event)" 
-                     placeholder="Buscar por cliente, RFC, No. Cliente o teléfono..." 
+                     placeholder="Buscar por cliente, RFC o teléfono..." 
                      class="form-control bg-light border-start-0" />
             </div>
           </div>
@@ -116,7 +108,7 @@
         </div>
       </div>
 
-      <!-- Tabla Principal de Cartera -->
+      <!-- Tabla Principal -->
       <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-white">
         <div class="table-responsive">
           <table class="table table-hover align-middle mb-0" style="font-size: 0.85rem;">
@@ -125,7 +117,7 @@
                 <th style="width: 110px;" class="ps-3">Segmento</th>
                 <th style="min-width: 200px;">Razón Social / Cliente</th>
                 <th style="width: 120px;">RFC / ID</th>
-                <th style="min-width: 180px;">Contacto Directo</th>
+                <th style="min-width: 190px;">Contacto Directo</th>
                 <th style="min-width: 170px;">Vehículo / Crédito</th>
                 <th style="width: 200px;">{{ isAdmin ? 'Asesor Asignado' : 'Estatus' }}</th>
                 <th class="text-center pe-3" style="width: 150px;">Acciones</th>
@@ -133,7 +125,7 @@
             </thead>
             <tbody>
               
-              <!-- Loader de Carga -->
+              <!-- Loader -->
               <tr *ngIf="isLoading">
                 <td colspan="7" class="py-5 text-center text-muted">
                   <div class="spinner-border spinner-border-sm text-danger mb-2" role="status"></div>
@@ -150,10 +142,10 @@
                 </td>
               </tr>
 
-              <!-- Filas de Clientes -->
+              <!-- Filas de Datos -->
               <tr *ngFor="let client of clients">
                 
-                <!-- 1. Segmento: Pill BENEFIT vs BASE -->
+                <!-- 1. Segmento -->
                 <td class="ps-3">
                   <span class="badge" 
                         [ngClass]="isBenefitClient(client) ? 'bg-warning text-dark border border-warning shadow-sm' : 'bg-secondary text-white'">
@@ -161,7 +153,7 @@
                   </span>
                 </td>
 
-                <!-- 2. Razón Social / Nombre -->
+                <!-- 2. Razón Social -->
                 <td>
                   <div class="fw-bold text-dark cursor-pointer text-truncate hover-underline" 
                        (click)="openClientDetailModal(client)" 
@@ -181,28 +173,59 @@
                   </span>
                 </td>
 
-                <!-- 4. Teléfono y WhatsApp Directo -->
+                <!-- 4. Contactos y WhatsApps -->
                 <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <span *ngIf="client.contactPhone || client.telefono1 || client.telefono2" class="fw-bold text-success font-monospace">
-                      📞 {{ client.contactPhone || client.telefono1 || client.telefono2 }}
-                    </span>
-                    <span *ngIf="!client.contactPhone && !client.telefono1 && !client.telefono2" class="text-muted fst-italic">
+                  <div class="d-flex flex-column gap-1">
+                    
+                    <!-- Teléfono 1 -->
+                    <div *ngIf="client.contactPhone || client.telefono1" class="d-flex align-items-center gap-1">
+                      <span class="badge bg-success-subtle text-success border border-success-subtle font-monospace py-1 px-2" style="font-size: 0.78rem;">
+                        📞 {{ client.contactPhone || client.telefono1 }}
+                      </span>
+                      <button (click)="sendInventoryWhatsAppTo(client, client.contactPhone || client.telefono1)" 
+                              class="btn btn-sm btn-outline-success py-0 px-1 border-0" 
+                              title="Enviar WhatsApp">
+                        💬
+                      </button>
+                    </div>
+
+                    <!-- Teléfono 2 (si existe) -->
+                    <div *ngIf="client.telefono2" class="d-flex align-items-center gap-1">
+                      <span class="badge bg-light text-dark border font-monospace py-1 px-2" style="font-size: 0.75rem;">
+                        📞2: {{ client.telefono2 }}
+                      </span>
+                      <button (click)="sendInventoryWhatsAppTo(client, client.telefono2)" 
+                              class="btn btn-sm btn-outline-success py-0 px-1 border-0" 
+                              title="WhatsApp Tel 2">
+                        💬
+                      </button>
+                    </div>
+
+                    <!-- Teléfono 3 (si existe) -->
+                    <div *ngIf="client.telefono3" class="d-flex align-items-center gap-1">
+                      <span class="badge bg-light text-dark border font-monospace py-1 px-2" style="font-size: 0.75rem;">
+                        📞3: {{ client.telefono3 }}
+                      </span>
+                      <button (click)="sendInventoryWhatsAppTo(client, client.telefono3)" 
+                              class="btn btn-sm btn-outline-success py-0 px-1 border-0" 
+                              title="WhatsApp Tel 3">
+                        💬
+                      </button>
+                    </div>
+
+                    <!-- Sin teléfono -->
+                    <div *ngIf="!client.contactPhone && !client.telefono1 && !client.telefono2 && !client.telefono3" class="text-muted fst-italic small">
                       Sin Teléfono
-                    </span>
-                    <button *ngIf="client.contactPhone || client.telefono1 || client.telefono2" 
-                            (click)="sendInventoryWhatsApp(client)" 
-                            class="btn btn-sm btn-outline-success py-0 px-1 border-0" 
-                            title="Enviar WhatsApp">
-                      💬
-                    </button>
+                    </div>
+
+                    <!-- Correo -->
+                    <small class="text-muted text-truncate d-block" style="max-width: 190px;" title="{{ client.contactEmail || client.email }}">
+                      {{ client.contactEmail || client.email || 'Sin Correo' }}
+                    </small>
                   </div>
-                  <small class="text-muted d-block text-truncate" style="max-width: 180px;">
-                    {{ client.contactEmail || client.email || 'Sin Correo' }}
-                  </small>
                 </td>
 
-                <!-- 5. Vehículo / Tipo de Crédito -->
+                <!-- 5. Vehículo / Crédito -->
                 <td>
                   <div class="text-dark fw-medium text-truncate" style="max-width: 170px;">
                     {{ client.vehicleModel || client.vehiculoComprado || 'Sin Modelo' }}
@@ -212,7 +235,7 @@
                   </small>
                 </td>
 
-                <!-- 6. Selector de Asesor (Admin) / Badge (Asesor) -->
+                <!-- 6. Selector Asesor -->
                 <td>
                   <div *ngIf="isAdmin">
                     <select (change)="onAssignAgent(client, $event)" 
@@ -405,11 +428,30 @@
             </div>
           </div>
 
-          <div class="col-md-6">
+          <!-- TELÉFONOS DESPLEGADOS -->
+          <div class="col-md-4">
             <div class="p-3 border rounded-3 bg-light">
-              <small class="text-muted text-uppercase fw-bold d-block mb-1">Teléfono Principal</small>
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Teléfono 1</small>
               <div class="fw-bold text-success font-monospace">
-                📞 {{ selectedClientForDetail.contactPhone || selectedClientForDetail.telefono1 || selectedClientForDetail.telefono2 || 'Sin Teléfono' }}
+                📞 {{ selectedClientForDetail.contactPhone || selectedClientForDetail.telefono1 || 'No registrado' }}
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="p-3 border rounded-3 bg-light">
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Teléfono 2</small>
+              <div class="fw-bold text-dark font-monospace">
+                📞 {{ selectedClientForDetail.telefono2 || 'No registrado' }}
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="p-3 border rounded-3 bg-light">
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Teléfono 3</small>
+              <div class="fw-bold text-dark font-monospace">
+                📞 {{ selectedClientForDetail.telefono3 || 'No registrado' }}
               </div>
             </div>
           </div>
@@ -423,7 +465,7 @@
 
           <div class="col-md-6">
             <div class="p-3 border rounded-3 bg-light">
-              <small class="text-muted text-uppercase fw-bold d-block mb-1">Vehículo</small>
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Vehículo Comprado</small>
               <div class="fw-bold text-dark">{{ selectedClientForDetail.vehicleModel || selectedClientForDetail.vehiculoComprado || 'Toyota' }}</div>
             </div>
           </div>
@@ -437,14 +479,21 @@
 
           <div class="col-md-6">
             <div class="p-3 border rounded-3 bg-light">
-              <small class="text-muted text-uppercase fw-bold d-block mb-1">Tipo de Crédito</small>
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Vendedor Original</small>
+              <div class="fw-bold text-dark">{{ selectedClientForDetail.vendedor || 'No registrado' }}</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-light">
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Tipo de Crédito / Operación</small>
               <div class="text-dark">{{ selectedClientForDetail.operationType || selectedClientForDetail.tipoDeCredito || 'Tradicional' }}</div>
             </div>
           </div>
 
           <div class="col-md-6">
             <div class="p-3 border rounded-3 bg-light">
-              <small class="text-muted text-uppercase fw-bold d-block mb-1">Vigencia / Observaciones</small>
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Vigencia / Notas</small>
               <div class="text-danger fw-bold">{{ selectedClientForDetail.vigencia || selectedClientForDetail.sensitiveNotes || 'Sin vigencia' }}</div>
             </div>
           </div>
@@ -453,8 +502,8 @@
       </div>
 
       <div class="modal-footer bg-light d-flex justify-content-between">
-        <button (click)="sendInventoryWhatsApp(selectedClientForDetail)" class="btn btn-success btn-sm fw-bold">
-          💬 Contactar por WhatsApp
+        <button (click)="sendInventoryWhatsAppTo(selectedClientForDetail, selectedClientForDetail.contactPhone || selectedClientForDetail.telefono1)" class="btn btn-success btn-sm fw-bold">
+          💬 WhatsApp Tel 1
         </button>
         <button type="button" class="btn btn-secondary btn-sm" (click)="closeClientDetailModal()">Cerrar Ficha</button>
       </div>
