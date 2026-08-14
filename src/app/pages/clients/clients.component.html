@@ -1,59 +1,58 @@
-<div class="flex h-screen bg-[#111317] text-gray-100 font-sans overflow-hidden">
+<div class="d-flex" style="min-height: 100vh; background-color: #f8fafc;">
   <!-- Sidebar -->
   <app-sidebar></app-sidebar>
 
   <!-- Contenedor Principal -->
-  <main class="flex-1 flex flex-col h-full overflow-y-auto bg-gradient-to-br from-[#13171f] via-[#111317] to-[#0c0d10]">
+  <div class="flex-grow-1 d-flex flex-column" style="overflow-x: hidden;">
     
     <!-- Topbar / Header Institucional -->
-    <header class="bg-[#181d26]/90 backdrop-blur-md border-b border-gray-800 px-8 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-20">
+    <header class="bg-white border-bottom px-4 py-3 shadow-sm d-flex flex-wrap justify-content-between align-items-center gap-3 sticky-top">
       <div>
-        <div class="flex items-center gap-3">
-          <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-2">
+        <div class="d-flex align-items-center gap-2">
+          <h4 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
             <span>🛡️</span> Gestión de Cartera Global
-          </h1>
-          <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-red-600/20 text-red-400 border border-red-500/30">
+          </h4>
+          <span class="badge bg-danger text-white ms-2" style="font-size: 0.75rem;">
             TOYOTA PACHUCA
           </span>
         </div>
-        <p class="text-xs text-gray-400 mt-0.5">{{ greetingMessage }}</p>
+        <small class="text-muted">{{ greetingMessage }}</small>
       </div>
 
       <!-- Métricas Superiores Rápidas -->
-      <div class="flex items-center gap-3">
+      <div class="d-flex align-items-center gap-2 flex-wrap">
         
         <!-- Total Cartera (Solo Admin) -->
-        <div *ngIf="isAdmin" class="bg-[#1f2532] px-4 py-2 rounded-xl border border-gray-700/60 flex items-center gap-3 shadow-inner">
-          <div class="w-8 h-8 rounded-lg bg-red-600/20 text-red-400 flex items-center justify-center font-bold">🏢</div>
+        <div *ngIf="isAdmin" class="card border-0 bg-light px-3 py-1 shadow-sm d-flex flex-row align-items-center gap-2">
+          <span class="fs-5">🏢</span>
           <div>
-            <span class="text-[10px] text-gray-400 uppercase tracking-wider block font-semibold">Total Cartera</span>
-            <span class="text-sm font-black text-white">{{ summaryTotalPortfolio | number }}</span>
+            <div class="text-muted text-uppercase" style="font-size: 0.65rem; font-weight: 700;">Total Cartera</div>
+            <div class="fw-bold text-dark" style="font-size: 0.9rem;">{{ summaryTotalPortfolio | number }}</div>
           </div>
         </div>
 
         <!-- Asignados / Mis Asignados -->
-        <div class="bg-[#1f2532] px-4 py-2 rounded-xl border border-gray-700/60 flex items-center gap-3 shadow-inner">
-          <div class="w-8 h-8 rounded-lg bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold">👤</div>
+        <div class="card border-0 bg-light px-3 py-1 shadow-sm d-flex flex-row align-items-center gap-2">
+          <span class="fs-5">👤</span>
           <div>
-            <span class="text-[10px] text-gray-400 uppercase tracking-wider block font-semibold">{{ isAdmin ? 'Asignados' : 'Mis Cuentas' }}</span>
-            <span class="text-sm font-black text-emerald-400">{{ assignedToMeCount | number }}</span>
+            <div class="text-muted text-uppercase" style="font-size: 0.65rem; font-weight: 700;">{{ isAdmin ? 'Asignados' : 'Mis Cuentas' }}</div>
+            <div class="fw-bold text-success" style="font-size: 0.9rem;">{{ assignedToMeCount | number }}</div>
           </div>
         </div>
 
         <!-- Seguimientos Pendientes -->
-        <div class="bg-[#1f2532] px-4 py-2 rounded-xl border border-gray-700/60 flex items-center gap-3 shadow-inner">
-          <div class="w-8 h-8 rounded-lg bg-amber-600/20 text-amber-400 flex items-center justify-center font-bold">⏳</div>
+        <div class="card border-0 bg-light px-3 py-1 shadow-sm d-flex flex-row align-items-center gap-2">
+          <span class="fs-5">⏳</span>
           <div>
-            <span class="text-[10px] text-gray-400 uppercase tracking-wider block font-semibold">Pendientes</span>
-            <span class="text-sm font-black text-amber-400">{{ pendingFollowUpsCount | number }}</span>
+            <div class="text-muted text-uppercase" style="font-size: 0.65rem; font-weight: 700;">Pendientes</div>
+            <div class="fw-bold text-warning" style="font-size: 0.9rem;">{{ pendingFollowUpsCount | number }}</div>
           </div>
         </div>
 
         <!-- Botón Importar Excel (Solo Admin) -->
-        <div *ngIf="isAdmin" class="relative">
-          <input type="file" #fileInput (change)="onFileSelected($event)" accept=".xlsx, .xls" class="hidden" />
-          <button (click)="fileInput.click()" 
-                  class="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-red-600/20 flex items-center gap-2">
+        <div *ngIf="isAdmin" class="ms-2">
+          <input type="file" #fileInput (change)="onFileSelected($event)" accept=".xlsx, .xls" class="d-none" />
+          <button (click)="fileInput.click()" class="btn btn-danger btn-sm fw-bold d-flex align-items-center gap-1 shadow-sm">
             <span>📥</span> Importar Excel
           </button>
         </div>
@@ -62,143 +61,151 @@
     </header>
 
     <!-- Contenido del Tablero -->
-    <div class="p-8 space-y-6">
+    <div class="p-4">
 
       <!-- Barra de Filtros, Pestañas y Búsqueda -->
-      <div class="bg-[#181d26] p-4 rounded-2xl border border-gray-800 flex flex-wrap items-center justify-between gap-4 shadow-xl">
-        
-        <!-- Pestañas (Modo Admin) -->
-        <div *ngIf="isAdmin" class="flex items-center gap-2 bg-[#12151b] p-1.5 rounded-xl border border-gray-700/50">
-          <button (click)="setFilterMode('UNASSIGNED')" 
-                  [ngClass]="currentFilterMode === 'UNASSIGNED' ? 'bg-red-600 text-white font-bold shadow-lg shadow-red-600/30' : 'text-gray-400 hover:text-gray-200'"
-                  class="px-4 py-2 rounded-lg text-xs transition flex items-center gap-2">
-            <span>📦</span> Bolsa Sin Asignar
-          </button>
+      <div class="card border-0 shadow-sm p-3 mb-4 rounded-3 bg-white">
+        <div class="row g-3 align-items-center justify-content-between">
+          
+          <!-- Pestañas (Modo Admin) -->
+          <div class="col-md-6" *ngIf="isAdmin">
+            <div class="btn-group" role="group">
+              <button (click)="setFilterMode('UNASSIGNED')" 
+                      [ngClass]="currentFilterMode === 'UNASSIGNED' ? 'btn btn-danger active fw-bold shadow-sm' : 'btn btn-outline-secondary'"
+                      class="btn btn-sm">
+                📦 Bolsa Sin Asignar
+              </button>
+              <button (click)="setFilterMode('ASSIGNED')" 
+                      [ngClass]="currentFilterMode === 'ASSIGNED' ? 'btn btn-success active fw-bold shadow-sm' : 'btn btn-outline-secondary'"
+                      class="btn btn-sm">
+                👥 Cartera Asignada
+              </button>
+            </div>
+          </div>
 
-          <button (click)="setFilterMode('ASSIGNED')" 
-                  [ngClass]="currentFilterMode === 'ASSIGNED' ? 'bg-emerald-600 text-white font-bold shadow-lg shadow-emerald-600/30' : 'text-gray-400 hover:text-gray-200'"
-                  class="px-4 py-2 rounded-lg text-xs transition flex items-center gap-2">
-            <span>👥</span> Cartera Asignada
-          </button>
-        </div>
+          <!-- Indicador para Asesor -->
+          <div class="col-md-6" *ngIf="!isAdmin">
+            <span class="badge bg-success-subtle text-success border border-success-subtle p-2">
+              🟢 Cartera Activa de Asesor
+            </span>
+          </div>
 
-        <!-- Indicador de Vista para Asesor -->
-        <div *ngIf="!isAdmin" class="flex items-center gap-2 text-xs text-gray-300 font-semibold bg-[#12151b] px-4 py-2 rounded-xl border border-gray-700/50">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          Cartera de Clientes Asignados a mi Cuenta
-        </div>
+          <!-- Buscador en Vivo -->
+          <div class="col-md-6 col-lg-5 ms-auto">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-light border-end-0">🔍</span>
+              <input type="text" 
+                     [value]="searchQuery" 
+                     (input)="onSearchInput($event)" 
+                     placeholder="Buscar por razón social, RFC o teléfono..." 
+                     class="form-control bg-light border-start-0" />
+            </div>
+          </div>
 
-        <!-- Buscador en Tiempo Real -->
-        <div class="relative flex-1 max-w-md">
-          <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-500">🔍</span>
-          <input type="text" 
-                 [value]="searchQuery" 
-                 (input)="onSearchInput($event)" 
-                 placeholder="Buscar por razón social, RFC o teléfono..." 
-                 class="w-full bg-[#12151b] text-xs text-gray-200 pl-10 pr-4 py-2.5 rounded-xl border border-gray-700 focus:outline-none focus:border-red-500 transition shadow-inner placeholder-gray-500" />
         </div>
       </div>
 
       <!-- Tabla Principal de Cartera -->
-      <div class="bg-[#181d26] rounded-2xl border border-gray-800 shadow-2xl overflow-hidden">
-        <div class="overflow-x-auto min-h-[420px]">
-          <table class="w-full text-left text-xs text-gray-300">
-            <thead class="bg-[#141820] text-gray-400 uppercase tracking-wider font-bold border-b border-gray-800 text-[11px]">
+      <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-white">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0" style="font-size: 0.85rem;">
+            <thead class="table-dark" style="font-size: 0.78rem;">
               <tr>
-                <th class="py-4 px-5">Segmento</th>
-                <th class="py-4 px-5">Razón Social / Cliente</th>
-                <th class="py-4 px-5">Identificador / RFC</th>
-                <th class="py-4 px-5">Contacto</th>
-                <th class="py-4 px-5">Vehículo / Crédito</th>
-                <th class="py-4 px-5">{{ isAdmin ? 'Asesor Asignado' : 'Estatus' }}</th>
-                <th class="py-4 px-5 text-center">Acciones</th>
+                <th style="width: 100px;">Segmento</th>
+                <th>Razón Social / Cliente</th>
+                <th style="width: 130px;">RFC / ID</th>
+                <th>Contacto Directo</th>
+                <th>Vehículo / Crédito</th>
+                <th style="width: 180px;">{{ isAdmin ? 'Asesor Asignado' : 'Estatus' }}</th>
+                <th class="text-center" style="width: 160px;">Acciones</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-800/60">
+            <tbody>
               
-              <!-- Spinner de Carga -->
+              <!-- Loader de Carga -->
               <tr *ngIf="isLoading">
-                <td colspan="7" class="py-20 text-center text-gray-400">
-                  <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500 mb-3"></div>
-                  <p class="text-xs font-semibold">Cargando registros de la base de datos...</p>
+                <td colspan="7" class="py-5 text-center text-muted">
+                  <div class="spinner-border spinner-border-sm text-danger mb-2" role="status"></div>
+                  <div>Cargando registros de la base de datos...</div>
                 </td>
               </tr>
 
-              <!-- Sin Resultados -->
+              <!-- Sin Datos -->
               <tr *ngIf="!isLoading && (!clients || clients.length === 0)">
-                <td colspan="7" class="py-20 text-center text-gray-500">
-                  <div class="text-4xl mb-3">📭</div>
-                  <p class="text-sm font-semibold text-gray-400">No se encontraron clientes</p>
-                  <p class="text-xs text-gray-600 mt-1">No hay registros disponibles para el criterio o filtro seleccionado.</p>
+                <td colspan="7" class="py-5 text-center text-muted">
+                  <div class="fs-2 mb-1">📭</div>
+                  <div class="fw-bold">No se encontraron clientes</div>
+                  <small>No hay registros disponibles para el criterio seleccionado.</small>
                 </td>
               </tr>
 
-              <!-- Fila de Cliente -->
-              <tr *ngFor="let client of clients" class="hover:bg-[#1f2533]/50 transition duration-150 group">
+              <!-- Filas de Clientes -->
+              <tr *ngFor="let client of clients">
                 
-                <!-- 1. Segmento (VIP vs Base) -->
-                <td class="py-4 px-5">
-                  <span class="inline-block px-2.5 py-1 text-[10px] font-black rounded-md tracking-wider" 
-                        [ngClass]="isVipClient(client) ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40 shadow-sm' : 'bg-gray-800 text-gray-300 border border-gray-700'">
+                <!-- 1. Segmento VIP vs BASE -->
+                <td>
+                  <span class="badge" [ngClass]="isVipClient(client) ? 'bg-warning text-dark' : 'bg-secondary text-white'">
                     {{ isVipClient(client) ? '💎 VIP' : '📦 BASE' }}
                   </span>
                 </td>
 
                 <!-- 2. Razón Social / Nombre -->
-                <td class="py-4 px-5">
-                  <div (click)="openClientDetailModal(client)" class="font-bold text-white group-hover:text-red-400 cursor-pointer transition">
+                <td>
+                  <div class="fw-bold text-dark cursor-pointer text-truncate hover-underline" 
+                       (click)="openClientDetailModal(client)" 
+                       style="max-width: 240px;"
+                       title="{{ client.companyName || client.nombreDelCliente }}">
                     {{ client.companyName || client.nombreDelCliente || 'SIN RAZÓN SOCIAL' }}
                   </div>
-                  <div class="text-[11px] text-gray-500 flex items-center gap-1.5 mt-0.5">
-                    <span>🚗 {{ client.vehicleModel || client.vehiculoComprado || client.brand || 'Toyota' }}</span>
-                  </div>
+                  <small class="text-muted d-block text-truncate" style="max-width: 240px;">
+                    🚗 {{ client.vehicleModel || client.vehiculoComprado || client.brand || 'Toyota' }}
+                  </small>
                 </td>
 
                 <!-- 3. RFC / No. Cliente -->
-                <td class="py-4 px-5 font-mono text-gray-300">
-                  <span class="bg-[#12151b] px-2 py-1 rounded border border-gray-700/60 text-xs font-semibold">
+                <td>
+                  <span class="badge bg-light text-dark border font-monospace">
                     {{ client.taxId || client.rfc || client.noDeCte || 'S/N' }}
                   </span>
                 </td>
 
-                <!-- 4. Contacto Directo y WhatsApp Rápido -->
-                <td class="py-4 px-5">
-                  <div class="flex items-center gap-2">
-                    <span *ngIf="client.contactPhone || client.telefono1 || client.telefono2" class="font-mono text-emerald-400 font-bold">
+                <!-- 4. Teléfono y WhatsApp Directo -->
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <span *ngIf="client.contactPhone || client.telefono1 || client.telefono2" class="fw-bold text-success font-monospace">
                       📞 {{ client.contactPhone || client.telefono1 || client.telefono2 }}
                     </span>
-                    <span *ngIf="!client.contactPhone && !client.telefono1 && !client.telefono2" class="text-gray-500 italic">
-                      📞 Sin Teléfono
+                    <span *ngIf="!client.contactPhone && !client.telefono1 && !client.telefono2" class="text-muted fst-italic">
+                      Sin Teléfono
                     </span>
                     <button *ngIf="client.contactPhone || client.telefono1 || client.telefono2" 
                             (click)="sendInventoryWhatsApp(client)" 
-                            title="Enviar WhatsApp con Catálogo"
-                            class="text-emerald-400 hover:text-emerald-300 transition text-base">
+                            class="btn btn-sm btn-outline-success py-0 px-1 border-0" 
+                            title="Enviar WhatsApp">
                       💬
                     </button>
                   </div>
-                  <div class="text-[11px] text-gray-400 truncate max-w-[170px] mt-0.5">
+                  <small class="text-muted d-block text-truncate" style="max-width: 180px;">
                     {{ client.contactEmail || client.email || 'Sin Correo' }}
-                  </div>
+                  </small>
                 </td>
 
                 <!-- 5. Vehículo / Tipo de Crédito -->
-                <td class="py-4 px-5">
-                  <div class="text-gray-200 font-medium truncate max-w-[170px]">
+                <td>
+                  <div class="text-dark fw-medium text-truncate" style="max-width: 160px;">
                     {{ client.vehicleModel || client.vehiculoComprado || 'Sin Modelo' }}
                   </div>
-                  <div class="text-[11px] text-gray-400 truncate max-w-[170px]">
+                  <small class="text-muted d-block text-truncate" style="max-width: 160px;">
                     {{ client.operationType || client.tipoDeCredito || client.qualification || 'Tradicional' }}
-                  </div>
+                  </small>
                 </td>
 
-                <!-- 6. Asignación (Select para Admin / Badge para Asesor) -->
-                <td class="py-4 px-5">
-                  
-                  <!-- Select de Asignación Rápida para Administrador -->
+                <!-- 6. Selector de Asesor (Admin) / Badge (Asesor) -->
+                <td>
                   <div *ngIf="isAdmin">
                     <select (change)="onAssignAgent(client, $event)" 
-                            class="bg-[#12151b] text-xs font-semibold rounded-lg px-2.5 py-1.5 border border-gray-700 focus:outline-none focus:border-red-500 transition text-gray-200">
+                            class="form-select form-select-sm agent-select"
+                            [ngClass]="client.assignedUserId || client.agentName ? 'agent-select-assigned' : 'agent-select-unassigned'">
                       <option [value]="0" [selected]="!client.assignedUserId && !client.agentName">-- Sin Asignar --</option>
                       <option *ngFor="let agent of agents" 
                               [value]="agent.id" 
@@ -207,50 +214,34 @@
                       </option>
                     </select>
                   </div>
-
-                  <!-- Estatus para Asesor -->
                   <div *ngIf="!isAdmin">
-                    <span class="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-lg font-semibold text-xs">
-                      <span>✓</span> En Cartera Activa
+                    <span class="badge bg-success-subtle text-success border border-success-subtle">
+                      ✓ Asignado
                     </span>
                   </div>
-
                 </td>
 
                 <!-- 7. Acciones -->
-                <td class="py-4 px-5 text-center">
-                  <div class="flex items-center justify-center gap-2">
-                    
-                    <!-- Botón Ficha Técnica -->
-                    <button (click)="openClientDetailModal(client)" 
-                            title="Ver Ficha Técnica"
-                            class="px-2.5 py-1.5 bg-[#262e3d] hover:bg-gray-700 text-white rounded-lg text-xs font-semibold transition flex items-center gap-1">
-                      <span>🪪</span> Ficha
+                <td class="text-center">
+                  <div class="btn-group btn-group-sm">
+                    <button (click)="openClientDetailModal(client)" class="btn btn-outline-secondary" title="Ficha Técnica">
+                      🪪
                     </button>
-
-                    <!-- Botón Bitácora / Seguimiento CRM -->
-                    <button (click)="openFollowUpModal(client)" 
-                            title="Registrar Seguimiento Comercial"
-                            class="px-2.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold transition flex items-center gap-1 shadow-md shadow-red-600/20">
-                      <span>📝</span> Bitácora
+                    <button (click)="openFollowUpModal(client)" class="btn btn-danger" title="Bitácora CRM">
+                      📝
                     </button>
-
-                    <!-- Botón Liberar Cliente (Solo Admin en modo asignados) -->
                     <button *ngIf="isAdmin && (client.assignedUserId || client.agentName)" 
                             (click)="unassignClient(client)" 
-                            title="Liberar a Bolsa Libre"
-                            class="px-2 py-1.5 bg-gray-800 hover:bg-rose-900/60 text-rose-400 rounded-lg text-xs transition border border-rose-800/40">
+                            class="btn btn-outline-warning" 
+                            title="Liberar a Bolsa Libre">
                       ✕
                     </button>
-
-                    <!-- Botón Eliminar Cliente (Solo Admin) -->
                     <button *ngIf="isAdmin" 
                             (click)="openDeleteModal(client)" 
-                            title="Eliminar Cuenta"
-                            class="px-2 py-1.5 bg-gray-800 hover:bg-red-950 text-red-400 rounded-lg text-xs transition border border-red-900/40">
+                            class="btn btn-outline-danger" 
+                            title="Eliminar">
                       🗑️
                     </button>
-
                   </div>
                 </td>
 
@@ -260,21 +251,21 @@
         </div>
 
         <!-- Paginación -->
-        <div class="bg-[#141820] px-6 py-4 border-t border-gray-800 flex flex-wrap items-center justify-between gap-4 text-xs text-gray-400">
-          <div>
-            Mostrando página <strong class="text-white">{{ currentPage + 1 }}</strong> de <strong class="text-white">{{ totalPages || 1 }}</strong> 
-            (<span class="text-gray-300 font-semibold">{{ totalElements || 0 | number }}</span> registros totales)
-          </div>
+        <div class="card-footer bg-white border-top py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <small class="text-muted">
+            Mostrando página <strong>{{ currentPage + 1 }}</strong> de <strong>{{ totalPages || 1 }}</strong> 
+            (<strong>{{ totalElements | number }}</strong> registros)
+          </small>
 
-          <div class="flex items-center gap-2">
+          <div class="btn-group btn-group-sm">
             <button (click)="changePage(currentPage - 1)" 
                     [disabled]="currentPage === 0" 
-                    class="px-3.5 py-1.5 bg-[#1f2532] hover:bg-[#283040] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg transition border border-gray-700">
+                    class="btn btn-outline-secondary">
               ◀ Anterior
             </button>
             <button (click)="changePage(currentPage + 1)" 
                     [disabled]="currentPage >= totalPages - 1" 
-                    class="px-3.5 py-1.5 bg-[#1f2532] hover:bg-[#283040] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg transition border border-gray-700">
+                    class="btn btn-outline-secondary">
               Siguiente ▶
             </button>
           </div>
@@ -283,208 +274,183 @@
       </div>
 
     </div>
-  </main>
-</div>
-
-<!-- ========================================================================= -->
-<!-- 1. MODAL DE SEGUIMIENTO COMERCIAL Y BITÁCORA CRM (showToolsModal)        -->
-<!-- ========================================================================= -->
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" *ngIf="showToolsModal && selectedClientForTools">
-  <div class="bg-[#181d26] border border-gray-700 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl animate-fade-in flex flex-col max-h-[90vh]">
-    
-    <!-- Encabezado Modal -->
-    <div class="bg-[#13161c] px-6 py-4 border-b border-gray-700/80 flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <span class="text-2xl">📝</span>
-        <div>
-          <h3 class="text-white font-bold text-base">Bitácora de Seguimiento Comercial</h3>
-          <p class="text-xs text-red-400 font-medium">{{ selectedClientForTools.companyName || selectedClientForTools.nombreDelCliente }}</p>
-        </div>
-      </div>
-      <button (click)="showToolsModal = false" class="text-gray-400 hover:text-white text-2xl font-bold leading-none">&times;</button>
-    </div>
-
-    <!-- Cuerpo del Modal con Scroll -->
-    <div class="p-6 overflow-y-auto space-y-5 text-xs">
-      
-      <!-- Formulario de Nuevo Registro -->
-      <div class="bg-[#1f2532] p-4 rounded-xl border border-gray-700/70 space-y-3">
-        <h4 class="text-white font-bold uppercase tracking-wider text-[11px] flex items-center gap-2">
-          <span>➕</span> Registrar Nueva Interacción
-        </h4>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="text-gray-400 block mb-1 font-semibold">Medio de Contacto</label>
-            <select [(ngModel)]="contactMethod" class="w-full bg-[#12151b] text-gray-200 px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-red-500">
-              <option value="WhatsApp">WhatsApp</option>
-              <option value="Llamada Telefónica">Llamada Telefónica</option>
-              <option value="Visita en Agencia">Visita en Agencia</option>
-              <option value="Correo Electrónico">Correo Electrónico</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="text-gray-400 block mb-1 font-semibold">Estatus Comercial</label>
-            <select [(ngModel)]="followUpStatus" class="w-full bg-[#12151b] text-gray-200 px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-red-500">
-              <option value="Interesado en Auto Nuevo / Seminuevo">Interesado en Auto Nuevo / Seminuevo</option>
-              <option value="Cita Programada para Prueba de Manejo">Cita Programada para Prueba de Manejo</option>
-              <option value="Solicitud de Crédito Ingresada">Solicitud de Crédito Ingresada</option>
-              <option value="No Contesta / Volver a Llamar">No Contesta / Volver a Llamar</option>
-              <option value="No Interesado por el Momento">No Interesado por el Momento</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label class="text-gray-400 block mb-1 font-semibold">Comentarios y Observaciones</label>
-          <textarea [(ngModel)]="followUpComments" 
-                    rows="3" 
-                    placeholder="Escribe el resumen de la conversación con el cliente..." 
-                    class="w-full bg-[#12151b] text-gray-200 p-3 rounded-lg border border-gray-700 focus:outline-none focus:border-red-500 placeholder-gray-500"></textarea>
-        </div>
-
-        <div class="flex justify-end">
-          <button (click)="saveFollowUpLog()" 
-                  class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold transition shadow flex items-center gap-2">
-            <span>💾</span> Guardar Avance
-          </button>
-        </div>
-      </div>
-
-      <!-- Historial de Interacciones -->
-      <div>
-        <h4 class="text-gray-300 font-bold uppercase tracking-wider text-[11px] mb-3 flex items-center gap-2">
-          <span>🕒</span> Historial de Interacciones Registradas
-        </h4>
-
-        <div *ngIf="isLoadingHistory" class="text-center py-6 text-gray-400">
-          <div class="inline-block animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-red-500 mb-2"></div>
-          <p>Cargando bitácora...</p>
-        </div>
-
-        <div *ngIf="!isLoadingHistory && (!clientFollowUpsHistory || clientFollowUpsHistory.length === 0)" class="text-center py-6 bg-[#141820] rounded-xl border border-gray-800 text-gray-500">
-          No hay registros de seguimiento para este cliente aún.
-        </div>
-
-        <div *ngIf="!isLoadingHistory && clientFollowUpsHistory.length > 0" class="space-y-2">
-          <div *ngFor="let log of clientFollowUpsHistory" class="bg-[#141820] p-3.5 rounded-xl border border-gray-800 flex justify-between items-start gap-3">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="font-bold text-white">{{ log.action || log.status }}</span>
-                <span class="text-[10px] px-2 py-0.5 rounded bg-gray-800 text-gray-400 border border-gray-700">{{ log.batchName || log.method || 'CRM' }}</span>
-              </div>
-              <p class="text-gray-300 mt-1">{{ log.description || log.comments }}</p>
-              <span class="text-[10px] text-gray-500 block mt-1">Por: {{ log.actorName || 'Asesor' }}</span>
-            </div>
-            <span class="text-[10px] text-gray-500 whitespace-nowrap">{{ log.timestamp | date:'short' }}</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Footer Modal -->
-    <div class="bg-[#13161c] px-6 py-3 border-t border-gray-700/80 flex justify-end">
-      <button (click)="showToolsModal = false" class="px-5 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-bold transition">
-        Cerrar Bitácora
-      </button>
-    </div>
-
   </div>
 </div>
 
 <!-- ========================================================================= -->
-<!-- 2. MODAL DE FICHA TÉCNICA DE CUENTA (showDetailModal)                    -->
+<!-- MODAL 1: SEGUIMIENTO COMERCIAL Y BITÁCORA CRM (showToolsModal)           -->
 <!-- ========================================================================= -->
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" *ngIf="showDetailModal && selectedClientForDetail">
-  <div class="bg-[#181d26] border border-gray-700 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl animate-fade-in flex flex-col max-h-[90vh]">
-    
-    <!-- Encabezado Modal -->
-    <div class="bg-[#13161c] px-6 py-4 border-b border-gray-700/80 flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <span class="text-2xl">🪪</span>
-        <div>
-          <h3 class="text-white font-black text-base">Ficha Técnica de Cuenta</h3>
-          <p class="text-xs text-red-400 font-mono">RFC / ID: {{ selectedClientForDetail.taxId || selectedClientForDetail.rfc || selectedClientForDetail.noDeCte }}</p>
-        </div>
-      </div>
-      <button (click)="closeClientDetailModal()" class="text-gray-400 hover:text-white text-2xl font-bold leading-none">&times;</button>
-    </div>
-
-    <!-- Grid de Datos -->
-    <div class="p-6 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+<div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6);" *ngIf="showToolsModal && selectedClientForTools">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow-lg rounded-3">
       
-      <div class="bg-[#1f2532] p-3.5 rounded-xl border border-gray-700/60 shadow-inner">
-        <span class="text-gray-400 text-[10px] uppercase font-bold tracking-wider block mb-1">Razón Social / Nombre</span>
-        <span class="text-white font-bold text-sm block">{{ selectedClientForDetail.companyName || selectedClientForDetail.nombreDelCliente }}</span>
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title fs-6 fw-bold d-flex align-items-center gap-2">
+          <span>📝</span> Bitácora Comercial - {{ selectedClientForTools.companyName || selectedClientForTools.nombreDelCliente }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="showToolsModal = false"></button>
       </div>
 
-      <div class="bg-[#1f2532] p-3.5 rounded-xl border border-gray-700/60 shadow-inner">
-        <span class="text-gray-400 text-[10px] uppercase font-bold tracking-wider block mb-1">Segmento / Categoría</span>
-        <span class="inline-block px-3 py-1 text-xs font-black rounded-md" 
-              [ngClass]="isVipClient(selectedClientForDetail) ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50' : 'bg-gray-700 text-gray-200'">
-          {{ selectedClientForDetail.calificacion || selectedClientForDetail.qualification || (isVipClient(selectedClientForDetail) ? 'VIP BENEFIT' : 'CARTERA BASE') }}
-        </span>
-      </div>
+      <div class="modal-body p-4">
+        
+        <!-- Formulario -->
+        <div class="card bg-light border-0 p-3 mb-4 rounded-3">
+          <h6 class="fw-bold mb-3 text-dark fs-6">➕ Registrar Nueva Interacción</h6>
+          
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-muted">Medio de Contacto</label>
+              <select [(ngModel)]="contactMethod" class="form-select form-select-sm">
+                <option value="WhatsApp">WhatsApp</option>
+                <option value="Llamada Telefónica">Llamada Telefónica</option>
+                <option value="Visita en Agencia">Visita en Agencia</option>
+                <option value="Correo Electrónico">Correo Electrónico</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-muted">Estatus Comercial</label>
+              <select [(ngModel)]="followUpStatus" class="form-select form-select-sm">
+                <option value="Interesado en Auto Nuevo / Seminuevo">Interesado en Auto Nuevo / Seminuevo</option>
+                <option value="Cita Programada para Prueba de Manejo">Cita Programada para Prueba de Manejo</option>
+                <option value="Solicitud de Crédito Ingresada">Solicitud de Crédito Ingresada</option>
+                <option value="No Contesta / Volver a Llamar">No Contesta / Volver a Llamar</option>
+                <option value="No Interesado por el Momento">No Interesado por el Momento</option>
+              </select>
+            </div>
+          </div>
 
-      <div class="bg-[#1f2532] p-3.5 rounded-xl border border-gray-700/60 shadow-inner">
-        <span class="text-gray-400 text-[10px] uppercase font-bold tracking-wider block mb-1">Teléfono Principal</span>
-        <span class="text-emerald-400 font-mono font-bold text-sm flex items-center gap-1.5">
-          📞 {{ selectedClientForDetail.contactPhone || selectedClientForDetail.telefono1 || selectedClientForDetail.telefono2 || 'Sin Teléfono' }}
-        </span>
-      </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-muted">Observaciones de la llamada / chat</label>
+            <textarea [(ngModel)]="followUpComments" rows="3" class="form-control form-control-sm" placeholder="Escribe aquí los comentarios..."></textarea>
+          </div>
 
-      <div class="bg-[#1f2532] p-3.5 rounded-xl border border-gray-700/60 shadow-inner">
-        <span class="text-gray-400 text-[10px] uppercase font-bold tracking-wider block mb-1">Correo Electrónico</span>
-        <span class="text-gray-200 truncate block font-medium">{{ selectedClientForDetail.contactEmail || selectedClientForDetail.email || 'Sin Correo Registrado' }}</span>
-      </div>
-
-      <div class="bg-[#1f2532] p-3.5 rounded-xl border border-gray-700/60 shadow-inner">
-        <span class="text-gray-400 text-[10px] uppercase font-bold tracking-wider block mb-1">Vehículo / Modelo</span>
-        <span class="text-white font-semibold">{{ selectedClientForDetail.vehicleModel || selectedClientForDetail.vehiculoComprado || selectedClientForDetail.brand || 'Toyota' }}</span>
-      </div>
-
-      <div class="bg-[#1f2532] p-3.5 rounded-xl border border-gray-700/60 shadow-inner">
-        <span class="text-gray-400 text-[10px] uppercase font-bold tracking-wider block mb-1">Número de Serie (VIN)</span>
-        <span class="text-gray-300 font-mono text-xs">{{ selectedClientForDetail.vin || 'Sin VIN Registrado' }}</span>
-      </div>
-
-      <div class="bg-[#1f2532] p-3.5 rounded-xl border border-gray-700/60 shadow-inner">
-        <span class="text-gray-400 text-[10px] uppercase font-bold tracking-wider block mb-1">Tipo de Crédito</span>
-        <span class="text-gray-200 font-medium">{{ selectedClientForDetail.operationType || selectedClientForDetail.tipoDeCredito || 'Tradicional' }}</span>
-      </div>
-
-      <div class="bg-[#1f2532] p-3.5 rounded-xl border border-gray-700/60 shadow-inner">
-        <span class="text-gray-400 text-[10px] uppercase font-bold tracking-wider block mb-1">Vigencia / Observaciones</span>
-        <span class="text-amber-400 font-medium">{{ selectedClientForDetail.vigencia || selectedClientForDetail.sensitiveNotes || 'Sin vigencia registrada' }}</span>
-      </div>
-
-      <div class="sm:col-span-2 bg-[#141820] p-4 rounded-xl border border-gray-800 flex items-center justify-between">
-        <div>
-          <span class="text-gray-500 text-[10px] uppercase font-bold block">Asesor Asignado</span>
-          <span class="text-emerald-400 font-bold text-sm">{{ selectedClientForDetail.agentName || 'Bolsa Libre (Sin Asignar)' }}</span>
+          <div class="text-end">
+            <button (click)="saveFollowUpLog()" class="btn btn-danger btn-sm fw-bold shadow-sm">
+              💾 Guardar Avance
+            </button>
+          </div>
         </div>
-        <div class="text-right">
-          <span class="text-gray-500 text-[10px] uppercase font-bold block">Sucursal / Agencia</span>
-          <span class="text-gray-300 font-medium">{{ selectedClientForDetail.sucursal || selectedClientForDetail.dealer || 'TOYOTA PACHUCA' }}</span>
+
+        <!-- Historial -->
+        <h6 class="fw-bold text-dark mb-3">🕒 Historial de Seguimientos</h6>
+        
+        <div *ngIf="isLoadingHistory" class="text-center py-4 text-muted">
+          <div class="spinner-border spinner-border-sm text-danger" role="status"></div>
+          <span class="ms-2">Cargando historial...</span>
         </div>
+
+        <div *ngIf="!isLoadingHistory && (!clientFollowUpsHistory || clientFollowUpsHistory.length === 0)" class="text-center py-4 text-muted border rounded-3 bg-light">
+          No hay registros de seguimiento para este cliente aún.
+        </div>
+
+        <div *ngIf="!isLoadingHistory && clientFollowUpsHistory.length > 0" class="list-group">
+          <div *ngFor="let log of clientFollowUpsHistory" class="list-group-item list-group-item-action flex-column align-items-start p-3 mb-2 border rounded-3 shadow-sm">
+            <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+              <h6 class="mb-0 fw-bold text-dark">{{ log.action || log.status }}</h6>
+              <small class="text-muted">{{ log.timestamp | date:'short' }}</small>
+            </div>
+            <p class="mb-1 text-secondary small">{{ log.description || log.comments }}</p>
+            <small class="text-muted">Por: <strong>{{ log.actorName || 'Asesor' }}</strong> ({{ log.batchName || log.method || 'CRM' }})</small>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary btn-sm" (click)="showToolsModal = false">Cerrar</button>
       </div>
 
     </div>
+  </div>
+</div>
 
-    <!-- Footer Modal -->
-    <div class="bg-[#13161c] px-6 py-3.5 border-t border-gray-700/80 flex justify-between items-center">
-      <button (click)="sendInventoryWhatsApp(selectedClientForDetail)" 
-              class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2">
-        <span>💬</span> Contactar por WhatsApp
-      </button>
+<!-- ========================================================================= -->
+<!-- MODAL 2: FICHA TÉCNICA DE CUENTA (showDetailModal)                       -->
+<!-- ========================================================================= -->
+<div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6);" *ngIf="showDetailModal && selectedClientForDetail">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow-lg rounded-3">
       
-      <button (click)="closeClientDetailModal()" 
-              class="px-5 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-xl text-xs font-bold transition">
-        Cerrar Ficha
-      </button>
-    </div>
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title fs-6 fw-bold d-flex align-items-center gap-2">
+          <span>🪪</span> Ficha Técnica de Cuenta - {{ selectedClientForDetail.companyName || selectedClientForDetail.nombreDelCliente }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeClientDetailModal()"></button>
+      </div>
 
+      <div class="modal-body p-4">
+        <div class="row g-3">
+          
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-light">
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Razón Social</small>
+              <div class="fw-bold text-dark">{{ selectedClientForDetail.companyName || selectedClientForDetail.nombreDelCliente }}</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-light">
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Segmento / Calificación</small>
+              <span class="badge" [ngClass]="isVipClient(selectedClientForDetail) ? 'bg-warning text-dark' : 'bg-secondary text-white'">
+                {{ selectedClientForDetail.calificacion || selectedClientForDetail.qualification || (isVipClient(selectedClientForDetail) ? 'VIP BENEFIT' : 'CARTERA BASE') }}
+              </span>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-light">
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Teléfono</small>
+              <div class="fw-bold text-success font-monospace">
+                📞 {{ selectedClientForDetail.contactPhone || selectedClientForDetail.telefono1 || selectedClientForDetail.telefono2 || 'Sin Teléfono' }}
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-light">
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Correo Electrónico</small>
+              <div class="text-dark">{{ selectedClientForDetail.contactEmail || selectedClientForDetail.email || 'Sin Correo' }}</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-light">
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Vehículo</small>
+              <div class="fw-bold text-dark">{{ selectedClientForDetail.vehicleModel || selectedClientForDetail.vehiculoComprado || 'Toyota' }}</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-light">
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Número de Serie (VIN)</small>
+              <div class="font-monospace text-dark">{{ selectedClientForDetail.vin || 'Sin VIN' }}</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-light">
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Tipo de Crédito</small>
+              <div class="text-dark">{{ selectedClientForDetail.operationType || selectedClientForDetail.tipoDeCredito || 'Tradicional' }}</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-light">
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Vigencia / Observaciones</small>
+              <div class="text-danger fw-bold">{{ selectedClientForDetail.vigencia || selectedClientForDetail.sensitiveNotes || 'Sin vigencia' }}</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="modal-footer bg-light d-flex justify-content-between">
+        <button (click)="sendInventoryWhatsApp(selectedClientForDetail)" class="btn btn-success btn-sm fw-bold">
+          💬 Contactar por WhatsApp
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="closeClientDetailModal()">Cerrar Ficha</button>
+      </div>
+
+    </div>
   </div>
 </div>
