@@ -167,7 +167,6 @@ export class TopAgentsComponent implements OnInit {
   assignSpecificVIPClient(client: any): void {
     if (!this.selectedAgentForAssign) return;
 
-    // Resguardo de IDs y Nombres antes del diálogo asíncrono
     const targetAgent = this.selectedAgentForAssign;
     const clientId = client.id || client.clientId || client.idCartera;
     const agentId = targetAgent.id;
