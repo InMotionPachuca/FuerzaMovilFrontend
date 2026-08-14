@@ -3,15 +3,25 @@
 
   <main class="main-content bg-light min-vh-100 py-4 px-3 px-md-4">
 
-    <!-- ENCABEZADO PERSONALIZADO -->
+    <!-- ENCABEZADO CON SALUDO INSTITUCIONAL -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
       <div>
-        <h3 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
-          <i class="bi" [ngClass]="isAdmin ? 'bi-building-gear text-danger' : 'bi-person-vcard-fill text-danger'"></i>
-          {{ isAdmin ? 'Cartera General de Clientes' : 'Mi Cartera Comercial Asignada' }}
-        </h3>
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <h3 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+            <i class="bi" [ngClass]="isAdmin ? 'bi-shield-lock-fill text-danger' : 'bi-person-badge-fill text-danger'"></i>
+            {{ greetingMessage }}
+          </h3>
+          <span class="badge rounded-pill font-monospace" 
+                [ngClass]="isAdmin ? 'bg-danger text-white' : 'bg-dark text-white'"
+                style="font-size: 0.72rem; letter-spacing: 0.5px;">
+            {{ isAdmin ? 'PANEL DIRECTIVO' : 'FUERZA COMERCIAL' }}
+          </span>
+        </div>
+
         <p class="text-muted small mb-0">
-          {{ isAdmin ? 'Gestión corporativa de cuentas comerciales y asignación masiva' : 'Listado táctico de cuentas para prospección comercial en Toyota Pachuca' }}
+          {{ isAdmin 
+              ? 'Gestión corporativa de cartera global, distribución de cuentas y supervisión en Toyota Pachuca' 
+              : 'Listado táctico de cuentas y herramientas de prospección comercial en Toyota Pachuca' }}
         </p>
       </div>
 
@@ -24,8 +34,7 @@
       </div>
     </div>
 
-    <!-- TARJETAS DE KPIS PERSONALIZADAS SEGÚN EL ROL -->
-    <!-- VISTA ADMINISTRADOR -->
+    <!-- TARJETAS DE KPIS: VISTA ADMINISTRADOR -->
     <div *ngIf="isAdmin" class="row g-3 mb-4">
       <div class="col-12 col-sm-6 col-xl-3">
         <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-dark">
@@ -88,7 +97,7 @@
       </div>
     </div>
 
-    <!-- VISTA PERSONALIZADA PARA EL AGENTE / VENDEDOR -->
+    <!-- TARJETAS DE KPIS: VISTA AGENTE -->
     <div *ngIf="!isAdmin" class="row g-3 mb-4">
       <div class="col-12 col-sm-4">
         <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-dark">
@@ -186,7 +195,7 @@
               </td>
             </tr>
 
-            <!-- ESTADO VACÍO CUANDO NO HAY CLIENTES -->
+            <!-- ESTADO VACÍO -->
             <tr *ngIf="!isLoading && clients.length === 0">
               <td [attr.colspan]="isAdmin ? 7 : 6" class="text-center py-5 bg-white">
                 <div class="py-4">

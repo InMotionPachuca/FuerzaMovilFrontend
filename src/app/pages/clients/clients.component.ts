@@ -53,6 +53,20 @@ export class ClientsComponent implements OnInit {
     this.loadInitialData();
   }
 
+  // Generador dinámico de saludo institucional por horario
+  get greetingMessage(): string {
+    const hour = new Date().getHours();
+    let timeGreeting = 'Buenos días';
+    if (hour >= 12 && hour < 19) {
+      timeGreeting = 'Buenas tardes';
+    } else if (hour >= 19 || hour < 6) {
+      timeGreeting = 'Buenas noches';
+    }
+
+    const name = this.currentUser?.fullName || (this.isAdmin ? 'Administrador Principal' : 'Asesor Comercial');
+    return `${timeGreeting}, ${name}`;
+  }
+
   checkUserRole(): void {
     this.currentUser = this.authService.getCurrentUser();
     const role = String(this.currentUser?.role || '').toUpperCase();
@@ -97,7 +111,6 @@ export class ClientsComponent implements OnInit {
         next: (res: any) => {
           this.clients = res.content || [];
           
-          // Soporta respuesta anidada en 'page' o plana
           if (res.page) {
             this.totalElements = res.page.totalElements ?? 0;
             this.totalPages = res.page.totalPages ?? 1;
@@ -107,7 +120,6 @@ export class ClientsComponent implements OnInit {
             this.totalPages = res.totalPages ?? Math.ceil(this.totalElements / this.pageSize) ?? 1;
           }
 
-          // Métricas personales del asesor
           this.assignedToMeCount = this.totalElements;
           let completed = 0;
           this.clients.forEach(c => {
@@ -141,7 +153,6 @@ export class ClientsComponent implements OnInit {
       next: (res: any) => {
         this.clients = res.content || [];
 
-        // Soporta respuesta anidada en 'page' o plana
         if (res.page) {
           this.totalElements = res.page.totalElements ?? 0;
           this.totalPages = res.page.totalPages ?? 1;

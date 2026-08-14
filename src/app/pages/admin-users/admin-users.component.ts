@@ -52,7 +52,21 @@ export class AdminUsersComponent implements OnInit {
     this.loadSettings();
   }
 
-  // Normalizador de roles seguro
+  // Generador dinámico de saludo institucional
+  get greetingMessage(): string {
+    const hour = new Date().getHours();
+    let timeGreeting = 'Buenos días';
+    if (hour >= 12 && hour < 19) {
+      timeGreeting = 'Buenas tardes';
+    } else if (hour >= 19 || hour < 6) {
+      timeGreeting = 'Buenas noches';
+    }
+
+    const user = this.authService.getCurrentUser();
+    const name = user?.fullName || 'Administrador Principal';
+    return `${timeGreeting}, ${name}`;
+  }
+
   private normalizeRole(role: any): string {
     const r = String(role || '').toUpperCase().trim();
     if (r.includes('ADMIN')) return 'ADMIN';
@@ -83,14 +97,12 @@ export class AdminUsersComponent implements OnInit {
 
   loadUsers(): void {
     this.isLoading = true;
-    // Usamos getAllUsers de AuthService para traer la lista completa (Admins + Asesores)
     this.authService.getAllUsers().subscribe({
       next: (data: any[]) => {
         this.users = data || [];
         this.isLoading = false;
       },
       error: () => {
-        // Fallback a agentService si fuera necesario
         this.agentService.getAgents().subscribe({
           next: (data) => {
             this.users = data || [];
