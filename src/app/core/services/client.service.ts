@@ -7,10 +7,16 @@ import { Observable } from 'rxjs';
 })
 export class ClientService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://fuerzamovilbackend.onrender.com/api/v1/clients';
-  private usersUrl = 'https://fuerzamovilbackend.onrender.com/api/v1/users';
+  
+  // Base URLs según tus controladores de Spring Boot
+  private baseUrl = 'https://fuerzamovilbackend.onrender.com/api/v1';
+  private clientsUrl = `${this.baseUrl}/clients`;
+  private agentsUrl = `${this.baseUrl}/agents`;
+  private authUrl = `${this.baseUrl}/auth`;
 
-  // 1. Consulta paginada unificada
+  /**
+   * 1. Consulta paginada unificada (ClientController: GET /api/v1/clients/paged)
+   */
   getClientsPaged(
     clientType: string = 'ALL',
     assignmentStatus: string = 'UNASSIGNED',
@@ -32,69 +38,108 @@ export class ClientService {
       params = params.set('userId', userId.toString());
     }
 
-    return this.http.get<any>(`${this.apiUrl}/paged`, { params });
+    return this.http.get<any>(`${this.clientsUrl}/paged`, { params });
   }
 
-  // 2. Métricas globales
+  /**
+   * 2. Métricas de resumen (ClientController: GET /api/v1/clients/metrics/summary)
+   */
   getSummaryMetrics(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/metrics/summary`);
+    return this.http.get<any>(`${this.clientsUrl}/metrics/summary`);
   }
 
-  // 3. Listado de asesores
+  /**
+   * 3. Listado de asesores (AgentController: GET /api/v1/agents)
+   */
   getAgents(): Observable<any[]> {
-    return this.http.get<any[]>(this.usersUrl);
+    return this.http.get<any[]>(this.agentsUrl);
   }
 
-  // 4. Asignación individual
-  assignClientToUser(clientId: number, userId: number, actorName: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/${clientId}/assign`, { userId, actorName });
+  /**
+   * 4. Listado completo de usuarios del sistema (AuthController: GET /api/v1/auth/users)
+   */
+  getAllUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.authUrl}/users`);
   }
 
-  // 5. Asignación por lote a un asesor específico (Resuelve TS2339 en admin-analytics)
-  assignBatchToAgent(agentId: number | string, baseCount: number, actorName: string = 'Administrador Principal'): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/assign/daily-batch`, { userId: agentId, baseCount, actorName });
+  /**
+   * 5. Asignar cliente individual a un asesor (ClientController: PUT /api/v1/clients/{clientId}/assign/{userId})
+   */
+  assignClientToUser(clientId: number, userId: number, actorName: string = 'Administrador Principal'): Observable<any> {
+    const params = new HttpParams().set('actorName', actorName);
+    return this.http.put<any>(`${this.clientsUrl}/${clientId}/assign/${userId}`, null, { params });
   }
 
-  // 6. Auto distribución masiva entre todos los agentes (Resuelve TS2339 en agent-list y admin-dashboard)
+  /**
+   * 6. Desasignar / Liberar cliente (ClientController: PUT /api/v1/clients/{clientId}/unassign)
+   */
+  unassignClient(clientId: number, actorName: string = 'Administrador Principal'): Observable<any> {
+    const params = new HttpParams().set('actorName', actorName);
+    return this.http.put<any>(`${this.clientsUrl}/${clientId}/unassign`, null, { params });
+  }
+
+  /**
+   * 7. Asignación por lote a un asesor (ClientController: POST /api/v1/clients/assign-batch/{userId}?count=...)
+   */
+  assignBatchToAgent(agentId: number | string, count: number, actorName: string = 'Administrador Principal'): Observable<any> {
+    const params = new HttpParams()
+      .set('count', count.toString())
+      .set('actorName', actorName);
+    return this.http.post<any>(`${this.clientsUrl}/assign-batch/${agentId}`, null, { params });
+  }
+
+  /**
+   * 8. Auto-distribución equitativa (ClientController: POST /api/v1/clients/auto-distribute?countPerAgent=...)
+   */
   autoDistributeClients(countPerAgent: number = 10, actorName: string = 'Administrador Principal'): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/auto-distribute`, { countPerAgent, actorName });
+    const params = new HttpParams()
+      .set('countPerAgent', countPerAgent.toString())
+      .set('actorName', actorName);
+    return this.http.post<any>(`${this.clientsUrl}/auto-distribute`, null, { params });
   }
 
-  // 7. Liberar/Desasignar cliente
-  unassignClient(clientId: number, actorName: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/${clientId}/unassign`, { actorName });
+  /**
+   * 9. Alternar estatus Top Agent (AgentController: PUT /api/v1/agents/{id}/toggle-top-agent)
+   */
+  toggleTopAgentStatus(agentId: number | string): Observable<any> {
+    return this.http.put<any>(`${this.agentsUrl}/${agentId}/toggle-top-agent`, {});
   }
 
-  // 8. Carga de archivo Excel
-  uploadExcel(file: File, actorName: string): Observable<any> {
+  /**
+   * 10. Carga e importación de archivo Excel (ClientController: POST /api/v1/clients/import-excel)
+   */
+  uploadExcel(file: File, actorName: string = 'Administrador Principal'): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('actorName', actorName);
-    return this.http.post<any>(`${this.apiUrl}/import/excel`, formData);
+    const params = new HttpParams().set('actorName', actorName);
+    return this.http.post<any>(`${this.clientsUrl}/import-excel`, formData, { params });
   }
 
-  // 9. Historial de auditoría por cliente
+  /**
+   * 11. Historial de auditoría por cliente (ClientController: GET /api/v1/clients/{clientId}/audit-logs)
+   */
   getClientAuditLogs(clientId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/${clientId}/audit-logs`);
+    return this.http.get<any[]>(`${this.clientsUrl}/${clientId}/audit-logs`);
   }
 
-  // 10. Seguimientos y avances por asesor (Resuelve TS2339 en admin-analytics y agent-dashboard)
+  /**
+   * 12. Historial de seguimientos por asesor (ClientController: GET /api/v1/clients/follow-ups/agent/{agentId})
+   */
   getFollowUpsByAgent(agentId: number | string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/follow-ups/agent/${agentId}`);
+    return this.http.get<any[]>(`${this.clientsUrl}/follow-ups/agent/${agentId}`);
   }
 
-  // 11. Registrar nuevo seguimiento
+  /**
+   * 13. Guardar registro de seguimiento (ClientController: POST /api/v1/clients/{clientId}/follow-ups)
+   */
   addFollowUp(clientId: number, payload: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/${clientId}/follow-ups`, payload);
+    return this.http.post<any>(`${this.clientsUrl}/${clientId}/follow-ups`, payload);
   }
 
-  // 12. Alternar estado Top Agent (Resuelve TS2339 en top-agents)
-  toggleTopAgentStatus(agentId: number | string): Observable<any> {
-    return this.http.patch<any>(`${this.usersUrl}/${agentId}/toggle-top-status`, {});
-  }
-
-  // 13. Eliminar cliente
+  /**
+   * 14. Eliminar cliente (ClientController: DELETE /api/v1/clients/{id})
+   */
   deleteClient(clientId: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${clientId}`);
+    return this.http.delete<any>(`${this.clientsUrl}/${clientId}`);
   }
 }
