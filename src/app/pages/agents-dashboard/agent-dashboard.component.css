@@ -1,59 +1,150 @@
 :host {
   display: block;
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: #1e293b;
 }
 
 .font-monospace {
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace !important;
 }
 
-/* BANNER INSTITUCIONAL */
+/* CONTENEDOR PRINCIPAL CON MARGEN FIJO */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.main-content {
+  flex-grow: 1;
+  margin-left: 210px;
+  min-width: 0;
+  background-color: #f8fafc;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 1rem !important;
+  }
+}
+
+/* BANNER INSTITUCIONAL EJECUTIVO */
 .header-banner {
-  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
   border-left: 5px solid #EB0A1E !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
 }
 
 .banner-watermark {
   position: absolute;
-  right: -15px;
-  bottom: -25px;
+  right: -20px;
+  bottom: -35px;
   font-size: 11rem;
   color: rgba(255, 255, 255, 0.03);
   pointer-events: none;
+  transform: rotate(-10deg);
 }
 
-/* KPIS ESTILIZADOS CON HOVER */
+/* KPIS DE RENDIMIENTO */
 .kpi-card {
-  transition: all 0.2s ease-in-out;
-  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  background: #ffffff;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .kpi-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.07) !important;
+  border-color: #cbd5e1 !important;
+}
+
+.kpi-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
 }
 
 .kpi-title {
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #6c757d;
+  letter-spacing: 0.6px;
+  color: #64748b;
 }
 
-/* RECTOR DE ACTIVIDAD CON HOVER SUAVE */
+/* TARJETAS DE CONTENIDO */
+.dashboard-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+}
+
+/* TIMELINE DE ACTIVIDADES */
+.timeline-item {
+  position: relative;
+  padding-left: 20px;
+  border-left: 2px solid #e2e8f0;
+  margin-left: 8px;
+  transition: all 0.2s ease;
+}
+
+.timeline-item:hover {
+  border-left-color: #EB0A1E;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -7px;
+  top: 14px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 2px solid #94a3b8;
+}
+
+.timeline-item:hover .timeline-dot {
+  border-color: #EB0A1E;
+  background-color: #fee2e2;
+}
+
 .activity-card {
-  border-left: 4px solid #EB0A1E !important;
-  transition: all 0.15s ease-in-out;
+  background-color: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  transition: all 0.2s ease;
 }
 
 .activity-card:hover {
-  background-color: #f8f9fa !important;
-  border-color: #adb5bd !important;
-  transform: translateX(2px);
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateX(3px);
 }
 
-/* ANIMACIÓN SPINNER DE ACTUALIZACIÓN */
+/* BOTÓN TOYOTA REDISEÑADO */
+.btn-toyota {
+  background-color: #EB0A1E;
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-toyota:hover {
+  background-color: #c90819;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(235, 10, 30, 0.35);
+  transform: translateY(-1px);
+}
+
+/* ANIMACIÓN SPINNER */
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -64,21 +155,21 @@
   display: inline-block;
 }
 
-/* SCROLLBAR MODERNO Y DISCRETO */
-div[style*="max-height"]::-webkit-scrollbar {
+/* SCROLLBAR REFINADO */
+.custom-scroll::-webkit-scrollbar {
   width: 5px;
 }
 
-div[style*="max-height"]::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
+.custom-scroll::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 6px;
 }
 
-div[style*="max-height"]::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 4px;
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 6px;
 }
 
-div[style*="max-height"]::-webkit-scrollbar-thumb:hover {
-  background: #EB0A1E;
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

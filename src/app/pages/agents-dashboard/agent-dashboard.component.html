@@ -1,37 +1,47 @@
 <div class="app-container">
   <app-sidebar></app-sidebar>
 
-  <main class="main-content bg-light min-vh-100 py-4 px-3 px-md-4">
+  <main class="main-content py-4 px-3 px-md-4">
     
-    <!-- BANNER DE BIENVENIDA -->
-    <div class="card border-0 shadow-sm rounded-4 bg-black text-white p-4 mb-4 position-relative overflow-hidden header-banner">
+    <!-- BANNER PRINCIPAL DE BIENVENIDA -->
+    <div class="card border-0 rounded-4 text-white p-4 mb-4 position-relative overflow-hidden header-banner">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 position-relative z-1">
         <div>
-          <span class="badge bg-danger text-white font-monospace text-uppercase px-2.5 py-1 mb-2" style="letter-spacing: 0.5px;">
-            <i class="bi bi-shield-check me-1"></i> Fuerza Móvil Toyota Pachuca
-          </span>
-          <h3 class="fw-bold text-white mb-1">
-            {{ greetingMessage }} {{ agentName }}
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="badge bg-danger text-white font-monospace text-uppercase px-2.5 py-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">
+              🛡️ FUERZA MÓVIL TOYOTA
+            </span>
+            <span class="badge bg-dark border border-secondary text-light px-2 py-0.5" style="font-size: 0.72rem;">
+              Toyota Pachuca
+            </span>
+          </div>
+          
+          <h3 class="fw-bold text-white mb-1 tracking-tight">
+            {{ greetingMessage }} {{ agentName }} 👋
           </h3>
-          <p class="text-white-50 small mb-0">
-            Aquí tienes el resumen de tu productividad y actividad comercial registrada el día de hoy.
+          <p class="text-light text-opacity-75 small mb-0" style="max-width: 600px;">
+            Resumen diario de prospección comercial, llamadas registradas y avance sobre tu cartera activa.
           </p>
         </div>
 
         <div class="d-flex align-items-center gap-2">
-          <button type="button" (click)="loadAgentMetrics()" class="btn btn-outline-light rounded-3 btn-sm fw-semibold px-3 shadow-sm" [disabled]="isLoading">
-            <i class="bi bi-arrow-repeat me-1" [class.spin]="isLoading"></i> Actualizar
+          <button type="button" 
+                  (click)="loadAgentMetrics()" 
+                  class="btn btn-outline-light rounded-3 btn-sm fw-semibold px-3 shadow-sm d-flex align-items-center gap-1.5" 
+                  [disabled]="isLoading">
+            <span [class.spin]="isLoading">🔄</span>
+            <span>Actualizar</span>
           </button>
 
-          <a routerLink="/clients" class="btn btn-danger text-white rounded-3 btn-sm fw-bold px-3 shadow-sm d-flex align-items-center gap-1.5">
-            <i class="bi bi-people-fill"></i>
-            <span>Ir a Mi Cartera</span>
+          <a routerLink="/clients" class="btn btn-toyota rounded-3 btn-sm px-3.5 py-2 shadow-sm d-flex align-items-center gap-2">
+            <span>👥</span>
+            <span>Mi Cartera</span>
           </a>
         </div>
       </div>
       
-      <!-- Marca de agua de fondo -->
-      <i class="bi bi-speedometer2 banner-watermark"></i>
+      <!-- Marca de agua decorativa -->
+      <span class="banner-watermark">🚗</span>
     </div>
 
     <!-- TARJETAS DE KPIS SUPERIORES -->
@@ -39,16 +49,16 @@
       
       <!-- KPI 1: CARTERA ASIGNADA -->
       <div class="col-12 col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 kpi-card border-start border-4 border-dark">
+        <div class="p-3 h-100 kpi-card border-start border-4 border-dark shadow-sm">
           <div class="d-flex align-items-center justify-content-between mb-2">
-            <span class="kpi-title">Mi Cartera Activa</span>
-            <div class="bg-dark bg-opacity-10 rounded-2 p-2 text-dark d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-              <i class="bi bi-folder-fill fs-5"></i>
+            <span class="kpi-title">Cartera Asignada</span>
+            <div class="kpi-icon-wrapper bg-dark text-white">
+              📁
             </div>
           </div>
           <div class="d-flex align-items-baseline gap-2">
             <h2 class="fw-bold text-dark mb-0 font-monospace">{{ totalAssigned }}</h2>
-            <span class="small text-muted">cuentas asignadas</span>
+            <span class="small text-muted">cuentas activas</span>
           </div>
           <div class="progress mt-3 rounded-pill bg-light" style="height: 6px;">
             <div class="progress-bar bg-dark rounded-pill" style="width: 100%;"></div>
@@ -58,11 +68,11 @@
 
       <!-- KPI 2: INTERACCIONES HOY -->
       <div class="col-12 col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 kpi-card border-start border-4 border-success">
+        <div class="p-3 h-100 kpi-card border-start border-4 border-success shadow-sm">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <span class="kpi-title">Bitácoras Ingresadas Hoy</span>
-            <div class="bg-success bg-opacity-10 rounded-2 p-2 text-success d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-              <i class="bi bi-chat-right-text-fill fs-5"></i>
+            <div class="kpi-icon-wrapper bg-success bg-opacity-10 text-success">
+              💬
             </div>
           </div>
           <div class="d-flex align-items-baseline gap-2">
@@ -75,13 +85,13 @@
         </div>
       </div>
 
-      <!-- KPI 3: CLIENTES CONCLUIDOS (3/3) -->
+      <!-- KPI 3: CLIENTES CONCLUIDOS -->
       <div class="col-12 col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 kpi-card border-start border-4 border-danger">
+        <div class="p-3 h-100 kpi-card border-start border-4 border-danger shadow-sm">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <span class="kpi-title">Prospección Concluida (3/3)</span>
-            <div class="bg-danger bg-opacity-10 rounded-2 p-2 text-danger d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-              <i class="bi bi-check-all fs-4"></i>
+            <div class="kpi-icon-wrapper bg-danger bg-opacity-10 text-danger">
+              🎯
             </div>
           </div>
           <div class="d-flex align-items-baseline gap-2">
@@ -96,102 +106,123 @@
 
     </div>
 
-    <!-- SECCIÓN PRINCIPAL: HISTORIAL DE HOY Y RESUMEN DE EFECTIVIDAD -->
+    <!-- SECCIÓN PRINCIPAL: HISTORIAL Y RESUMEN DE EFECTIVIDAD -->
     <div class="row g-4">
       
       <!-- HISTORIAL EN VIVO DE HOY -->
       <div class="col-12 col-lg-8">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
+        <div class="dashboard-card shadow-sm p-4 h-100 d-flex flex-column">
+          
           <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
             <div>
-              <h6 class="fw-bold text-dark mb-0 text-uppercase d-flex align-items-center gap-2" style="letter-spacing: 0.5px;">
-                <i class="bi bi-clock-history text-danger"></i>
-                Bitácoras Registradas Hoy
+              <h6 class="fw-bold text-dark mb-0 text-uppercase d-flex align-items-center gap-2" style="font-size: 0.82rem; letter-spacing: 0.5px;">
+                <span>⏱️</span> Bitácoras Registradas Hoy
               </h6>
-              <span class="small text-muted" style="font-size: 0.75rem;">Historial cronológico de interacciones comercializadas</span>
+              <span class="small text-muted">Historial cronológico de interacciones de la jornada</span>
             </div>
-            <span class="badge bg-dark text-white font-monospace px-2.5 py-1.5">{{ todayLogs.length }} Avances</span>
+            <span class="badge bg-dark text-white font-monospace px-2.5 py-1.5 rounded-pill" style="font-size: 0.75rem;">
+              {{ todayLogs.length }} {{ todayLogs.length === 1 ? 'Avance' : 'Avances' }}
+            </span>
           </div>
 
           <!-- LOADER -->
-          <div *ngIf="isLoading" class="text-center py-5">
+          <div *ngIf="isLoading" class="text-center py-5 my-auto">
             <div class="spinner-border text-danger spinner-border-sm me-2" role="status"></div>
             <span class="small text-muted font-monospace d-block mt-2">Cargando métricas de hoy...</span>
           </div>
 
           <!-- ESTADO VACÍO -->
-          <div *ngIf="!isLoading && todayLogs.length === 0" class="text-center py-5 bg-light rounded-3 border">
-            <i class="bi bi-chat-square-dots fs-1 text-secondary opacity-50 d-block mb-2"></i>
+          <div *ngIf="!isLoading && todayLogs.length === 0" class="text-center py-5 my-auto bg-light rounded-4 border">
+            <div class="fs-1 mb-2">📋</div>
             <h6 class="fw-bold text-dark mb-1">Aún no registras contactos el día de hoy</h6>
-            <p class="small text-muted mb-3" style="max-width: 380px; margin: 0 auto;">Ingresa a tu cartera comercial para contactar a tus clientes y registrar tus bitácoras.</p>
-            <a routerLink="/clients" class="btn btn-sm btn-danger rounded-3 fw-bold px-3 shadow-sm">
-              <i class="bi bi-telephone-outbound me-1"></i> Iniciar Prospección
+            <p class="small text-muted mb-3" style="max-width: 380px; margin: 0 auto;">
+              Ingresa a tu cartera comercial para contactar a tus clientes asignados y registrar tus avances.
+            </p>
+            <a routerLink="/clients" class="btn btn-sm btn-toyota rounded-3 px-3 shadow-sm">
+              🚀 Iniciar Prospección
             </a>
           </div>
 
-          <!-- LISTA DE HISTORIAL -->
-          <div *ngIf="!isLoading && todayLogs.length > 0" class="d-flex flex-column gap-2.5" style="max-height: 420px; overflow-y: auto;">
-            <div *ngFor="let log of todayLogs" class="activity-card p-3 rounded-3 border bg-white d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
-              <div class="flex-grow-1">
-                <div class="d-flex align-items-center gap-2 mb-1">
-                  <strong class="text-dark small text-uppercase">{{ log.clientName }}</strong>
-                  <span class="badge px-2 py-0.5 font-monospace rounded-2" [ngClass]="getActionBadgeClass(log.action)" style="font-size: 0.65rem;">
-                    {{ log.action }}
-                  </span>
+          <!-- TIMELINE DE HISTORIAL -->
+          <div *ngIf="!isLoading && todayLogs.length > 0" class="custom-scroll pe-2 d-flex flex-column gap-2" style="max-height: 420px; overflow-y: auto;">
+            <div *ngFor="let log of todayLogs" class="timeline-item">
+              <span class="timeline-dot"></span>
+              <div class="activity-card p-3 shadow-2xs">
+                <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                  <div>
+                    <strong class="text-dark small text-uppercase font-monospace d-block">
+                      {{ log.clientName || 'Cliente' }}
+                    </strong>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge px-2 py-0.5 font-monospace rounded-2" [ngClass]="getActionBadgeClass(log.action)" style="font-size: 0.65rem;">
+                      {{ log.action }}
+                    </span>
+                    <span class="small text-muted font-monospace" style="font-size: 0.72rem;">
+                      🕒 {{ log.timestamp | date:'hh:mm a' }}
+                    </span>
+                  </div>
                 </div>
-                <p class="small text-secondary mb-0 fw-medium" style="font-size: 0.82rem;">{{ log.comments }}</p>
-              </div>
-
-              <div class="d-flex align-items-center gap-3">
-                <span class="small text-muted font-monospace" style="font-size: 0.72rem;">
-                  <i class="bi bi-clock me-1 text-danger"></i>{{ log.timestamp | date:'hh:mm a' }}
-                </span>
+                <p class="small text-secondary mb-0 fw-medium" style="font-size: 0.82rem;">
+                  {{ log.comments || log.description }}
+                </p>
               </div>
             </div>
           </div>
+
         </div>
       </div>
 
-      <!-- RESUMEN DE EFECTIVIDAD -->
+      <!-- RESUMEN DE EFECTIVIDAD COMERCIAL -->
       <div class="col-12 col-lg-4">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100 d-flex flex-column justify-content-between">
+        <div class="dashboard-card shadow-sm p-4 h-100 d-flex flex-column justify-content-between">
+          
           <div>
             <div class="border-bottom pb-3 mb-3">
-              <h6 class="fw-bold text-dark mb-0 text-uppercase d-flex align-items-center gap-2" style="letter-spacing: 0.5px;">
-                <i class="bi bi-trophy-fill text-warning"></i>
-                Efectividad del Asesor
+              <h6 class="fw-bold text-dark mb-0 text-uppercase d-flex align-items-center gap-2" style="font-size: 0.82rem; letter-spacing: 0.5px;">
+                <span>🏆</span> Rendimiento Diario
               </h6>
             </div>
 
-            <div class="p-3.5 rounded-4 bg-light border text-center mb-4 shadow-sm">
-              <span class="text-muted small text-uppercase d-block fw-bold mb-1" style="font-size: 0.7rem;">Cumplimiento Diario</span>
-              <h1 class="fw-bold text-danger mb-0 font-monospace display-5">{{ progressPercentage }}%</h1>
-              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Calculado sobre meta de 3 llamadas por cuenta</span>
+            <!-- Widget Circular / Efectividad -->
+            <div class="p-3.5 rounded-4 bg-light border text-center mb-4 shadow-2xs">
+              <span class="text-muted small text-uppercase d-block fw-bold mb-1" style="font-size: 0.68rem; letter-spacing: 0.5px;">
+                Cumplimiento de Meta
+              </span>
+              <h1 class="fw-bold text-danger mb-0 font-monospace display-5">
+                {{ progressPercentage }}%
+              </h1>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.74rem;">
+                Basado en el estándar de 3 seguimientos por cuenta
+              </span>
             </div>
 
-            <div class="d-flex flex-column gap-2.5">
+            <!-- Desglose de Cuentas -->
+            <div class="d-flex flex-column gap-2">
               <div class="d-flex align-items-center justify-content-between p-2.5 bg-light rounded-3 border small">
-                <span class="text-muted"><i class="bi bi-check-circle-fill text-dark me-1.5"></i>Cartera Asignada:</span>
+                <span class="text-muted">📁 Cartera Asignada:</span>
                 <strong class="font-monospace text-dark">{{ totalAssigned }} Clientes</strong>
               </div>
 
               <div class="d-flex align-items-center justify-content-between p-2.5 bg-light rounded-3 border small">
-                <span class="text-muted"><i class="bi bi-chat-dots-fill text-success me-1.5"></i>Bitácoras Hoy:</span>
-                <strong class="font-monospace text-dark">{{ todayContactsCount }} Registros</strong>
+                <span class="text-muted">💬 Bitácoras Hoy:</span>
+                <strong class="font-monospace text-success">{{ todayContactsCount }} Registros</strong>
               </div>
 
               <div class="d-flex align-items-center justify-content-between p-2.5 bg-light rounded-3 border small">
-                <span class="text-muted"><i class="bi bi-star-fill text-warning me-1.5"></i>Efectividad Meta:</span>
-                <strong class="font-monospace text-dark">{{ goalCompletionPercentage }}% Concluidos</strong>
+                <span class="text-muted">🎯 Concluidos al 100%:</span>
+                <strong class="font-monospace text-danger">{{ goalCompletionPercentage }}%</strong>
               </div>
             </div>
           </div>
 
+          <!-- Sello de Marca -->
           <div class="pt-4 border-top text-center mt-3">
-            <span class="badge bg-black text-white font-monospace px-3 py-1.5 rounded-pill shadow-sm">
-              <i class="bi bi-car-front-fill me-1 text-danger"></i> Toyota Pachuca
+            <span class="badge bg-dark text-white font-monospace px-3 py-1.5 rounded-pill shadow-sm" style="font-size: 0.72rem;">
+              🚗 TOYOTA & CARSLINE PACHUCA
             </span>
           </div>
+
         </div>
       </div>
 
