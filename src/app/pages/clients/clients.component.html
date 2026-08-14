@@ -32,7 +32,7 @@
           <div class="d-flex align-items-center justify-content-between">
             <div>
               <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.7rem;">Total Cartera</span>
-              <h3 class="fw-bold text-dark mb-0 font-monospace">{{ summaryTotalPortfolio }}</h3>
+              <h3 class="fw-bold text-dark mb-0 font-monospace">{{ summaryTotalPortfolio | number }}</h3>
               <span class="small text-muted d-block mt-1" style="font-size: 0.72rem;">Cuentas unificadas</span>
             </div>
             <div class="bg-dark bg-opacity-10 rounded-3 p-3 text-dark d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
@@ -47,7 +47,7 @@
           <div class="d-flex align-items-center justify-content-between">
             <div>
               <span class="text-primary small fw-bold text-uppercase d-block mb-1" style="font-size: 0.7rem;">Clientes Asignados</span>
-              <h3 class="fw-bold text-primary mb-0 font-monospace">{{ assignedToMeCount }}</h3>
+              <h3 class="fw-bold text-primary mb-0 font-monospace">{{ assignedToMeCount | number }}</h3>
               <span class="small text-muted d-block mt-1" style="font-size: 0.72rem;">En atención por la fuerza de ventas</span>
             </div>
             <div class="bg-primary bg-opacity-10 rounded-3 p-3 text-primary d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
@@ -62,7 +62,7 @@
           <div class="d-flex align-items-center justify-content-between">
             <div>
               <span class="text-warning-emphasis small fw-bold text-uppercase d-block mb-1" style="font-size: 0.7rem;">Sin Agente</span>
-              <h3 class="fw-bold text-dark mb-0 font-monospace">{{ pendingFollowUpsCount }}</h3>
+              <h3 class="fw-bold text-dark mb-0 font-monospace">{{ pendingFollowUpsCount | number }}</h3>
               <span class="small text-muted d-block mt-1" style="font-size: 0.72rem;">Disponibles para reparto</span>
             </div>
             <div class="bg-warning bg-opacity-10 rounded-3 p-3 text-warning-emphasis d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
@@ -77,7 +77,7 @@
           <div class="d-flex align-items-center justify-content-between">
             <div>
               <span class="text-success small fw-bold text-uppercase d-block mb-1" style="font-size: 0.7rem;">Avance Atención</span>
-              <h3 class="fw-bold text-success mb-0 font-monospace">{{ completedFollowUpsCount }}</h3>
+              <h3 class="fw-bold text-success mb-0 font-monospace">{{ completedFollowUpsCount | number }}</h3>
               <span class="small text-muted d-block mt-1" style="font-size: 0.72rem;">Seguimientos realizados</span>
             </div>
             <div class="bg-success bg-opacity-10 rounded-3 p-3 text-success d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
@@ -95,7 +95,7 @@
           <div class="d-flex align-items-center justify-content-between">
             <div>
               <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.7rem;">Mi Lote Asignado</span>
-              <h3 class="fw-bold text-dark mb-0 font-monospace">{{ assignedToMeCount }}</h3>
+              <h3 class="fw-bold text-dark mb-0 font-monospace">{{ assignedToMeCount | number }}</h3>
               <span class="small text-muted d-block mt-1" style="font-size: 0.72rem;">Clientes bajo mi gestión</span>
             </div>
             <div class="bg-dark bg-opacity-10 rounded-3 p-3 text-dark d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
@@ -110,7 +110,7 @@
           <div class="d-flex align-items-center justify-content-between">
             <div>
               <span class="text-warning-emphasis small fw-bold text-uppercase d-block mb-1" style="font-size: 0.7rem;">Pendientes de Atención</span>
-              <h3 class="fw-bold text-dark mb-0 font-monospace">{{ pendingFollowUpsCount }}</h3>
+              <h3 class="fw-bold text-dark mb-0 font-monospace">{{ pendingFollowUpsCount | number }}</h3>
               <span class="small text-muted d-block mt-1" style="font-size: 0.72rem;">Requieren completar 3 intentos</span>
             </div>
             <div class="bg-warning bg-opacity-10 rounded-3 p-3 text-warning-emphasis d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
@@ -125,7 +125,7 @@
           <div class="d-flex align-items-center justify-content-between">
             <div>
               <span class="text-danger small fw-bold text-uppercase d-block mb-1" style="font-size: 0.7rem;">Meta Concluida (3/3)</span>
-              <h3 class="fw-bold text-danger mb-0 font-monospace">{{ completedFollowUpsCount }}</h3>
+              <h3 class="fw-bold text-danger mb-0 font-monospace">{{ completedFollowUpsCount | number }}</h3>
               <span class="small text-muted d-block mt-1" style="font-size: 0.72rem;">Cuentas al 100% prospectadas</span>
             </div>
             <div class="bg-danger bg-opacity-10 rounded-3 p-3 text-danger d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
@@ -186,14 +186,14 @@
               </td>
             </tr>
 
-            <!-- ESTADO VACÍO ELEGANTE CUANDO NO TIENE CLIENTES ASIGNADOS -->
+            <!-- ESTADO VACÍO CUANDO NO HAY CLIENTES -->
             <tr *ngIf="!isLoading && clients.length === 0">
               <td [attr.colspan]="isAdmin ? 7 : 6" class="text-center py-5 bg-white">
                 <div class="py-4">
                   <div class="bg-light rounded-circle d-inline-flex p-3 mb-3 text-secondary">
                     <i class="bi bi-inbox fs-1"></i>
                   </div>
-                  <h6 class="fw-bold text-dark mb-1">Aún no tienes clientes asignados en tu cartera</h6>
+                  <h6 class="fw-bold text-dark mb-1">Aún no tienes clientes en esta vista</h6>
                   <p class="small text-muted mb-0" style="max-width: 420px; margin: 0 auto;">
                     {{ isAdmin ? 'No se encontraron registros de clientes en esta vista.' : 'Solicita a la administración la asignación de tu lote comercial para comenzar tu prospección.' }}
                   </p>
@@ -215,7 +215,9 @@
 
               <!-- 2. RAZÓN SOCIAL / CLIENTE -->
               <td>
-                <strong class="d-block text-dark small text-uppercase text-truncate" style="max-width: 210px;" title="{{ client.companyName || client.nombreDelCliente }}">{{ client.companyName || client.nombreDelCliente }}</strong>
+                <strong class="d-block text-dark small text-uppercase text-truncate" style="max-width: 210px;" title="{{ client.companyName || client.nombreDelCliente || 'SIN NOMBRE' }}">
+                  {{ client.companyName || client.nombreDelCliente || 'SIN NOMBRE' }}
+                </strong>
                 <span class="badge bg-light text-secondary border fw-normal" style="font-size: 0.68rem;">
                   <i class="bi bi-car-front me-1"></i>{{ client.vehicleModel || client.brand || 'TOYOTA' }}
                 </span>
@@ -236,7 +238,8 @@
                     <span *ngIf="client.contactPhone || client.telefonoContacto" class="fw-semibold text-dark font-monospace">
                       <i class="bi bi-telephone-fill me-1 text-success"></i>{{ client.contactPhone || client.telefonoContacto }}
                     </span>
-                    <button *ngIf="!isAdmin" type="button" (click)="sendInventoryWhatsApp(client)" class="btn btn-xs btn-success rounded-circle p-1 d-inline-flex align-items-center justify-content-center" style="width: 22px; height: 22px;" title="Enviar WhatsApp Rápido">
+                    <span *ngIf="!client.contactPhone && !client.telefonoContacto" class="text-muted small">Sin Teléfono</span>
+                    <button *ngIf="!isAdmin && (client.contactPhone || client.telefonoContacto)" type="button" (click)="sendInventoryWhatsApp(client)" class="btn btn-xs btn-success rounded-circle p-1 d-inline-flex align-items-center justify-content-center ms-1" style="width: 22px; height: 22px;" title="Enviar WhatsApp Rápido">
                       <i class="bi bi-whatsapp" style="font-size: 0.72rem;"></i>
                     </button>
                   </div>
@@ -307,7 +310,8 @@
       <!-- PAGINACIÓN FOOTER -->
       <div class="card-footer bg-white border-0 p-3 d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
         <span class="small text-muted font-monospace">
-          Página <strong>{{ currentPage + 1 }}</strong> de <strong>{{ totalPages }}</strong> (Mostrando {{ clients.length }} de {{ totalElements }} clientes)
+          Página <strong>{{ currentPage + 1 }}</strong> de <strong>{{ totalPages }}</strong> 
+          (Mostrando {{ clients.length }} de {{ totalElements | number }} clientes)
         </span>
 
         <div class="btn-group">
@@ -471,7 +475,7 @@
               <div class="col-12 col-md-6">
                 <div class="p-3 bg-white rounded-3 border h-100">
                   <span class="text-muted d-block small mb-1">Teléfono Principal</span>
-                  <strong class="d-block text-dark small font-monospace"><i class="bi bi-telephone-fill me-1 text-success"></i>{{ selectedClientForDetail?.contactPhone || selectedClientForDetail?.telefonoContacto }}</strong>
+                  <strong class="d-block text-dark small font-monospace"><i class="bi bi-telephone-fill me-1 text-success"></i>{{ selectedClientForDetail?.contactPhone || selectedClientForDetail?.telefonoContacto || 'Sin Teléfono' }}</strong>
                 </div>
               </div>
             </div>

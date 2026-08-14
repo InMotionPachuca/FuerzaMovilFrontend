@@ -96,8 +96,16 @@ export class ClientsComponent implements OnInit {
       ).subscribe({
         next: (res: any) => {
           this.clients = res.content || [];
-          this.totalElements = res.totalElements ?? this.clients.length;
-          this.totalPages = res.totalPages ?? Math.ceil(this.totalElements / this.pageSize) ?? 1;
+          
+          // Soporta respuesta anidada en 'page' o plana
+          if (res.page) {
+            this.totalElements = res.page.totalElements ?? 0;
+            this.totalPages = res.page.totalPages ?? 1;
+            this.currentPage = res.page.number ?? 0;
+          } else {
+            this.totalElements = res.totalElements ?? this.clients.length;
+            this.totalPages = res.totalPages ?? Math.ceil(this.totalElements / this.pageSize) ?? 1;
+          }
 
           // Métricas personales del asesor
           this.assignedToMeCount = this.totalElements;
@@ -132,8 +140,17 @@ export class ClientsComponent implements OnInit {
     ).subscribe({
       next: (res: any) => {
         this.clients = res.content || [];
-        this.totalElements = res.totalElements ?? this.clients.length;
-        this.totalPages = res.totalPages ?? Math.ceil(this.totalElements / this.pageSize) ?? 1;
+
+        // Soporta respuesta anidada en 'page' o plana
+        if (res.page) {
+          this.totalElements = res.page.totalElements ?? 0;
+          this.totalPages = res.page.totalPages ?? 1;
+          this.currentPage = res.page.number ?? 0;
+        } else {
+          this.totalElements = res.totalElements ?? this.clients.length;
+          this.totalPages = res.totalPages ?? Math.ceil(this.totalElements / this.pageSize) ?? 1;
+        }
+
         this.isLoading = false;
       },
       error: () => {
