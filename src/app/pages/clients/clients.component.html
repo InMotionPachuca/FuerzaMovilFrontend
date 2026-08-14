@@ -1,9 +1,9 @@
-<div class="d-flex" style="min-height: 100vh; background-color: #f8fafc; overflow-x: hidden;">
-  <!-- Sidebar -->
+<div class="d-flex" style="min-height: 100vh; background-color: #f8fafc;">
+  <!-- Sidebar Fijo (210px) -->
   <app-sidebar></app-sidebar>
 
-  <!-- Contenedor Principal -->
-  <div class="flex-grow-1 d-flex flex-column min-vw-0" style="overflow-x: hidden;">
+  <!-- Contenedor Principal desplazado 210px a la derecha -->
+  <div class="flex-grow-1 d-flex flex-column clients-main-content" style="margin-left: 210px; min-width: 0; background-color: #f8fafc;">
     
     <!-- Topbar / Header Institucional -->
     <header class="bg-white border-bottom px-4 py-3 shadow-sm d-flex flex-wrap justify-content-between align-items-center gap-3 sticky-top">
@@ -111,13 +111,13 @@
           <table class="table table-hover align-middle mb-0" style="font-size: 0.85rem;">
             <thead class="table-dark" style="font-size: 0.78rem;">
               <tr>
-                <th style="width: 110px;" class="ps-3">Segmento</th>
-                <th style="min-width: 220px;">Razón Social / Cliente</th>
+                <th style="width: 100px;" class="ps-3">Segmento</th>
+                <th style="min-width: 200px;">Razón Social / Cliente</th>
                 <th style="width: 120px;">RFC / ID</th>
                 <th style="min-width: 180px;">Contacto Directo</th>
                 <th style="min-width: 170px;">Vehículo / Crédito</th>
                 <th style="width: 200px;">{{ isAdmin ? 'Asesor Asignado' : 'Estatus' }}</th>
-                <th class="text-center pe-3" style="width: 160px;">Acciones</th>
+                <th class="text-center pe-3" style="width: 150px;">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -278,7 +278,7 @@
 </div>
 
 <!-- ========================================================================= -->
-<!-- MODAL 1: SEGUIMIENTO COMERCIAL Y BITÁCORA CRM (showToolsModal)           -->
+<!-- MODAL 1: SEGUIMIENTO COMERCIAL Y BITÁCORA CRM                            -->
 <!-- ========================================================================= -->
 <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6);" *ngIf="showToolsModal && selectedClientForTools">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -292,8 +292,6 @@
       </div>
 
       <div class="modal-body p-4">
-        
-        <!-- Formulario -->
         <div class="card bg-light border-0 p-3 mb-4 rounded-3">
           <h6 class="fw-bold mb-3 text-dark fs-6">➕ Registrar Nueva Interacción</h6>
           
@@ -320,7 +318,7 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label small fw-bold text-muted">Observaciones de la llamada / chat</label>
+            <label class="form-label small fw-bold text-muted">Observaciones de la interacción</label>
             <textarea [(ngModel)]="followUpComments" rows="3" class="form-control form-control-sm" placeholder="Escribe aquí los comentarios..."></textarea>
           </div>
 
@@ -331,7 +329,6 @@
           </div>
         </div>
 
-        <!-- Historial -->
         <h6 class="fw-bold text-dark mb-3">🕒 Historial de Seguimientos</h6>
         
         <div *ngIf="isLoadingHistory" class="text-center py-4 text-muted">
@@ -353,7 +350,6 @@
             <small class="text-muted">Por: <strong>{{ log.actorName || 'Asesor' }}</strong> ({{ log.batchName || log.method || 'CRM' }})</small>
           </div>
         </div>
-
       </div>
 
       <div class="modal-footer bg-light">
@@ -365,7 +361,7 @@
 </div>
 
 <!-- ========================================================================= -->
-<!-- MODAL 2: FICHA TÉCNICA DE CUENTA (showDetailModal)                       -->
+<!-- MODAL 2: FICHA TÉCNICA DE CUENTA                                         -->
 <!-- ========================================================================= -->
 <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6);" *ngIf="showDetailModal && selectedClientForDetail">
   <div class="modal-dialog modal-dialog-centered modal-lg">
