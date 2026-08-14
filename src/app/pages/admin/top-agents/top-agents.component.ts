@@ -68,6 +68,9 @@ export class TopAgentsComponent implements OnInit {
     this.clientService.getSummaryMetrics().subscribe({
       next: (m: any) => {
         this.totalVIPClientsAvailable = m.benefit || 0;
+      },
+      error: (err: any) => {
+        console.error('Error al cargar métricas de VIP:', err);
       }
     });
 
@@ -98,7 +101,6 @@ export class TopAgentsComponent implements OnInit {
     const previousState = agent.isTopAgent;
     agent.isTopAgent = !agent.isTopAgent;
 
-    // AHORA USA EL CLIENTSERVICE CON LA RUTA REAL HACIA AGENTCONTROLLER
     this.clientService.toggleTopAgentStatus(agent.id).subscribe({
       next: () => {
         const title = agent.isTopAgent ? '¡Asesor Ascendido a Top Agent!' : 'Asesor Removido';
@@ -115,7 +117,7 @@ export class TopAgentsComponent implements OnInit {
           showConfirmButton: false
         });
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error al actualizar estatus:', err);
         agent.isTopAgent = previousState;
         Swal.fire('Error', 'No se pudo guardar la preferencia en el servidor.', 'error');

@@ -51,7 +51,7 @@ export class AdminDashboardComponent implements OnInit {
         this.totalPortfolioCount = m.total || (this.baseCount + this.benefitCount);
         this.assignedClientsCount = Math.max(0, this.totalPortfolioCount - this.unassignedCount);
       },
-      error: (err) => console.error('Error al cargar métricas ejecutivas:', err)
+      error: (err: any) => console.error('Error al cargar métricas ejecutivas:', err)
     });
 
     // 2. Cargar Asesores y Calcular la Efectividad Individual
@@ -72,7 +72,7 @@ export class AdminDashboardComponent implements OnInit {
           const agentId = Number(agent.id);
 
           // A. Obtener clientes asignados individualmente a este agente
-          this.clientService.getClientsPaged('ALL', '', 0, 1000, agentId, 'AGENT').subscribe({
+          this.clientService.getClientsPaged('ALL', '', 0, 1000, agentId, 'AGENT', '').subscribe({
             next: (res: any) => {
               const assignedList = res.content || [];
               const totalAssigned = res.totalElements !== undefined ? res.totalElements : assignedList.length;
@@ -144,7 +144,7 @@ export class AdminDashboardComponent implements OnInit {
           });
         });
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error al cargar lista de agentes:', err);
         this.isLoading = false;
       }
@@ -152,7 +152,6 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   private sortAndSetTopAgents(list: any[]): void {
-    // Ordenar de mayor a menor porcentaje de efectividad y tomar los primeros 5
     this.topAgentsList = list
       .sort((a, b) => b.effectiveness - a.effectiveness || b.completedFollowUps - a.completedFollowUps)
       .slice(0, 5);
