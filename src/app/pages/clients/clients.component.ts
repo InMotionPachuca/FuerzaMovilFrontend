@@ -21,9 +21,10 @@ export class ClientsComponent implements OnInit {
   summaryTotalPortfolio = 0;
   assignedToMeCount = 0;
   pendingFollowUpsCount = 0;
-  completedFollowUpsCount = 0;
+  benefitClientsCount = 0;
 
-  currentFilterMode: 'UNASSIGNED' | 'ASSIGNED' = 'ASSIGNED';
+  // MODOS DE FILTRO: 'UNASSIGNED' (Base), 'BENEFIT', 'ASSIGNED'
+  currentFilterMode: 'UNASSIGNED' | 'BENEFIT' | 'ASSIGNED' = 'UNASSIGNED';
   isAdmin = false;
   currentUser: any = null;
 
@@ -53,7 +54,6 @@ export class ClientsComponent implements OnInit {
     this.loadInitialData();
   }
 
-  // Generador dinámico e infalible de saludo institucional
   get greetingMessage(): string {
     const hour = new Date().getHours();
     let timeGreeting = 'Buenos días';
@@ -63,10 +63,7 @@ export class ClientsComponent implements OnInit {
       timeGreeting = 'Buenas noches';
     }
 
-    // 1. Obtener desde currentUser
     let name = this.currentUser?.fullName;
-
-    // 2. Si es null, buscar directo en localStorage
     if (!name) {
       try {
         const storedUser = localStorage.getItem('user');
@@ -79,7 +76,6 @@ export class ClientsComponent implements OnInit {
       }
     }
 
-    // 3. Fallback por rol
     if (!name) {
       name = this.isAdmin ? 'Administrador Principal' : 'Asesor Comercial';
     }
@@ -108,7 +104,7 @@ export class ClientsComponent implements OnInit {
         this.summaryTotalPortfolio = m.total || 0;
         this.assignedToMeCount = (m.total || 0) - (m.unassigned || 0);
         this.pendingFollowUpsCount = m.unassigned || 0;
-        this.completedFollowUpsCount = m.base || 0;
+        this.benefitClientsCount = m.benefit || 0;
       }
     });
   }
@@ -116,7 +112,7 @@ export class ClientsComponent implements OnInit {
   loadClients(): void {
     this.isLoading = true;
 
-    // 1. VISTA DE AGENTE COMERCIAL
+    // 1. VISTA DE ASESOR COMERCIAL
     if (!this.isAdmin) {
       const agentId = this.currentUser?.id;
       this.clientService.getClientsPaged(
@@ -130,24 +126,7 @@ export class ClientsComponent implements OnInit {
       ).subscribe({
         next: (res: any) => {
           this.clients = res.content || [];
-          
-          if (res.page) {
-            this.totalElements = res.page.totalElements ?? 0;
-            this.totalPages = res.page.totalPages ?? 1;
-            this.currentPage = res.page.number ?? 0;
-          } else {
-            this.totalElements = res.totalElements ?? this.clients.length;
-            this.totalPages = res.totalPages ?? Math.ceil(this.totalElements / this.pageSize) ?? 1;
-          }
-
-          this.assignedToMeCount = this.totalElements;
-          let completed = 0;
-          this.clients.forEach(c => {
-            if ((c.followUpsCount || 0) >= 3) completed++;
-          });
-          this.completedFollowUpsCount = completed;
-          this.pendingFollowUpsCount = this.totalElements - completed;
-
+          this.setPaginationData(res);
           this.isLoading = false;
         },
         error: () => {
@@ -158,12 +137,24 @@ export class ClientsComponent implements OnInit {
       return;
     }
 
-    // 2. VISTA DE ADMINISTRADOR
-    const assignmentStatus = this.currentFilterMode === 'ASSIGNED' ? 'ASSIGNED' : 'UNASSIGNED';
+    // 2. VISTA DE ADMINISTRADOR (BASE, BENEFIT O ASIGNADOS)
+    let clientTypeParam: string = 'ALL';
+    let assignmentStatusParam: string = this.currentFilterMode;
+
+    if (this.currentFilterMode === 'BENEFIT') {
+      clientTypeParam = 'BENEFIT';
+      assignmentStatusParam = 'ALL';
+    } else if (this.currentFilterMode === 'UNASSIGNED') {
+      clientTypeParam = 'BASE';
+      assignmentStatusParam = 'UNASSIGNED';
+    } else if (this.currentFilterMode === 'ASSIGNED') {
+      clientTypeParam = 'ALL';
+      assignmentStatusParam = 'ASSIGNED';
+    }
 
     this.clientService.getClientsPaged(
-      'ALL',
-      assignmentStatus,
+      clientTypeParam,
+      assignmentStatusParam,
       this.currentPage,
       this.pageSize,
       undefined,
@@ -172,16 +163,7 @@ export class ClientsComponent implements OnInit {
     ).subscribe({
       next: (res: any) => {
         this.clients = res.content || [];
-
-        if (res.page) {
-          this.totalElements = res.page.totalElements ?? 0;
-          this.totalPages = res.page.totalPages ?? 1;
-          this.currentPage = res.page.number ?? 0;
-        } else {
-          this.totalElements = res.totalElements ?? this.clients.length;
-          this.totalPages = res.totalPages ?? Math.ceil(this.totalElements / this.pageSize) ?? 1;
-        }
-
+        this.setPaginationData(res);
         this.isLoading = false;
       },
       error: () => {
@@ -189,6 +171,17 @@ export class ClientsComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  private setPaginationData(res: any): void {
+    if (res.page) {
+      this.totalElements = res.page.totalElements ?? 0;
+      this.totalPages = res.page.totalPages ?? 1;
+      this.currentPage = res.page.number ?? 0;
+    } else {
+      this.totalElements = res.totalElements ?? this.clients.length;
+      this.totalPages = res.totalPages ?? Math.ceil(this.totalElements / this.pageSize) ?? 1;
+    }
   }
 
   loadAgentsList(): void {
@@ -202,18 +195,18 @@ export class ClientsComponent implements OnInit {
     });
   }
 
-  isVipClient(client: any): boolean {
+  isBenefitClient(client: any): boolean {
     if (!client) return false;
-    if (client.isVip || client.isBenefit) return true;
+    if (client.isBenefit) return true;
 
     const rawType = String(
-      client.clientType || client.operationType || client.tipoDeCredito || ''
+      client.clientType || client.operationType || client.tipoDeCredito || client.origen || ''
     ).toUpperCase().trim();
 
-    return ['VIP', 'BENEFIT', 'BENEFICIO', 'BENEFICIOS', 'PREFERENCIAL'].includes(rawType);
+    return rawType.includes('BENEFIT') || rawType.includes('BENEFICIO') || rawType.includes('PREFERENCIAL');
   }
 
-  setFilterMode(mode: 'UNASSIGNED' | 'ASSIGNED'): void {
+  setFilterMode(mode: 'UNASSIGNED' | 'BENEFIT' | 'ASSIGNED'): void {
     if (!this.isAdmin) return;
     this.currentFilterMode = mode;
     this.currentPage = 0;
@@ -262,7 +255,7 @@ export class ClientsComponent implements OnInit {
   unassignClient(client: any): void {
     Swal.fire({
       title: '¿Liberar cliente?',
-      text: `El cliente ${client.companyName || client.nombreDelCliente} volverá a la Bolsa Sin Asignar.`,
+      text: `El cliente ${client.companyName || client.nombreDelCliente} volverá a la bolsa correspondiente.`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#EB0A1E',
@@ -286,7 +279,7 @@ export class ClientsComponent implements OnInit {
 
     Swal.fire({
       title: 'Cargando archivo Excel...',
-      text: 'Procesando archivo de clientes.',
+      text: 'Procesando archivo de clientes a beneficios.',
       allowOutsideClick: false,
       didOpen: () => Swal.showLoading()
     });
@@ -345,7 +338,7 @@ export class ClientsComponent implements OnInit {
   }
 
   sendInventoryWhatsApp(client: any): void {
-    const phone = client?.contactPhone || client?.telefonoContacto;
+    const phone = client?.contactPhone || client?.telefono1 || client?.telefono2;
     if (!phone) {
       Swal.fire('Sin teléfono', 'El cliente no tiene un teléfono registrado.', 'warning');
       return;
@@ -356,31 +349,28 @@ export class ClientsComponent implements OnInit {
 
     const clientName = client.companyName || client.nombreDelCliente || 'Estimado(a) cliente';
     const agentName = this.currentUser?.fullName || 'Su Asesor Comercial';
-    const isVip = this.isVipClient(client);
+    const isBenefit = this.isBenefitClient(client);
 
     let messageText = '';
 
-    if (isVip) {
+    if (isBenefit) {
       messageText =
         `Estimado(a) *${clientName}*, le saluda *${agentName}* asesor de ventas de *Toyota & Carsline Pachuca*.\n` +
-        `Me pongo en contacto con usted porque tenemos un *beneficio especial de financiamiento* que podría ayudarle a estrenar ` +
+        `Me pongo en contacto con usted porque cuenta con un *beneficio especial de financiamiento Benefit* para estrenar ` +
         `una nueva unidad con condiciones preferenciales.\n` +
-        `Me gustaría revisar con usted las opciones disponibles y encontrar la alternativa que mejor se adapte a sus necesidades.\n` +
-        `¿Le gustaría que le comparta la información y hagamos una propuesta sin compromiso?\n` +
+        `¿Le gustaría que le comparta las alternativas disponibles y hagamos una propuesta a su medida?\n` +
         `¡Que tenga un excelente día!\n` +
         `*${agentName} | Toyota & Carsline Pachuca*\n` +
-        `*Catálogo de Vehículos Nuevos:* https://toyotapachuca.com.mx/\n` +
-        `*Inventario de Seminuevos:* https://toyotapachuca.com.mx/Seminuevos/`;
+        `*Catálogo:* https://toyotapachuca.com.mx/`;
     } else {
       messageText =
         `Estimado(a) *${clientName}*, le saluda *${agentName}* asesor de ventas de *Toyota & Carsline Pachuca*.\n` +
         `Quiero ponerme a sus órdenes para apoyarle si está pensando en cambiar o renovar su vehículo. \n` +
-        `Actualmente contamos con diferentes modelos y opciones que podrían adaptarse a lo que busca.\n` +
-        `¿Le gustaría que le comparta algunas opciones y promociones disponibles?\n` +
+        `Actualmente contamos con diferentes modelos y promociones disponibles.\n` +
+        `¿Le gustaría revisar alternativas?\n` +
         `¡Será un gusto atenderle!\n` +
         `*${agentName} | Toyota & Carsline Pachuca*\n` +
-        `*Vehículos Nuevos:* https://toyotapachuca.com.mx/\n` +
-        `*Inventario de Seminuevos:* https://toyotapachuca.com.mx/Seminuevos/`;
+        `*Vehículos Nuevos:* https://toyotapachuca.com.mx/`;
     }
 
     const encodedMsg = encodeURIComponent(messageText);
@@ -400,7 +390,7 @@ export class ClientsComponent implements OnInit {
 
   openDeleteModal(client: any): void {
     Swal.fire({
-      title: '¿Eliminar cliente permanentemente?',
+      title: '¿Eliminar cliente?',
       text: `Esta acción no se puede deshacer para ${client.companyName || client.nombreDelCliente}.`,
       icon: 'error',
       showCancelButton: true,

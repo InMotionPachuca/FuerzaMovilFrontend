@@ -2,7 +2,7 @@
   <!-- Sidebar Fijo (210px) -->
   <app-sidebar></app-sidebar>
 
-  <!-- Contenedor Principal desplazado 210px a la derecha -->
+  <!-- Contenedor Principal desplazado para convivir con el Sidebar -->
   <div class="flex-grow-1 d-flex flex-column clients-main-content" style="margin-left: 210px; min-width: 0; background-color: #f8fafc;">
     
     <!-- Topbar / Header Institucional -->
@@ -40,12 +40,12 @@
           </div>
         </div>
 
-        <!-- Seguimientos Pendientes -->
-        <div class="card border-0 bg-light px-3 py-1 shadow-sm d-flex flex-row align-items-center gap-2">
-          <span class="fs-5">⏳</span>
+        <!-- Cartera Benefit -->
+        <div *ngIf="isAdmin" class="card border-0 bg-light px-3 py-1 shadow-sm d-flex flex-row align-items-center gap-2">
+          <span class="fs-5">💎</span>
           <div>
-            <div class="text-muted text-uppercase" style="font-size: 0.65rem; font-weight: 700;">Pendientes</div>
-            <div class="fw-bold text-warning" style="font-size: 0.9rem;">{{ pendingFollowUpsCount | number }}</div>
+            <div class="text-muted text-uppercase" style="font-size: 0.65rem; font-weight: 700;">Benefit</div>
+            <div class="fw-bold text-warning" style="font-size: 0.9rem;">{{ benefitClientsCount | number }}</div>
           </div>
         </div>
 
@@ -63,41 +63,52 @@
     <!-- Contenido del Tablero -->
     <div class="p-4">
 
-      <!-- Barra de Filtros, Pestañas y Búsqueda -->
+      <!-- Barra de Filtros: 3 Pestañas y Buscador -->
       <div class="card border-0 shadow-sm p-3 mb-4 rounded-3 bg-white">
         <div class="row g-3 align-items-center justify-content-between">
           
-          <!-- Pestañas (Modo Admin) -->
-          <div class="col-12 col-md-6" *ngIf="isAdmin">
+          <!-- 3 Pestañas (Modo Admin) -->
+          <div class="col-12 col-lg-7" *ngIf="isAdmin">
             <div class="btn-group shadow-sm" role="group">
+              
+              <!-- Pestaña 1: Base -->
               <button (click)="setFilterMode('UNASSIGNED')" 
                       [ngClass]="currentFilterMode === 'UNASSIGNED' ? 'btn btn-danger active fw-bold' : 'btn btn-outline-secondary'"
                       class="btn btn-sm">
-                📦 Bolsa Sin Asignar
+                📦 Bolsa Base
               </button>
+
+              <!-- Pestaña 2: Benefit -->
+              <button (click)="setFilterMode('BENEFIT')" 
+                      [ngClass]="currentFilterMode === 'BENEFIT' ? 'btn btn-warning active fw-bold text-dark' : 'btn btn-outline-warning text-dark'"
+                      class="btn btn-sm">
+                💎 Cartera Benefit
+              </button>
+
+              <!-- Pestaña 3: Asignados -->
               <button (click)="setFilterMode('ASSIGNED')" 
                       [ngClass]="currentFilterMode === 'ASSIGNED' ? 'btn btn-success active fw-bold' : 'btn btn-outline-secondary'"
                       class="btn btn-sm">
-                👥 Cartera Asignada
+                👥 Asignados
               </button>
             </div>
           </div>
 
           <!-- Indicador para Asesor -->
-          <div class="col-12 col-md-6" *ngIf="!isAdmin">
+          <div class="col-12 col-lg-7" *ngIf="!isAdmin">
             <span class="badge bg-success-subtle text-success border border-success-subtle p-2">
-              🟢 Cartera Activa de Asesor
+              🟢 Mi Cartera Asignada
             </span>
           </div>
 
-          <!-- Buscador en Vivo -->
-          <div class="col-12 col-md-6 col-lg-5 ms-auto">
+          <!-- Buscador en Tiempo Real -->
+          <div class="col-12 col-lg-5">
             <div class="input-group input-group-sm">
               <span class="input-group-text bg-light border-end-0">🔍</span>
               <input type="text" 
                      [value]="searchQuery" 
                      (input)="onSearchInput($event)" 
-                     placeholder="Buscar por razón social, RFC o teléfono..." 
+                     placeholder="Buscar por cliente, RFC, No. Cliente o teléfono..." 
                      class="form-control bg-light border-start-0" />
             </div>
           </div>
@@ -111,7 +122,7 @@
           <table class="table table-hover align-middle mb-0" style="font-size: 0.85rem;">
             <thead class="table-dark" style="font-size: 0.78rem;">
               <tr>
-                <th style="width: 100px;" class="ps-3">Segmento</th>
+                <th style="width: 110px;" class="ps-3">Segmento</th>
                 <th style="min-width: 200px;">Razón Social / Cliente</th>
                 <th style="width: 120px;">RFC / ID</th>
                 <th style="min-width: 180px;">Contacto Directo</th>
@@ -126,7 +137,7 @@
               <tr *ngIf="isLoading">
                 <td colspan="7" class="py-5 text-center text-muted">
                   <div class="spinner-border spinner-border-sm text-danger mb-2" role="status"></div>
-                  <div>Cargando registros de la base de datos...</div>
+                  <div>Cargando cartera de clientes...</div>
                 </td>
               </tr>
 
@@ -134,7 +145,7 @@
               <tr *ngIf="!isLoading && (!clients || clients.length === 0)">
                 <td colspan="7" class="py-5 text-center text-muted">
                   <div class="fs-2 mb-1">📭</div>
-                  <div class="fw-bold">No se encontraron clientes</div>
+                  <div class="fw-bold">No se encontraron clientes en este segmento</div>
                   <small>No hay registros disponibles para el criterio seleccionado.</small>
                 </td>
               </tr>
@@ -142,10 +153,11 @@
               <!-- Filas de Clientes -->
               <tr *ngFor="let client of clients">
                 
-                <!-- 1. Segmento VIP vs BASE -->
+                <!-- 1. Segmento: Pill BENEFIT vs BASE -->
                 <td class="ps-3">
-                  <span class="badge" [ngClass]="isVipClient(client) ? 'bg-warning text-dark border border-warning' : 'bg-secondary text-white'">
-                    {{ isVipClient(client) ? '💎 VIP' : '📦 BASE' }}
+                  <span class="badge" 
+                        [ngClass]="isBenefitClient(client) ? 'bg-warning text-dark border border-warning shadow-sm' : 'bg-secondary text-white'">
+                    {{ isBenefitClient(client) ? '💎 BENEFIT' : '📦 BASE' }}
                   </span>
                 </td>
 
@@ -233,7 +245,7 @@
                     <button *ngIf="isAdmin && (client.assignedUserId || client.agentName)" 
                             (click)="unassignClient(client)" 
                             class="btn btn-outline-warning" 
-                            title="Liberar a Bolsa Libre">
+                            title="Liberar a Bolsa">
                       ✕
                     </button>
                     <button *ngIf="isAdmin" 
@@ -318,7 +330,7 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label small fw-bold text-muted">Observaciones de la interacción</label>
+            <label class="form-label small fw-bold text-muted">Observaciones de la conversación</label>
             <textarea [(ngModel)]="followUpComments" rows="3" class="form-control form-control-sm" placeholder="Escribe aquí los comentarios..."></textarea>
           </div>
 
@@ -386,16 +398,16 @@
 
           <div class="col-md-6">
             <div class="p-3 border rounded-3 bg-light">
-              <small class="text-muted text-uppercase fw-bold d-block mb-1">Segmento / Calificación</small>
-              <span class="badge" [ngClass]="isVipClient(selectedClientForDetail) ? 'bg-warning text-dark' : 'bg-secondary text-white'">
-                {{ selectedClientForDetail.calificacion || selectedClientForDetail.qualification || (isVipClient(selectedClientForDetail) ? 'VIP BENEFIT' : 'CARTERA BASE') }}
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Segmento / Categoría</small>
+              <span class="badge" [ngClass]="isBenefitClient(selectedClientForDetail) ? 'bg-warning text-dark' : 'bg-secondary text-white'">
+                {{ selectedClientForDetail.calificacion || selectedClientForDetail.qualification || (isBenefitClient(selectedClientForDetail) ? 'BENEFIT' : 'CARTERA BASE') }}
               </span>
             </div>
           </div>
 
           <div class="col-md-6">
             <div class="p-3 border rounded-3 bg-light">
-              <small class="text-muted text-uppercase fw-bold d-block mb-1">Teléfono</small>
+              <small class="text-muted text-uppercase fw-bold d-block mb-1">Teléfono Principal</small>
               <div class="fw-bold text-success font-monospace">
                 📞 {{ selectedClientForDetail.contactPhone || selectedClientForDetail.telefono1 || selectedClientForDetail.telefono2 || 'Sin Teléfono' }}
               </div>
