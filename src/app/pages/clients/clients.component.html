@@ -9,7 +9,7 @@
         <div class="d-flex align-items-center gap-2 mb-1">
           <h3 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
             <i class="bi" [ngClass]="isAdmin ? 'bi-shield-lock-fill text-danger' : 'bi-person-badge-fill text-danger'"></i>
-            {{ greetingMessage }}
+            <span>{{ greetingMessage }}</span>
           </h3>
           <span class="badge rounded-pill font-monospace" 
                 [ngClass]="isAdmin ? 'bg-danger text-white' : 'bg-dark text-white'"

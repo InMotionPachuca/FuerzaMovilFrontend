@@ -53,7 +53,7 @@ export class ClientsComponent implements OnInit {
     this.loadInitialData();
   }
 
-  // Generador dinámico de saludo institucional por horario
+  // Generador dinámico e infalible de saludo institucional
   get greetingMessage(): string {
     const hour = new Date().getHours();
     let timeGreeting = 'Buenos días';
@@ -63,7 +63,27 @@ export class ClientsComponent implements OnInit {
       timeGreeting = 'Buenas noches';
     }
 
-    const name = this.currentUser?.fullName || (this.isAdmin ? 'Administrador Principal' : 'Asesor Comercial');
+    // 1. Obtener desde currentUser
+    let name = this.currentUser?.fullName;
+
+    // 2. Si es null, buscar directo en localStorage
+    if (!name) {
+      try {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          const parsed = JSON.parse(storedUser);
+          name = parsed.fullName || parsed.username;
+        }
+      } catch (e) {
+        name = null;
+      }
+    }
+
+    // 3. Fallback por rol
+    if (!name) {
+      name = this.isAdmin ? 'Administrador Principal' : 'Asesor Comercial';
+    }
+
     return `${timeGreeting}, ${name}`;
   }
 
