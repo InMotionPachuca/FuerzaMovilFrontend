@@ -82,16 +82,24 @@ export class ClientsComponent implements OnInit {
   loadClients(): void {
     this.isLoading = true;
 
-    // VISTA DE AGENTE COMERCIAL
+    // 1. VISTA DE AGENTE COMERCIAL
     if (!this.isAdmin) {
       const agentId = this.currentUser?.id;
-      this.clientService.getClientsPaged('ALL', 'ASSIGNED', this.currentPage, this.pageSize, agentId, 'AGENT', this.searchQuery).subscribe({
+      this.clientService.getClientsPaged(
+        'ALL',
+        'ASSIGNED',
+        this.currentPage,
+        this.pageSize,
+        agentId,
+        'AGENT',
+        this.searchQuery
+      ).subscribe({
         next: (res: any) => {
           this.clients = res.content || [];
-          this.totalElements = res.totalElements || this.clients.length;
-          this.totalPages = res.totalPages || Math.ceil(this.totalElements / this.pageSize) || 1;
+          this.totalElements = res.totalElements ?? this.clients.length;
+          this.totalPages = res.totalPages ?? Math.ceil(this.totalElements / this.pageSize) ?? 1;
 
-          // Calcular métricas personales del asesor
+          // Métricas personales del asesor
           this.assignedToMeCount = this.totalElements;
           let completed = 0;
           this.clients.forEach(c => {
@@ -110,14 +118,22 @@ export class ClientsComponent implements OnInit {
       return;
     }
 
-    // VISTA ADMINISTRADOR
+    // 2. VISTA DE ADMINISTRADOR
     const assignmentStatus = this.currentFilterMode === 'ASSIGNED' ? 'ASSIGNED' : 'UNASSIGNED';
 
-    this.clientService.getClientsPaged('ALL', assignmentStatus, this.currentPage, this.pageSize, undefined, 'ADMIN', this.searchQuery).subscribe({
+    this.clientService.getClientsPaged(
+      'ALL',
+      assignmentStatus,
+      this.currentPage,
+      this.pageSize,
+      undefined,
+      'ADMIN',
+      this.searchQuery
+    ).subscribe({
       next: (res: any) => {
         this.clients = res.content || [];
-        this.totalElements = res.totalElements || this.clients.length;
-        this.totalPages = res.totalPages || Math.ceil(this.totalElements / this.pageSize) || 1;
+        this.totalElements = res.totalElements ?? this.clients.length;
+        this.totalPages = res.totalPages ?? Math.ceil(this.totalElements / this.pageSize) ?? 1;
         this.isLoading = false;
       },
       error: () => {
@@ -287,54 +303,42 @@ export class ClientsComponent implements OnInit {
       return;
     }
 
-    // Sanitizar teléfono a 10 dígitos limpios
     const cleanPhone = phone.replace(/\D/g, '');
     const tenDigitPhone = cleanPhone.length > 10 ? cleanPhone.slice(-10) : cleanPhone;
 
     const clientName = client.companyName || client.nombreDelCliente || 'Estimado(a) cliente';
     const agentName = this.currentUser?.fullName || 'Su Asesor Comercial';
-    const vehicleInterest = client.vehicleModel ? ` sobre la unidad *${client.vehicleModel}*` : '';
-
-    // Verificar si es cliente VIP / Beneficios usando nuestro helper
     const isVip = this.isVipClient(client);
 
     let messageText = '';
 
     if (isVip) {
-      // =========================================================================
-      // PLANTILLA 1: CLIENTES DE BENEFICIOS VIP / CARTERA PREFERENCIAL
-      // =========================================================================
       messageText =
-        `Estimado(a) *${clientName}*, le saluda *${agentName}* asesor de ventas de *Toyota & Carsline Pachuca*.
-Me pongo en contacto con usted porque tenemos un *beneficio especial de financiamiento* que podría ayudarle a estrenar
-una nueva unidad con condiciones preferenciales.
-Me gustaría revisar con usted las opciones disponibles y encontrar la alternativa que mejor se adapte a sus necesidades.
-¿Le gustaría que le comparta la información y hagamos una propuesta sin compromiso?
-¡Que tenga un excelente día!
-*${agentName} | Toyota & Carsline Pachuca*
-*Catálogo de Vehículos Nuevos:* https://toyotapachuca.com.mx/
-*Inventario de Seminuevos:* https://toyotapachuca.com.mx/Seminuevos/`;
-
-
-
+        `Estimado(a) *${clientName}*, le saluda *${agentName}* asesor de ventas de *Toyota & Carsline Pachuca*.\n` +
+        `Me pongo en contacto con usted porque tenemos un *beneficio especial de financiamiento* que podría ayudarle a estrenar ` +
+        `una nueva unidad con condiciones preferenciales.\n` +
+        `Me gustaría revisar con usted las opciones disponibles y encontrar la alternativa que mejor se adapte a sus necesidades.\n` +
+        `¿Le gustaría que le comparta la información y hagamos una propuesta sin compromiso?\n` +
+        `¡Que tenga un excelente día!\n` +
+        `*${agentName} | Toyota & Carsline Pachuca*\n` +
+        `*Catálogo de Vehículos Nuevos:* https://toyotapachuca.com.mx/\n` +
+        `*Inventario de Seminuevos:* https://toyotapachuca.com.mx/Seminuevos/`;
     } else {
-      // =========================================================================
-      // PLANTILLA 2: CONTACTO NORMAL / CARTERA BASE
-      // =========================================================================
       messageText =
-        `Estimado(a) *${clientName}*, le saluda *${agentName}* asesor de ventas de *Toyota & Carsline Pachuca*.
-Quiero ponerme a sus órdenes para apoyarle si está pensando en cambiar o renovar su vehículo. 
-Actualmente contamos con diferentes modelos y opciones que podrían adaptarse a lo que busca.
-¿Le gustaría que le comparta algunas opciones y promociones disponibles?
-¡Será un gusto atenderle!
-*${agentName} | Toyota & Carsline Pachuca*
-*Vehículos Nuevos:* https://toyotapachuca.com.mx/
-*Inventario de Seminuevos:* https://toyotapachuca.com.mx/Seminuevos/`;
+        `Estimado(a) *${clientName}*, le saluda *${agentName}* asesor de ventas de *Toyota & Carsline Pachuca*.\n` +
+        `Quiero ponerme a sus órdenes para apoyarle si está pensando en cambiar o renovar su vehículo. \n` +
+        `Actualmente contamos con diferentes modelos y opciones que podrían adaptarse a lo que busca.\n` +
+        `¿Le gustaría que le comparta algunas opciones y promociones disponibles?\n` +
+        `¡Será un gusto atenderle!\n` +
+        `*${agentName} | Toyota & Carsline Pachuca*\n` +
+        `*Vehículos Nuevos:* https://toyotapachuca.com.mx/\n` +
+        `*Inventario de Seminuevos:* https://toyotapachuca.com.mx/Seminuevos/`;
     }
 
     const encodedMsg = encodeURIComponent(messageText);
     window.open(`https://wa.me/52${tenDigitPhone}?text=${encodedMsg}`, '_blank');
   }
+
   openClientDetailModal(client: any): void {
     this.selectedClientForDetail = client;
     this.showDetailModal = true;

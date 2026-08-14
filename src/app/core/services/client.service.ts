@@ -1,78 +1,74 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClientService {
   private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl;
+  private apiUrl = 'https://fuerzamovilbackend.onrender.com/api/v1/clients';
+
+  /**
+   * Consulta paginada de cartera de clientes.
+   * Envía los parámetros con nombres exactos para Spring Boot.
+   */
+  getClientsPaged(
+    clientType: string = 'ALL',
+    assignmentStatus: string = 'UNASSIGNED',
+    page: number = 0,
+    size: number = 10,
+    userId?: number,
+    userRole: string = 'ADMIN',
+    search: string = ''
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('clientType', clientType || 'ALL')
+      .set('assignmentStatus', assignmentStatus || '')
+      .set('search', search ? search.trim() : '')
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('userRole', userRole || 'ADMIN');
+
+    if (userId !== undefined && userId !== null) {
+      params = params.set('userId', userId.toString());
+    }
+
+    return this.http.get<any>(`${this.apiUrl}/paged`, { params });
+  }
 
   getSummaryMetrics(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/clients/metrics/summary`);
+    return this.http.get<any>(`${this.apiUrl}/metrics/summary`);
   }
 
   getAgents(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/agents`);
-  }
-
-  toggleTopAgentStatus(agentId: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/agents/${agentId}/toggle-top-agent`, {});
-  }
-
-  getClientsPaged(
-    type: string,
-    status: string,
-    page: number,
-    size: number,
-    agentId?: number,
-    role?: string,
-    search?: string
-  ): Observable<any> {
-    let url = `${this.apiUrl}/clients/paged?clientType=${type}&assignmentStatus=${status}&page=${page}&size=${size}`;
-    if (agentId) url += `&userId=${agentId}`;
-    if (role) url += `&userRole=${role}`;
-    if (search) url += `&search=${encodeURIComponent(search)}`;
-    return this.http.get(url);
+    return this.http.get<any[]>(`https://fuerzamovilbackend.onrender.com/api/v1/users`);
   }
 
   assignClientToUser(clientId: number, userId: number, actorName: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/clients/${clientId}/assign/${userId}?actorName=${encodeURIComponent(actorName)}`, {});
+    return this.http.post<any>(`${this.apiUrl}/${clientId}/assign`, { userId, actorName });
   }
 
   unassignClient(clientId: number, actorName: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/clients/${clientId}/assign/0?actorName=${encodeURIComponent(actorName)}`, {});
-  }
-
-  assignBatchToAgent(agentId: number, count: number, actorName: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/clients/assign-batch/${agentId}?count=${count}&actorName=${encodeURIComponent(actorName)}`, {});
-  }
-
-  autoDistributeClients(countPerAgent: number, actorName: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/clients/auto-distribute?countPerAgent=${countPerAgent}&actorName=${encodeURIComponent(actorName)}`, {});
-  }
-
-  getClientAuditLogs(clientId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/clients/${clientId}/audit-logs`);
-  }
-
-  getFollowUpsByAgent(agentId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/clients/follow-ups/agent/${agentId}`);
-  }
-
-  addFollowUp(clientId: number, payload: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/clients/${clientId}/follow-ups`, payload);
-  }
-
-  deleteClient(clientId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/clients/${clientId}`);
+    return this.http.post<any>(`${this.apiUrl}/${clientId}/unassign`, { actorName });
   }
 
   uploadExcel(file: File, actorName: string): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post(`${this.apiUrl}/clients/import-excel?actorName=${encodeURIComponent(actorName)}`, formData);
+    formData.append('actorName', actorName);
+    return this.http.post<any>(`${this.apiUrl}/import/excel`, formData);
+  }
+
+  getClientAuditLogs(clientId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${clientId}/audit-logs`);
+  }
+
+  addFollowUp(clientId: number, payload: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${clientId}/follow-ups`, payload);
+  }
+
+  deleteClient(clientId: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${clientId}`);
   }
 }
