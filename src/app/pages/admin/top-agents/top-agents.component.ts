@@ -51,11 +51,12 @@ export class TopAgentsComponent implements OnInit {
   get filteredVIPClients(): any[] {
     if (!this.vipModalSearchQuery.trim()) return this.unassignedVIPClients;
     const q = this.vipModalSearchQuery.toLowerCase().trim();
-    return this.unassignedVIPClients.filter(c => 
-      (c.companyName && c.companyName.toLowerCase().includes(q)) ||
-      (c.taxId && c.taxId.toLowerCase().includes(q)) ||
-      (c.vehicleModel && c.vehicleModel.toLowerCase().includes(q))
-    );
+    return this.unassignedVIPClients.filter(c => {
+      const name = (c.companyName || c.nombreDelCliente || '').toLowerCase();
+      const rfc = (c.taxId || c.rfc || '').toLowerCase();
+      const model = (c.vehicleModel || c.brand || '').toLowerCase();
+      return name.includes(q) || rfc.includes(q) || model.includes(q);
+    });
   }
 
   ngOnInit(): void {
@@ -82,7 +83,7 @@ export class TopAgentsComponent implements OnInit {
         );
 
         this.allAgents = agentsOnly.map((a: any) => ({
-          id: a.id,
+          id: a.id || a.userId || a.agentId,
           fullName: a.fullName || a.username,
           username: a.username,
           isTopAgent: a.isTopAgent || a.topAgent || false
@@ -166,8 +167,18 @@ export class TopAgentsComponent implements OnInit {
   assignSpecificVIPClient(client: any): void {
     if (!this.selectedAgentForAssign) return;
 
-    const agentName = this.selectedAgentForAssign.fullName;
+    // Resguardo de IDs y Nombres antes del diálogo asíncrono
+    const targetAgent = this.selectedAgentForAssign;
+    const clientId = client.id || client.clientId || client.idCartera;
+    const agentId = targetAgent.id;
+
+    const agentName = targetAgent.fullName;
     const clientName = client.companyName || client.nombreDelCliente || 'Cliente Beneficio';
+
+    if (!clientId || !agentId) {
+      Swal.fire('Error', 'No se identificó el ID del cliente o del asesor.', 'error');
+      return;
+    }
 
     Swal.fire({
       title: '¿Confirmar Asignación?',
@@ -178,8 +189,14 @@ export class TopAgentsComponent implements OnInit {
       confirmButtonText: 'Sí, asignar cliente',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
-      if (result.isConfirmed && this.selectedAgentForAssign) {
-        this.clientService.assignClientToUser(client.id, this.selectedAgentForAssign.id, 'Administrador Principal').subscribe({
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Asignando en Base de Datos...',
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading()
+        });
+
+        this.clientService.assignClientToUser(clientId, agentId, 'Administrador Principal').subscribe({
           next: () => {
             Swal.fire({
               icon: 'success',
@@ -191,7 +208,10 @@ export class TopAgentsComponent implements OnInit {
             this.loadUnassignedVIPClients();
             this.loadData();
           },
-          error: () => Swal.fire('Error', 'No se pudo realizar la asignación.', 'error')
+          error: (err: any) => {
+            console.error('Error al asignar:', err);
+            Swal.fire('Error', 'No se pudo realizar la asignación en el servidor.', 'error');
+          }
         });
       }
     });
