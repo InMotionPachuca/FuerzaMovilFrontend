@@ -3,10 +3,12 @@
   <app-sidebar></app-sidebar>
 
   <!-- Contenedor Principal con margen izquierdo de 210px -->
-  <div class="flex-grow-1 d-flex flex-column clients-main-content" style="margin-left: 210px; min-width: 0; background-color: #f8fafc;">
-    
+  <div class="flex-grow-1 d-flex flex-column clients-main-content"
+    style="margin-left: 210px; min-width: 0; background-color: #f8fafc;">
+
     <!-- Topbar / Header Institucional -->
-    <header class="bg-white border-bottom px-4 py-3 shadow-sm d-flex flex-wrap justify-content-between align-items-center gap-3 sticky-top">
+    <header
+      class="bg-white border-bottom px-4 py-3 shadow-sm d-flex flex-wrap justify-content-between align-items-center gap-3 sticky-top">
       <div class="d-flex flex-column">
         <div class="d-flex align-items-center gap-2">
           <h4 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
@@ -21,8 +23,9 @@
 
       <!-- Métricas Rápidas -->
       <div class="d-flex align-items-center gap-3 flex-wrap">
-        
-        <div *ngIf="isAdmin" class="card border-0 bg-light px-3 py-1 shadow-sm d-flex flex-row align-items-center gap-2">
+
+        <div *ngIf="isAdmin"
+          class="card border-0 bg-light px-3 py-1 shadow-sm d-flex flex-row align-items-center gap-2">
           <span class="fs-5">🏢</span>
           <div>
             <div class="text-muted text-uppercase" style="font-size: 0.65rem; font-weight: 700;">Total Cartera</div>
@@ -33,12 +36,18 @@
         <div class="card border-0 bg-light px-3 py-1 shadow-sm d-flex flex-row align-items-center gap-2">
           <span class="fs-5">👤</span>
           <div>
-            <div class="text-muted text-uppercase" style="font-size: 0.65rem; font-weight: 700;">{{ isAdmin ? 'Asignados' : 'Mis Cuentas' }}</div>
-            <div class="fw-bold text-success" style="font-size: 0.9rem;">{{ assignedToMeCount | number }}</div>
+            <div class="text-muted text-uppercase" style="font-size: 0.65rem; font-weight: 700;">
+              {{ isAdmin ? 'Asignados' : 'Mis Cuentas' }}
+            </div>
+            <!-- Usamos totalElements para que refleje el total exacto -->
+            <div class="fw-bold text-success" style="font-size: 0.9rem;">
+              {{ (isAdmin ? assignedToMeCount : totalElements) | number }}
+            </div>
           </div>
         </div>
 
-        <div *ngIf="isAdmin" class="card border-0 bg-light px-3 py-1 shadow-sm d-flex flex-row align-items-center gap-2">
+        <div *ngIf="isAdmin"
+          class="card border-0 bg-light px-3 py-1 shadow-sm d-flex flex-row align-items-center gap-2">
           <span class="fs-5">💎</span>
           <div>
             <div class="text-muted text-uppercase" style="font-size: 0.65rem; font-weight: 700;">Benefit</div>
@@ -48,7 +57,8 @@
 
         <div *ngIf="isAdmin" class="ms-2">
           <input type="file" #fileInput (change)="onFileSelected($event)" accept=".xlsx, .xls" class="d-none" />
-          <button (click)="fileInput.click()" class="btn btn-danger btn-sm fw-bold d-flex align-items-center gap-1 shadow-sm">
+          <button (click)="fileInput.click()"
+            class="btn btn-danger btn-sm fw-bold d-flex align-items-center gap-1 shadow-sm">
             <span>📥</span> Importar Excel
           </button>
         </div>
@@ -62,25 +72,25 @@
       <!-- Barra de Filtros: 3 Pestañas y Buscador -->
       <div class="card border-0 shadow-sm p-3 mb-4 rounded-3 bg-white">
         <div class="row g-3 align-items-center justify-content-between">
-          
+
           <!-- 3 Pestañas (Admin) -->
           <div class="col-12 col-lg-7" *ngIf="isAdmin">
             <div class="btn-group shadow-sm" role="group">
-              <button (click)="setFilterMode('UNASSIGNED')" 
-                      [ngClass]="currentFilterMode === 'UNASSIGNED' ? 'btn btn-danger active fw-bold' : 'btn btn-outline-secondary'"
-                      class="btn btn-sm">
+              <button (click)="setFilterMode('UNASSIGNED')"
+                [ngClass]="currentFilterMode === 'UNASSIGNED' ? 'btn btn-danger active fw-bold' : 'btn btn-outline-secondary'"
+                class="btn btn-sm">
                 📦 Bolsa Base
               </button>
 
-              <button (click)="setFilterMode('BENEFIT')" 
-                      [ngClass]="currentFilterMode === 'BENEFIT' ? 'btn btn-warning active fw-bold text-dark' : 'btn btn-outline-warning text-dark'"
-                      class="btn btn-sm">
+              <button (click)="setFilterMode('BENEFIT')"
+                [ngClass]="currentFilterMode === 'BENEFIT' ? 'btn btn-warning active fw-bold text-dark' : 'btn btn-outline-warning text-dark'"
+                class="btn btn-sm">
                 💎 Cartera Benefit
               </button>
 
-              <button (click)="setFilterMode('ASSIGNED')" 
-                      [ngClass]="currentFilterMode === 'ASSIGNED' ? 'btn btn-success active fw-bold' : 'btn btn-outline-secondary'"
-                      class="btn btn-sm">
+              <button (click)="setFilterMode('ASSIGNED')"
+                [ngClass]="currentFilterMode === 'ASSIGNED' ? 'btn btn-success active fw-bold' : 'btn btn-outline-secondary'"
+                class="btn btn-sm">
                 👥 Asignados
               </button>
             </div>
@@ -97,11 +107,8 @@
           <div class="col-12 col-lg-5">
             <div class="input-group input-group-sm">
               <span class="input-group-text bg-light border-end-0">🔍</span>
-              <input type="text" 
-                     [value]="searchQuery" 
-                     (input)="onSearchInput($event)" 
-                     placeholder="Buscar por cliente, RFC o teléfono..." 
-                     class="form-control bg-light border-start-0" />
+              <input type="text" [value]="searchQuery" (input)="onSearchInput($event)"
+                placeholder="Buscar por cliente, RFC o teléfono..." class="form-control bg-light border-start-0" />
             </div>
           </div>
 
@@ -124,7 +131,7 @@
               </tr>
             </thead>
             <tbody>
-              
+
               <!-- Loader -->
               <tr *ngIf="isLoading">
                 <td colspan="7" class="py-5 text-center text-muted">
@@ -144,21 +151,20 @@
 
               <!-- Filas de Datos -->
               <tr *ngFor="let client of clients">
-                
+
                 <!-- 1. Segmento -->
                 <td class="ps-3">
-                  <span class="badge" 
-                        [ngClass]="isBenefitClient(client) ? 'bg-warning text-dark border border-warning shadow-sm' : 'bg-secondary text-white'">
+                  <span class="badge"
+                    [ngClass]="isBenefitClient(client) ? 'bg-warning text-dark border border-warning shadow-sm' : 'bg-secondary text-white'">
                     {{ isBenefitClient(client) ? '💎 BENEFIT' : '📦 BASE' }}
                   </span>
                 </td>
 
                 <!-- 2. Razón Social -->
                 <td>
-                  <div class="fw-bold text-dark cursor-pointer text-truncate hover-underline" 
-                       (click)="openClientDetailModal(client)" 
-                       style="max-width: 240px;"
-                       title="{{ client.companyName || client.nombreDelCliente }}">
+                  <div class="fw-bold text-dark cursor-pointer text-truncate hover-underline"
+                    (click)="openClientDetailModal(client)" style="max-width: 240px;"
+                    title="{{ client.companyName || client.nombreDelCliente }}">
                     {{ client.companyName || client.nombreDelCliente || 'SIN RAZÓN SOCIAL' }}
                   </div>
                   <small class="text-muted d-block text-truncate" style="max-width: 240px;">
@@ -176,52 +182,55 @@
                 <!-- 4. Contactos y WhatsApps -->
                 <td>
                   <div class="d-flex flex-column gap-1">
-                    
-                    <!-- Teléfono 1 -->
-                    <div *ngIf="client.contactPhone || client.telefono1" class="d-flex align-items-center gap-1">
-                      <span class="badge bg-success-subtle text-success border border-success-subtle font-monospace py-1 px-2" style="font-size: 0.78rem;">
-                        📞 {{ client.contactPhone || client.telefono1 }}
-                      </span>
-                      <button (click)="sendInventoryWhatsAppTo(client, client.contactPhone || client.telefono1)" 
-                              class="btn btn-sm btn-outline-success py-0 px-1 border-0" 
-                              title="Enviar WhatsApp">
-                        💬
-                      </button>
+
+                    <!-- Teléfono 1 (Principal) -->
+                    <div *ngIf="client.contactPhone || client.telefono1" class="d-flex align-items-center">
+                      <div class="phone-badge-container shadow-sm">
+                        <span class="phone-number">📞 {{ client.contactPhone || client.telefono1 }}</span>
+                        <button type="button"
+                          (click)="sendInventoryWhatsAppTo(client, client.contactPhone || client.telefono1)"
+                          class="btn-wa-direct" title="Abrir chat de WhatsApp (Tel 1)">
+                          💬
+                        </button>
+                      </div>
                     </div>
 
-                    <!-- Teléfono 2 (si existe) -->
-                    <div *ngIf="client.telefono2" class="d-flex align-items-center gap-1">
-                      <span class="badge bg-light text-dark border font-monospace py-1 px-2" style="font-size: 0.75rem;">
-                        📞2: {{ client.telefono2 }}
-                      </span>
-                      <button (click)="sendInventoryWhatsAppTo(client, client.telefono2)" 
-                              class="btn btn-sm btn-outline-success py-0 px-1 border-0" 
-                              title="WhatsApp Tel 2">
-                        💬
-                      </button>
+                    <!-- Teléfono 2 (Secundario) -->
+                    <div *ngIf="client.telefono2" class="d-flex align-items-center">
+                      <div class="phone-badge-container shadow-sm"
+                        style="background-color: #f1f5f9; border-color: #cbd5e1;">
+                        <span class="phone-number" style="color: #334155;">📞2: {{ client.telefono2 }}</span>
+                        <button type="button" (click)="sendInventoryWhatsAppTo(client, client.telefono2)"
+                          class="btn-wa-direct" title="Abrir chat de WhatsApp (Tel 2)">
+                          💬
+                        </button>
+                      </div>
                     </div>
 
-                    <!-- Teléfono 3 (si existe) -->
-                    <div *ngIf="client.telefono3" class="d-flex align-items-center gap-1">
-                      <span class="badge bg-light text-dark border font-monospace py-1 px-2" style="font-size: 0.75rem;">
-                        📞3: {{ client.telefono3 }}
-                      </span>
-                      <button (click)="sendInventoryWhatsAppTo(client, client.telefono3)" 
-                              class="btn btn-sm btn-outline-success py-0 px-1 border-0" 
-                              title="WhatsApp Tel 3">
-                        💬
-                      </button>
+                    <!-- Teléfono 3 (Adicional) -->
+                    <div *ngIf="client.telefono3" class="d-flex align-items-center">
+                      <div class="phone-badge-container shadow-sm"
+                        style="background-color: #f1f5f9; border-color: #cbd5e1;">
+                        <span class="phone-number" style="color: #334155;">📞3: {{ client.telefono3 }}</span>
+                        <button type="button" (click)="sendInventoryWhatsAppTo(client, client.telefono3)"
+                          class="btn-wa-direct" title="Abrir chat de WhatsApp (Tel 3)">
+                          💬
+                        </button>
+                      </div>
                     </div>
 
-                    <!-- Sin teléfono -->
-                    <div *ngIf="!client.contactPhone && !client.telefono1 && !client.telefono2 && !client.telefono3" class="text-muted fst-italic small">
+                    <!-- Sin teléfono registrado -->
+                    <div *ngIf="!client.contactPhone && !client.telefono1 && !client.telefono2 && !client.telefono3"
+                      class="text-muted fst-italic small">
                       Sin Teléfono
                     </div>
 
-                    <!-- Correo -->
-                    <small class="text-muted text-truncate d-block" style="max-width: 190px;" title="{{ client.contactEmail || client.email }}">
-                      {{ client.contactEmail || client.email || 'Sin Correo' }}
+                    <!-- Correo Electrónico -->
+                    <small class="text-muted text-truncate d-block mt-0.5" style="max-width: 190px;"
+                      title="{{ client.contactEmail || client.email }}">
+                      ✉️ {{ client.contactEmail || client.email || 'Sin Correo' }}
                     </small>
+
                   </div>
                 </td>
 
@@ -238,13 +247,12 @@
                 <!-- 6. Selector Asesor -->
                 <td>
                   <div *ngIf="isAdmin">
-                    <select (change)="onAssignAgent(client, $event)" 
-                            class="form-select form-select-sm agent-select"
-                            [ngClass]="client.assignedUserId || client.agentName ? 'agent-select-assigned' : 'agent-select-unassigned'">
-                      <option [value]="0" [selected]="!client.assignedUserId && !client.agentName">-- Sin Asignar --</option>
-                      <option *ngFor="let agent of agents" 
-                              [value]="agent.id" 
-                              [selected]="client.assignedUserId === agent.id || client.agentName === agent.fullName">
+                    <select (change)="onAssignAgent(client, $event)" class="form-select form-select-sm agent-select"
+                      [ngClass]="client.assignedUserId || client.agentName ? 'agent-select-assigned' : 'agent-select-unassigned'">
+                      <option [value]="0" [selected]="!client.assignedUserId && !client.agentName">-- Sin Asignar --
+                      </option>
+                      <option *ngFor="let agent of agents" [value]="agent.id"
+                        [selected]="client.assignedUserId === agent.id || client.agentName === agent.fullName">
                         {{ agent.fullName || agent.username }}
                       </option>
                     </select>
@@ -259,22 +267,19 @@
                 <!-- 7. Acciones -->
                 <td class="text-center pe-3">
                   <div class="btn-group btn-group-sm">
-                    <button (click)="openClientDetailModal(client)" class="btn btn-outline-secondary" title="Ficha Técnica">
+                    <button (click)="openClientDetailModal(client)" class="btn btn-outline-secondary"
+                      title="Ficha Técnica">
                       🪪
                     </button>
                     <button (click)="openFollowUpModal(client)" class="btn btn-danger" title="Bitácora CRM">
                       📝
                     </button>
-                    <button *ngIf="isAdmin && (client.assignedUserId || client.agentName)" 
-                            (click)="unassignClient(client)" 
-                            class="btn btn-outline-warning" 
-                            title="Liberar a Bolsa">
+                    <button *ngIf="isAdmin && (client.assignedUserId || client.agentName)"
+                      (click)="unassignClient(client)" class="btn btn-outline-warning" title="Liberar a Bolsa">
                       ✕
                     </button>
-                    <button *ngIf="isAdmin" 
-                            (click)="openDeleteModal(client)" 
-                            class="btn btn-outline-danger" 
-                            title="Eliminar">
+                    <button *ngIf="isAdmin" (click)="openDeleteModal(client)" class="btn btn-outline-danger"
+                      title="Eliminar">
                       🗑️
                     </button>
                   </div>
@@ -286,21 +291,20 @@
         </div>
 
         <!-- Paginación -->
-        <div class="card-footer bg-white border-top py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div
+          class="card-footer bg-white border-top py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
           <small class="text-muted">
-            Mostrando página <strong>{{ currentPage + 1 }}</strong> de <strong>{{ totalPages || 1 }}</strong> 
+            Mostrando página <strong>{{ currentPage + 1 }}</strong> de <strong>{{ totalPages || 1 }}</strong>
             (<strong>{{ totalElements | number }}</strong> registros)
           </small>
 
           <div class="btn-group btn-group-sm">
-            <button (click)="changePage(currentPage - 1)" 
-                    [disabled]="currentPage === 0" 
-                    class="btn btn-outline-secondary">
+            <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 0"
+              class="btn btn-outline-secondary">
               ◀ Anterior
             </button>
-            <button (click)="changePage(currentPage + 1)" 
-                    [disabled]="currentPage >= totalPages - 1" 
-                    class="btn btn-outline-secondary">
+            <button (click)="changePage(currentPage + 1)" [disabled]="currentPage >= totalPages - 1"
+              class="btn btn-outline-secondary">
               Siguiente ▶
             </button>
           </div>
@@ -315,13 +319,15 @@
 <!-- ========================================================================= -->
 <!-- MODAL 1: SEGUIMIENTO COMERCIAL Y BITÁCORA CRM                            -->
 <!-- ========================================================================= -->
-<div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6);" *ngIf="showToolsModal && selectedClientForTools">
+<div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6);"
+  *ngIf="showToolsModal && selectedClientForTools">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content border-0 shadow-lg rounded-3">
-      
+
       <div class="modal-header bg-dark text-white">
         <h5 class="modal-title fs-6 fw-bold d-flex align-items-center gap-2">
-          <span>📝</span> Bitácora Comercial - {{ selectedClientForTools.companyName || selectedClientForTools.nombreDelCliente }}
+          <span>📝</span> Bitácora Comercial - {{ selectedClientForTools.companyName ||
+          selectedClientForTools.nombreDelCliente }}
         </h5>
         <button type="button" class="btn-close btn-close-white" (click)="showToolsModal = false"></button>
       </div>
@@ -329,7 +335,7 @@
       <div class="modal-body p-4">
         <div class="card bg-light border-0 p-3 mb-4 rounded-3">
           <h6 class="fw-bold mb-3 text-dark fs-6">➕ Registrar Nueva Interacción</h6>
-          
+
           <div class="row g-3 mb-3">
             <div class="col-md-6">
               <label class="form-label small fw-bold text-muted">Medio de Contacto</label>
@@ -354,7 +360,8 @@
 
           <div class="mb-3">
             <label class="form-label small fw-bold text-muted">Observaciones de la conversación</label>
-            <textarea [(ngModel)]="followUpComments" rows="3" class="form-control form-control-sm" placeholder="Escribe aquí los comentarios..."></textarea>
+            <textarea [(ngModel)]="followUpComments" rows="3" class="form-control form-control-sm"
+              placeholder="Escribe aquí los comentarios..."></textarea>
           </div>
 
           <div class="text-end">
@@ -365,24 +372,27 @@
         </div>
 
         <h6 class="fw-bold text-dark mb-3">🕒 Historial de Seguimientos</h6>
-        
+
         <div *ngIf="isLoadingHistory" class="text-center py-4 text-muted">
           <div class="spinner-border spinner-border-sm text-danger" role="status"></div>
           <span class="ms-2">Cargando historial...</span>
         </div>
 
-        <div *ngIf="!isLoadingHistory && (!clientFollowUpsHistory || clientFollowUpsHistory.length === 0)" class="text-center py-4 text-muted border rounded-3 bg-light">
+        <div *ngIf="!isLoadingHistory && (!clientFollowUpsHistory || clientFollowUpsHistory.length === 0)"
+          class="text-center py-4 text-muted border rounded-3 bg-light">
           No hay registros de seguimiento para este cliente aún.
         </div>
 
         <div *ngIf="!isLoadingHistory && clientFollowUpsHistory.length > 0" class="list-group">
-          <div *ngFor="let log of clientFollowUpsHistory" class="list-group-item list-group-item-action flex-column align-items-start p-3 mb-2 border rounded-3 shadow-sm">
+          <div *ngFor="let log of clientFollowUpsHistory"
+            class="list-group-item list-group-item-action flex-column align-items-start p-3 mb-2 border rounded-3 shadow-sm">
             <div class="d-flex w-100 justify-content-between align-items-center mb-1">
               <h6 class="mb-0 fw-bold text-dark">{{ log.action || log.status }}</h6>
               <small class="text-muted">{{ log.timestamp | date:'short' }}</small>
             </div>
             <p class="mb-1 text-secondary small">{{ log.description || log.comments }}</p>
-            <small class="text-muted">Por: <strong>{{ log.actorName || 'Asesor' }}</strong> ({{ log.batchName || log.method || 'CRM' }})</small>
+            <small class="text-muted">Por: <strong>{{ log.actorName || 'Asesor' }}</strong> ({{ log.batchName ||
+              log.method || 'CRM' }})</small>
           </div>
         </div>
       </div>
@@ -398,32 +408,37 @@
 <!-- ========================================================================= -->
 <!-- MODAL 2: FICHA TÉCNICA DE CUENTA                                         -->
 <!-- ========================================================================= -->
-<div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6);" *ngIf="showDetailModal && selectedClientForDetail">
+<div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6);"
+  *ngIf="showDetailModal && selectedClientForDetail">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content border-0 shadow-lg rounded-3">
-      
+
       <div class="modal-header bg-dark text-white">
         <h5 class="modal-title fs-6 fw-bold d-flex align-items-center gap-2">
-          <span>🪪</span> Ficha Técnica de Cuenta - {{ selectedClientForDetail.companyName || selectedClientForDetail.nombreDelCliente }}
+          <span>🪪</span> Ficha Técnica de Cuenta - {{ selectedClientForDetail.companyName ||
+          selectedClientForDetail.nombreDelCliente }}
         </h5>
         <button type="button" class="btn-close btn-close-white" (click)="closeClientDetailModal()"></button>
       </div>
 
       <div class="modal-body p-4">
         <div class="row g-3">
-          
+
           <div class="col-md-6">
             <div class="p-3 border rounded-3 bg-light">
               <small class="text-muted text-uppercase fw-bold d-block mb-1">Razón Social</small>
-              <div class="fw-bold text-dark">{{ selectedClientForDetail.companyName || selectedClientForDetail.nombreDelCliente }}</div>
+              <div class="fw-bold text-dark">{{ selectedClientForDetail.companyName ||
+                selectedClientForDetail.nombreDelCliente }}</div>
             </div>
           </div>
 
           <div class="col-md-6">
             <div class="p-3 border rounded-3 bg-light">
               <small class="text-muted text-uppercase fw-bold d-block mb-1">Segmento / Categoría</small>
-              <span class="badge" [ngClass]="isBenefitClient(selectedClientForDetail) ? 'bg-warning text-dark' : 'bg-secondary text-white'">
-                {{ selectedClientForDetail.calificacion || selectedClientForDetail.qualification || (isBenefitClient(selectedClientForDetail) ? 'BENEFIT' : 'CARTERA BASE') }}
+              <span class="badge"
+                [ngClass]="isBenefitClient(selectedClientForDetail) ? 'bg-warning text-dark' : 'bg-secondary text-white'">
+                {{ selectedClientForDetail.calificacion || selectedClientForDetail.qualification ||
+                (isBenefitClient(selectedClientForDetail) ? 'BENEFIT' : 'CARTERA BASE') }}
               </span>
             </div>
           </div>
@@ -459,14 +474,16 @@
           <div class="col-md-6">
             <div class="p-3 border rounded-3 bg-light">
               <small class="text-muted text-uppercase fw-bold d-block mb-1">Correo Electrónico</small>
-              <div class="text-dark">{{ selectedClientForDetail.contactEmail || selectedClientForDetail.email || 'Sin Correo' }}</div>
+              <div class="text-dark">{{ selectedClientForDetail.contactEmail || selectedClientForDetail.email || 'Sin
+                Correo' }}</div>
             </div>
           </div>
 
           <div class="col-md-6">
             <div class="p-3 border rounded-3 bg-light">
               <small class="text-muted text-uppercase fw-bold d-block mb-1">Vehículo Comprado</small>
-              <div class="fw-bold text-dark">{{ selectedClientForDetail.vehicleModel || selectedClientForDetail.vehiculoComprado || 'Toyota' }}</div>
+              <div class="fw-bold text-dark">{{ selectedClientForDetail.vehicleModel ||
+                selectedClientForDetail.vehiculoComprado || 'Toyota' }}</div>
             </div>
           </div>
 
@@ -487,14 +504,16 @@
           <div class="col-md-6">
             <div class="p-3 border rounded-3 bg-light">
               <small class="text-muted text-uppercase fw-bold d-block mb-1">Tipo de Crédito / Operación</small>
-              <div class="text-dark">{{ selectedClientForDetail.operationType || selectedClientForDetail.tipoDeCredito || 'Tradicional' }}</div>
+              <div class="text-dark">{{ selectedClientForDetail.operationType || selectedClientForDetail.tipoDeCredito
+                || 'Tradicional' }}</div>
             </div>
           </div>
 
           <div class="col-md-6">
             <div class="p-3 border rounded-3 bg-light">
               <small class="text-muted text-uppercase fw-bold d-block mb-1">Vigencia / Notas</small>
-              <div class="text-danger fw-bold">{{ selectedClientForDetail.vigencia || selectedClientForDetail.sensitiveNotes || 'Sin vigencia' }}</div>
+              <div class="text-danger fw-bold">{{ selectedClientForDetail.vigencia ||
+                selectedClientForDetail.sensitiveNotes || 'Sin vigencia' }}</div>
             </div>
           </div>
 
@@ -502,7 +521,9 @@
       </div>
 
       <div class="modal-footer bg-light d-flex justify-content-between">
-        <button (click)="sendInventoryWhatsAppTo(selectedClientForDetail, selectedClientForDetail.contactPhone || selectedClientForDetail.telefono1)" class="btn btn-success btn-sm fw-bold">
+        <button
+          (click)="sendInventoryWhatsAppTo(selectedClientForDetail, selectedClientForDetail.contactPhone || selectedClientForDetail.telefono1)"
+          class="btn btn-success btn-sm fw-bold">
           💬 WhatsApp Tel 1
         </button>
         <button type="button" class="btn btn-secondary btn-sm" (click)="closeClientDetailModal()">Cerrar Ficha</button>
